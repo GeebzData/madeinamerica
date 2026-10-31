@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+pipeline/raw/
+pipeline/warehouse/
+.env
+.DS_Store
+.bak/

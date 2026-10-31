@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Southeast · Made in America</title>
+<meta name="description" content="Alabama, Georgia, Tennessee, South Carolina and Mississippi side by side: factory jobs, plants, pay and industries since 1990.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .block { padding-top: 2rem; }
+  .block .card { padding: 2rem; }
+  .block h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 2.6rem; }
+  .block .lede { margin: 0.4rem 0 1.6rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
+
+  .wide-chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  .wide-chart text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+  .wide-chart text.end-label { font-size: 12px; font-weight: 600; }
+  .wide-chart .readout { font-size: 1.4rem; min-height: 2.1rem; margin: 0 0 0.8rem; }
+
+  #map text { font-weight: 600; }
+  #map text.pname { font-weight: 500; }
+  #map .state-line { fill: none; stroke: var(--ink); stroke-width: 1.2; pointer-events: none; }
+  #map .metro-line { fill: none; stroke: var(--ink); stroke-width: 0.8; pointer-events: none; }
+  #map .state-shape { stroke: var(--card); stroke-width: 1; cursor: pointer; }
+  .drill { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.6rem; }
+  .drill label { display: flex; flex-direction: column; gap: 0.4rem; font-size: 1.2rem; color: var(--muted); }
+  .drill .select { max-width: 30rem; color: var(--ink); background-color: #fff; }
+  .drill .arrow { padding-bottom: 1rem; color: var(--faint); }
+  .crumbs { font-size: 1.3rem; color: var(--muted); }
+  .crumbs button { padding: 0; border: none; background: none; font: inherit; color: var(--soft); text-decoration: underline; cursor: pointer; }
+  .panel-list ol { list-style: none; margin: 0; padding: 0; }
+  .panel-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line-soft); font-size: 1.4rem; }
+  .panel-list li:last-child { border-bottom: none; }
+  .panel-list li button { padding: 0; border: none; background: none; font: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 0.3rem; }
+  .panel-list h3 { margin: 0 0 0.4rem; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .size-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
+  .size-grid div { border-top: 1px solid var(--line); padding-top: 0.6rem; }
+  .size-grid strong { display: block; font-size: 1.9rem; font-weight: 600; line-height: 1.2; }
+  .size-grid span { font-size: 1.15rem; color: var(--muted); }
+
+  .matrix td { text-align: center; }
+  .matrix td span { display: inline-block; min-width: 8.4rem; padding: 0.4rem 0.8rem; border-radius: 0.6rem; }
+  .matrix th { text-align: center; }
+
+  @media (max-width: 600px) {
+    .block .card { padding: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="./">Made in America</a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="./">Explore</a>
+    <a href="story.html">Story</a>
+    <a href="reindustrialization.html">Reindustrialization</a>
+    <a href="alabama.html">Alabama</a>
+    <a href="southeast.html" aria-current="page">Southeast</a>
+    <a href="money.html">Money</a>
+    <a href="#sources">Data sources</a>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap intro">
+    <h1>The Southeast, <em>side by side</em></h1>
+    <p>Alabama, Georgia, Tennessee, South Carolina and Mississippi compete for many of the same plants. Pick a measure and a starting year to compare them, with the U.S. as a benchmark.</p>
+  </section>
+
+  <section class="wrap controls" aria-label="Filters">
+    <div class="control-row">
+      <div class="control">
+        <span class="control-label">Measure</span>
+        <div class="segmented" id="measure" role="group" aria-label="Measure">
+          <button type="button" data-v="e" aria-pressed="true" aria-describedby="hint"
+            data-hint="Private-sector factory jobs, averaged over the year's 12 months, counted where people work."
+            data-source="BLS Quarterly Census of Employment and Wages (employer unemployment-insurance filings)">Jobs</button>
+          <button type="button" data-v="n" aria-pressed="false" aria-describedby="hint"
+            data-hint="Private manufacturing establishments, averaged over the year. Each plant or shop counts once, whatever its size."
+            data-source="BLS Quarterly Census of Employment and Wages">Factories</button>
+          <button type="button" data-v="p" aria-pressed="false" aria-describedby="hint"
+            data-hint="Total yearly wages divided by jobs, adjusted for inflation to latest-year dollars."
+            data-source="BLS Quarterly Census of Employment and Wages; BLS Consumer Price Index">Average pay</button>
+        </div>
+      </div>
+      <div class="control">
+        <span class="control-label">Show as</span>
+        <select class="select" id="mode" aria-label="Show as">
+          <option value="pct">% change</option>
+          <option value="chg">Change</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="map-h">
+    <div class="card" style="padding:2rem">
+      <div class="block-head">
+        <h2 id="map-h">Drill down: state, metro area, county</h2>
+        <div class="control">
+          <span class="control-label" style="min-width:0">Map by</span>
+          <div class="segmented small" id="level" role="group" aria-label="Map by">
+            <button type="button" data-v="state" aria-pressed="true">States</button>
+            <button type="button" data-v="metro" aria-pressed="false">Metros</button>
+            <button type="button" data-v="county" aria-pressed="false">Counties</button>
+          </div>
+        </div>
+      </div>
+      <p class="lede">Pick a state, then one of its metro areas, then a county, or click the map. The map zooms to your pick, and its line is added to the chart below.</p>
+      <div class="drill">
+        <label>State<select class="select" id="pick-state"></select></label>
+        <span class="arrow" aria-hidden="true">→</span>
+        <label>Metro area<select class="select" id="pick-metro"></select></label>
+        <span class="arrow" aria-hidden="true">→</span>
+        <label>County<select class="select" id="pick-county"></select></label>
+        <button type="button" class="dl-button" id="pick-reset">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap explore">
+    <div class="card map-card">
+      <div class="map-head">
+        <div>
+          <div class="map-sub" id="map-sub"></div>
+          <div class="map-title" id="map-title"></div>
+        </div>
+      </div>
+      <div class="map-tools">
+        <span id="map-hint">Hover for exact figures · click to select · Ctrl + scroll or the buttons to zoom</span>
+        <div class="zoom">
+          <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+          <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+          <button type="button" id="zoom-reset" aria-label="Show all five states">⟲</button>
+        </div>
+      </div>
+      <div class="map-wrap" id="map-wrap">
+        <svg id="map" role="img" aria-label="Map of manufacturing change in five Southeast states"></svg>
+        <div class="loading" id="loading">Loading data…</div>
+        <div class="tooltip" id="tooltip" hidden></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <details class="calc" id="calc"><summary id="calc-summary"></summary><div id="calc-body"></div></details>
+    </div>
+
+    <aside class="card panel" id="panel" aria-live="polite">
+      <div>
+        <p class="eyebrow">Selected</p>
+        <h2 id="p-name"></h2>
+        <div class="crumbs" id="p-crumbs"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span id="p-l1"></span><strong id="p-v1"></strong></div>
+        <div class="stat"><span id="p-l2"></span><strong id="p-v2"></strong><small id="p-v2b"></small></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Growth per year</span><strong id="p-v3"></strong></div>
+        <div class="stat"><span id="p-l4"></span><strong id="p-v4"></strong></div>
+      </div>
+      <figure class="spark">
+        <figcaption id="p-spark-cap"></figcaption>
+        <svg id="spark" viewBox="0 0 300 90" role="img" aria-label="Trend for the selected place"></svg>
+      </figure>
+      <div class="panel-list">
+        <h3 id="p-sizes-h"></h3>
+        <div class="size-grid" id="p-sizes"></div>
+      </div>
+      <div class="panel-list" id="p-list-wrap">
+        <h3 id="p-list-h"></h3>
+        <ol id="p-list"></ol>
+      </div>
+      <p class="panel-note" id="p-note"></p>
+    </aside>
+  </section>
+
+  <section class="wrap timeline" aria-label="Start year">
+    <div class="card">
+      <div class="since">
+        <span class="eyebrow">Change since</span>
+        <strong id="since-year">2019</strong>
+        <small id="since-vs"></small>
+      </div>
+      <div class="slider">
+        <label for="start">Drag to pick a starting year</label>
+        <input type="range" id="start" min="1990" max="2024" step="1" value="2019">
+        <div class="ticks" id="ticks"></div>
+      </div>
+      <div class="picks">
+        <span>Quick picks</span>
+        <div id="picks"></div>
+      </div>
+      <p class="since-note" id="since-note" hidden></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rank-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="rank-h">How the five states compare</h2>
+        <button type="button" class="dl-button" id="dl-rank">Download CSV</button>
+      </div>
+      <p class="lede" id="rank-lede"></p>
+      <div class="table-scroll"><table class="data-table" id="rank-table"></table></div>
+      <p class="panel-note" id="rank-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="vs-h">
+    <div class="card wide-chart">
+      <h2 id="vs-h">Over time</h2>
+      <p class="lede" id="vs-lede"></p>
+      <p class="readout" id="vs-readout"></p>
+      <svg id="vs" role="img" aria-label="Five Southeast states and the U.S. indexed to the starting year"></svg>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="ind-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="ind-h">Industry by industry</h2>
+        <div class="segmented small" id="view" role="group" aria-label="Show">
+          <button type="button" data-v="chg" aria-pressed="true">Change since start</button>
+          <button type="button" data-v="level" aria-pressed="false">Latest year</button>
+        </div>
+      </div>
+      <p class="lede" id="ind-lede"></p>
+      <div class="table-scroll"><table class="data-table matrix" id="ind-table"></table></div>
+      <p class="panel-note" id="ind-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="policy-h">
+    <div class="card">
+      <h2 id="policy-h">Before and after CHIPS and the IRA</h2>
+      <p class="lede" id="policy-lede"></p>
+      <div class="table-scroll"><table class="data-table" id="policy-table"></table></div>
+      <p class="panel-note">Growth per year, so periods of different length compare fairly. Every state also has its own incentive programs, and the timing of a law alone doesn't show that it caused a change. See the Alabama page for Alabama's laws.</p>
+    </div>
+  </section>
+
+  <section class="wrap guide" id="categories" aria-labelledby="guide-h">
+    <div class="card">
+      <h2 id="guide-h">What each category includes</h2>
+      <p class="lede">Every manufacturing industry BLS tracks sits in exactly one category and one industry group, so together they add up to all of manufacturing. The small numbers are NAICS industry codes, the federal system BLS uses to classify businesses.</p>
+      <div class="guide-grid" id="guide"></div>
+    </div>
+  </section>
+
+  <section class="wrap sources block" id="sources">
+    <div class="card">
+      <h2>Data sources</h2>
+      <ul>
+        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: jobs, factories (establishments) and pay by county, state and industry, private sector, annual averages and the latest quarter.</li>
+        <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">BLS Consumer Price Index</a>: used to put pay in today's dollars.</li>
+        <li><a href="https://www.census.gov/programs-surveys/cbp.html">Census Bureau County Business Patterns</a>: plants by number of employees.</li>
+        <li><a href="https://www.census.gov/geographies/reference-files/time-series/demo/metro-micro/delineation-files.html">Census Bureau metro area definitions</a> (July 2023).</li>
+        <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: county and state outlines from the Census Bureau.</li>
+      </ul>
+      <p id="notes"></p>
+    </div>
+  </section>
+</main>
+<div class="hint" id="hint" role="tooltip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="categories.js"></script>
+<script>
+  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
+  const PEERS = [
+    { id: '01', name: 'Alabama', color: '#141414' },
+    { id: '13', name: 'Georgia', color: '#2F6690' },
+    { id: '47', name: 'Tennessee', color: '#7A4E9C' },
+    { id: '45', name: 'South Carolina', color: '#B07A12' },
+    { id: '28', name: 'Mississippi', color: '#2E8B83' }
+  ];
+  const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
+  const THRESH = { e: [100, 1000, 5000], n: [3, 15, 50], p: [1000, 5000, 10000], pct: [5, 20, 40] };
+  const MEASURES = { e: 'Jobs', n: 'Factories', p: 'Average pay' };
+  const UNITS = { e: 'jobs', n: 'factories', p: '' };
+  const PICKS = [[2000, '2000 · before the China shock'], [2015, '2015 · 10 years'], [2019, '2019 · before COVID'], [2021, '2021 · before CHIPS']];
+  const EVENTS = [[2001, 'China joins WTO'], [2008, 'Great Recession'], [2022, 'CHIPS / IRA']];
+  const LOWS = {
+    1991: ['the early-1990s recession', 1990], 1992: ['the early-1990s recession', 1990],
+    2009: ['the Great Recession', 2007], 2010: ['the Great Recession', 2007],
+    2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
+  };
+  const W = 960;
+  const ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '28': 'MS' };
+  const OUTSIDE = '#EFEFEB';
+  const LEVEL_THRESH = {
+    state: { e: [2000, 15000, 40000], n: [25, 150, 400], p: [1000, 5000, 10000] },
+    metro: { e: [250, 2500, 7500], n: [5, 25, 75], p: [1000, 5000, 10000] },
+    county: { e: [100, 1000, 5000], n: [3, 15, 50], p: [1000, 5000, 10000] }
+  };
+
+  const state = { measure: 'e', mode: 'pct', start: 2019, view: 'chg', sort: { key: 'pct', dir: -1 }, level: 'state', pick: { st: null, metro: null, county: null } };
+  let meta, national, states, counties, plants, quarter, years, endIdx, H;
+  const names = {};
+  const shapes = {};
+  const metros = {};
+  const metroOf = {};
+  const countiesOf = {};
+  const labelAt = {};
+
+  const projection = d3.geoIdentity();
+  const path = d3.geoPath(projection);
+  const svg = d3.select('#map');
+  const zoomLayer = svg.append('g');
+  const gCounties = zoomLayer.append('g');
+  const gStateShapes = zoomLayer.append('g');
+  const gMetros = zoomLayer.append('g');
+  const gStates = zoomLayer.append('g');
+  const hoverLine = zoomLayer.append('path').attr('class', 'hover');
+  const selLine = zoomLayer.append('path').attr('class', 'selected');
+  const gLabels = zoomLayer.append('g').attr('font-size', 12);
+  const zoom = d3.zoom()
+    .scaleExtent([1, 12])
+    .filter(event => {
+      if (event.type === 'wheel') return event.ctrlKey;
+      if (event.type.startsWith('touch')) return event.touches.length > 1;
+      return !event.button;
+    })
+    .on('zoom', event => {
+      zoomLayer.attr('transform', event.transform);
+      gLabels.attr('font-size', 12 / event.transform.k).style('stroke-width', 3 / event.transform.k);
+    });
+  svg.call(zoom).style('touch-action', 'pan-y');
+  document.getElementById('zoom-in').onclick = () => svg.transition().duration(400).call(zoom.scaleBy, 1.6);
+  document.getElementById('zoom-out').onclick = () => svg.transition().duration(400).call(zoom.scaleBy, 1 / 1.6);
+  document.getElementById('zoom-reset').onclick = () => pick(null, null, null);
+  const tip = d3.select('#tooltip');
+  const mapWrap = document.getElementById('map-wrap');
+  const hatch = svg.append('defs').append('pattern')
+    .attr('id', 'hatch').attr('width', 6).attr('height', 6)
+    .attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
+  hatch.append('rect').attr('width', 6).attr('height', 6).attr('fill', '#EFEFEB');
+  hatch.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 6).attr('stroke', '#B4B4AE').attr('stroke-width', 2);
+
+  function startIdx() { return years.indexOf(state.start); }
+  function at(arr, year) { return arr ? arr[years.indexOf(year)] : null; }
+  function sign(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; }
+  function pct(a, b) { return a && b != null ? (b - a) / a * 100 : null; }
+  function fmtPct(v, digits = 1) { return v == null ? 'n/a' : sign(v) + Math.abs(v).toFixed(digits) + '%'; }
+  function perYear(a, b, n) { return a && b ? (Math.pow(b / a, 1 / n) - 1) * 100 : null; }
+  function toneClass(v) { return v == null ? '' : v < 0 ? 'is-loss' : v > 0 ? 'is-gain' : ''; }
+  function estimatedPct(s, i) { return s && s.x && i >= 0 ? s.x[i] : 0; }
+
+  function endPoint(arr) {
+    if (!arr) return -1;
+    if (arr[endIdx] != null) return endIdx;
+    return arr[endIdx - 1] != null ? endIdx - 1 : -1;
+  }
+
+  function change(arr, mode = state.mode) {
+    if (!arr) return null;
+    const a = arr[startIdx()];
+    const b = arr[endPoint(arr)];
+    if (a == null || b == null) return null;
+    if (mode === 'pct') return a > 0 ? (b - a) / a * 100 : null;
+    return b - a;
+  }
+
+  function compact(a) {
+    if (a >= 1e6) return (a / 1e6).toFixed(1) + 'M';
+    if (a >= 1e4) return Math.round(a / 1e3) + 'K';
+    if (a >= 1e3) return (a / 1e3).toFixed(1) + 'K';
+    return String(Math.round(a));
+  }
+
+  function fmtShort(v, mode = state.mode, measure = state.measure) {
+    if (v == null) return 'n/a';
+    if (mode === 'pct') return sign(v) + Math.abs(v).toFixed(0) + '%';
+    return sign(v) + (measure === 'p' ? '$' : '') + compact(Math.abs(v));
+  }
+
+  function fmtLong(v, mode = state.mode, measure = state.measure) {
+    if (v == null) return 'Not published';
+    if (mode === 'pct') return sign(v) + Math.abs(v).toFixed(1) + '%';
+    const n = d3.format(',')(Math.round(Math.abs(v)));
+    if (measure === 'p') return sign(v) + '$' + n;
+    return sign(v) + n + ' ' + UNITS[measure];
+  }
+
+  function fmtLevel(v, measure = state.measure) {
+    if (v == null) return 'not published';
+    const n = d3.format(',')(Math.round(v));
+    return measure === 'p' ? '$' + n : n + ' ' + UNITS[measure];
+  }
+
+  function downloadCsv(filename, rows) {
+    const cell = v => (v == null ? '' : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
+    const blob = new Blob([rows.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // The five states added together; pay is weighted by jobs. Blank in a year any state is withheld.
+  function regionSeries(key = 'all|all') {
+    const rows = PEERS.map(p => states[p.id].sel[key] || {});
+    const sum = k => years.map((yr, i) => (rows.some(r => !r[k] || r[k][i] == null) ? null : d3.sum(rows, r => r[k][i])));
+    const e = sum('e');
+    const n = sum('n');
+    const p = years.map((yr, i) => (!e[i] || rows.some(r => !r.p || r.p[i] == null) ? null : d3.sum(rows, r => r.p[i] * r.e[i]) / e[i]));
+    return { e, n, p };
+  }
+
+  function rankRows() {
+    const end = years[endIdx];
+    const region = regionSeries();
+    const regionPlants = PEERS.map(p => plants.states[p.id].all);
+    const regionQ = PEERS.map(p => quarter.areas[p.id]).filter(Boolean);
+    const places = [
+      ...PEERS.map(p => ({ id: p.id, name: p.name, s: states[p.id].sel['all|all'], sizes: plants.states[p.id].all, q: quarter.areas[p.id], focus: p.id === '01' })),
+      { id: 'SE', name: 'Five states together', s: region, sizes: regionPlants[0].map((v, i) => d3.sum(regionPlants, r => r[i])), q: regionQ.length === PEERS.length ? regionQ[0].map((v, i) => d3.sum(regionQ, r => r[i])) : null, total: true },
+      { id: 'US', name: 'United States', s: national.sel['all|all'], sizes: null, q: quarter.areas.US, total: true }
+    ];
+    return places.map(r => {
+      const arr = r.s[state.measure];
+      const ei = endPoint(arr);
+      return {
+        ...r, level: ei >= 0 ? arr[ei] : null, levelYear: ei >= 0 ? years[ei] : null,
+        v: change(arr, 'chg'), pct: change(arr, 'pct'),
+        rate: ei >= 0 ? perYear(arr[startIdx()], arr[ei], years[ei] - state.start) : null,
+        quarter: r.q ? pct(r.q[3], r.q[0]) : null,
+        big: r.sizes ? r.sizes[2] + r.sizes[3] : null,
+        share: r.id === 'US' ? null : at(r.s.e, end) / at(national.sel['all|all'].e, end) * 100
+      };
+    });
+  }
+
+  function drawRanks() {
+    const end = years[endIdx];
+    const rows = rankRows();
+    const peers = rows.filter(r => !r.total);
+    const { key, dir } = state.sort;
+    peers.sort((a, b) => ((a[key] ?? -Infinity) - (b[key] ?? -Infinity)) * dir);
+    const ordered = [...peers, ...rows.filter(r => r.total)];
+    const unit = { e: 'Factory jobs', n: 'Factories', p: 'Avg pay' }[state.measure];
+    const cols = [
+      ['level', `${unit}, ${end}`], ['v', `Change since ${state.start}`], ['pct', '% change'], ['rate', 'Per year'],
+      ['quarter', `Q${quarter.qtr} ${quarter.year} vs Q${quarter.qtr} ${quarter.year - 1}<br><small>jobs</small>`],
+      ['big', `Plants with 100+ workers, ${plants.year}`], ['share', `Share of U.S. factory jobs, ${end}`]
+    ];
+    const head = cols.map(([k, label]) => `<th><button type="button" data-sort="${k}"${k === key ? ` aria-sort="${dir < 0 ? 'descending' : 'ascending'}"` : ''}>${label}${k === key ? (dir < 0 ? ' ↓' : ' ↑') : ''}</button></th>`).join('');
+    const cell = (v, fmt, tone) => `<td class="${tone ? toneClass(v) : ''}">${v == null ? 'n/a' : fmt(v)}</td>`;
+    document.getElementById('rank-table').innerHTML = `<thead><tr><th>State</th>${head}</tr></thead><tbody>` +
+      ordered.map(r => `<tr class="${r.focus ? 'is-focus' : ''}"${r.total ? ' style="color:var(--soft)"' : ''}>
+        <td>${r.name}</td>
+        ${cell(r.level, v => (state.measure === 'p' ? '$' : '') + d3.format(',')(Math.round(v)) + (r.levelYear !== end ? ` <small>${r.levelYear}</small>` : ''))}
+        ${cell(r.v, v => fmtShort(v, 'chg'), true)}
+        ${cell(r.pct, v => fmtPct(v), true)}
+        ${cell(r.rate, v => fmtPct(v), true)}
+        ${cell(r.quarter, v => fmtPct(v), true)}
+        ${cell(r.big, v => d3.format(',')(v))}
+        ${cell(r.share, v => v.toFixed(2) + '%')}
+      </tr>`).join('') + '</tbody>';
+    const byPct = peers.slice().filter(r => r.pct != null).sort((a, b) => b.pct - a.pct);
+    const al = peers.find(r => r.id === '01');
+    const word = { e: 'factory jobs', n: 'factories', p: 'average factory pay' }[state.measure];
+    document.getElementById('rank-lede').textContent =
+      `Change in ${word} from ${state.start} to ${end}. ` +
+      (byPct[0] === al
+        ? `Alabama did best of the five (${fmtPct(al.pct)}); ${byPct[1].name} was next (${fmtPct(byPct[1].pct)}). `
+        : `${byPct[0].name} did best (${fmtPct(byPct[0].pct)}); Alabama ranks ${byPct.indexOf(al) + 1} of 5 (${fmtPct(al.pct)}). `) +
+      'Click a column to sort.';
+    document.getElementById('rank-note').textContent =
+      `"Per year" is the average yearly growth rate. The quarter column is the latest BLS count of factory jobs compared with the same quarter a year earlier, since factory hiring is seasonal; full-year ${quarter.year} figures come out around September ${quarter.year + 1}. ` +
+      'Plant sizes are from the Census Bureau and count plants with employees.';
+  }
+
+  function rankCsv() {
+    const end = years[endIdx];
+    const label = { e: 'jobs', n: 'factories', p: 'average pay' }[state.measure];
+    const rows = [['State', `${label} ${state.start}`, `${label} latest`, 'latest year', 'change', '% change', '% per year',
+      `jobs Q${quarter.qtr} ${quarter.year} vs ${quarter.year - 1} (%)`, `plants 100+ workers (${plants.year})`, `share of U.S. jobs ${end} (%)`]];
+    for (const r of rankRows()) {
+      rows.push([r.name, at(r.s[state.measure], state.start), r.level == null ? null : Math.round(r.level), r.levelYear,
+        r.v == null ? null : Math.round(r.v), r.pct == null ? null : r.pct.toFixed(1), r.rate == null ? null : r.rate.toFixed(2),
+        r.quarter == null ? null : r.quarter.toFixed(1), r.big, r.share == null ? null : r.share.toFixed(2)]);
+    }
+    downloadCsv(`southeast-${label.replace(' ', '-')}-${state.start}-${end}.csv`, rows);
+  }
+
+  function drawVs() {
+    const el = d3.select('#vs');
+    el.selectAll('*').remove();
+    const Wc = 960, Hc = 320, M = { t: 18, r: 120, b: 28, l: 44 };
+    el.attr('viewBox', `0 0 ${Wc} ${Hc}`);
+    const i0 = startIdx();
+    const span = years.slice(i0);
+    const index = arr => span.map((yr, j) => (arr && arr[i0] && arr[i0 + j] != null ? arr[i0 + j] / arr[i0] * 100 : null));
+    const focus = focusId();
+    const lines = [
+      ...PEERS.map(p => ({ label: p.name, color: p.color, width: state.pick.st === 'S' + p.id ? 4 : p.id === '01' ? 3 : 2, dash: null, vals: index(states[p.id].sel['all|all'][state.measure]) })),
+      { label: 'U.S.', color: '#8A8A84', width: 1.5, dash: '5 4', vals: index(national.sel['all|all'][state.measure]) }
+    ];
+    if (focus && kindOf(focus) !== 'state') {
+      const vals = index((series(focus) || {})[state.measure]);
+      if (vals.some(v => v != null)) lines.push({ label: names[focus].replace(/ metro.*| County.*/, ''), color: '#355E3B', width: 3, dash: '2 3', vals });
+    }
+    const allVals = lines.flatMap(l => l.vals).filter(v => v != null);
+    const x = d3.scaleLinear().domain([span[0], span[span.length - 1]]).range([M.l, Wc - M.r]);
+    const y = d3.scaleLinear().domain([Math.min(95, d3.min(allVals)), Math.max(105, d3.max(allVals))]).nice().range([Hc - M.b, M.t]);
+    el.append('g').attr('transform', `translate(0,${Hc - M.b})`)
+      .call(d3.axisBottom(x).ticks(Math.min(span.length - 1, 12)).tickFormat(d3.format('d')).tickSize(0).tickPadding(8))
+      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    el.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(Wc - M.l - M.r)))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    el.append('line').attr('x1', M.l).attr('x2', Wc - M.r).attr('y1', y(100)).attr('y2', y(100)).attr('stroke', '#A8A8A2');
+    el.append('text').attr('x', M.l + 4).attr('y', y(100) - 6).text(`${state.start} = 100`);
+    const last = span.length - 1;
+    const ends = [];
+    for (const l of lines) {
+      el.append('path').attr('d', d3.line().defined(v => v != null).x((v, i) => x(span[i])).y(v => y(v))(l.vals))
+        .attr('fill', 'none').attr('stroke', l.color).attr('stroke-width', l.width).attr('stroke-dasharray', l.dash);
+      const li = l.vals.map((v, i) => (v == null ? -1 : i)).reduce((a, b) => Math.max(a, b), -1);
+      if (li >= 0) ends.push({ l, y: y(l.vals[li]), x: x(span[li]) });
+    }
+    // Spread end labels so they don't overlap.
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i += 1) ends[i].ly = Math.max(ends[i].y, (ends[i - 1].ly ?? ends[i - 1].y) + 14);
+    ends[0].ly = ends[0].y;
+    for (const e of ends) {
+      el.append('text').attr('class', 'end-label').attr('x', Wc - M.r + 8).attr('y', e.ly).attr('dominant-baseline', 'middle')
+        .style('fill', e.l.color).text(`${e.l.label} ${Math.round(e.l.vals[e.l.vals.length - 1] ?? e.l.vals[last - 1])}`);
+    }
+    const word = { e: 'Factory jobs', n: 'The number of factories', p: 'Average factory pay' }[state.measure];
+    document.getElementById('vs-lede').textContent = `${word} in each state, set to 100 in ${state.start}. Alabama is the thicker black line; the U.S. is dashed.` +
+      (focus && kindOf(focus) !== 'state' ? ` ${names[focus]} is the dotted green line.` : ' Pick a metro area or county on the map to add it.');
+    const readout = document.getElementById('vs-readout');
+    const text = i => `${span[i]}: ` + lines.map(l => `${l.label} ${l.vals[i] == null ? 'n/a' : l.vals[i].toFixed(1)}`).join(' · ');
+    const dots = lines.map(l => el.append('circle').attr('r', 4).attr('fill', l.color).attr('display', 'none'));
+    const rest = () => { readout.textContent = text(last); dots.forEach(d => d.attr('display', 'none')); };
+    el.append('rect').attr('x', M.l).attr('y', M.t).attr('width', Wc - M.l - M.r).attr('height', Hc - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const i = Math.max(0, Math.min(last, Math.round(x.invert(d3.pointer(event)[0])) - span[0]));
+        lines.forEach((l, k) => dots[k].attr('display', l.vals[i] == null ? 'none' : null).attr('cx', x(span[i])).attr('cy', l.vals[i] == null ? 0 : y(l.vals[i])));
+        readout.textContent = text(i);
+      })
+      .on('pointerleave', rest);
+    rest();
+  }
+
+  function kindOf(id) { return !id ? 'region' : id[0] === 'S' ? 'state' : id[0] === 'm' ? 'metro' : 'county'; }
+
+  // Annual series for any place: the five states together, a state, a metro area or a county.
+  function series(id) {
+    const kind = kindOf(id);
+    if (kind === 'region') return regionSeries();
+    if (kind === 'state') return states[id.slice(1)].sel['all|all'];
+    if (kind === 'metro') return metros[id].s;
+    return counties[id];
+  }
+
+  function memberCounties(id) {
+    const kind = kindOf(id);
+    if (kind === 'region') return null;
+    if (kind === 'state') return countiesOf[id.slice(1)];
+    if (kind === 'metro') return metros[id].counties;
+    return [id];
+  }
+
+  function sumRows(rows) {
+    return rows.length && rows.every(Boolean) ? rows[0].map((v, i) => d3.sum(rows, r => r[i])) : null;
+  }
+
+  function quarterFor(id) {
+    const kind = kindOf(id);
+    if (kind === 'region') return sumRows(PEERS.map(p => quarter.areas[p.id]));
+    if (kind === 'state') return quarter.areas[id.slice(1)] || null;
+    return sumRows(memberCounties(id).map(c => quarter.areas[c]));
+  }
+
+  function plantsFor(id) {
+    const kind = kindOf(id);
+    if (kind === 'region') return sumRows(PEERS.map(p => plants.states[p.id].all));
+    if (kind === 'state') return plants.states[id.slice(1)].all;
+    return sumRows(memberCounties(id).map(c => plants.counties[c]).filter(Boolean));
+  }
+
+  // Sum of counties; pay weighted by jobs. A year is blank if any county is withheld that year.
+  function sumSeries(list) {
+    const rows = list.map(c => counties[c] || {});
+    const sum = k => years.map((yr, i) => (rows.some(r => !r[k] || r[k][i] == null) ? null : d3.sum(rows, r => r[k][i])));
+    const e = sum('e');
+    const n = sum('n');
+    const p = years.map((yr, i) => (!e[i] || rows.some(r => !r.p || r.p[i] == null) ? null : d3.sum(rows, r => r.p[i] * r.e[i]) / e[i]));
+    return { e, n, p };
+  }
+
+  function focusId() { return state.pick.county || state.pick.metro || state.pick.st; }
+
+  // The place a county stands for at the current map level.
+  function placeFor(countyId) {
+    if (state.level === 'state') return 'S' + countyId.slice(0, 2);
+    if (state.level === 'metro') return metroOf[countyId] || countyId;
+    return countyId;
+  }
+
+  function thresholds() { return state.mode === 'pct' ? THRESH.pct : LEVEL_THRESH[state.level][state.measure]; }
+
+  function drawMap() {
+    const t = thresholds();
+    const scale = d3.scaleThreshold().domain([-t[2], -t[1], -t[0], t[0], t[1], t[2]]).range(COLORS);
+    const fill = id => {
+      const v = change((series(id) || {})[state.measure]);
+      return v == null ? 'url(#hatch)' : scale(v);
+    };
+    const byState = state.level === 'state';
+    gStateShapes.style('display', byState ? null : 'none');
+    gStateShapes.selectAll('path').attr('fill', d => fill('S' + d.id));
+    gCounties.style('display', byState ? 'none' : null);
+    gCounties.selectAll('path').attr('fill', d => (state.level === 'metro' && !metroOf[d.id] ? OUTSIDE : fill(placeFor(d.id))));
+    gMetros.style('display', state.level === 'metro' ? null : 'none');
+
+    const labels = [];
+    const add = (id, name) => {
+      const [x, y] = labelAt[id];
+      const v = change((series(id) || {})[state.measure]);
+      const color = v != null && Math.abs(v) >= t[2] ? '#fff' : '#141414';
+      labels.push({ x, y: y - 7, text: name, color, cls: 'pname' });
+      labels.push({ x, y: y + 7, text: fmtShort(v), color, cls: null });
+    };
+    if (byState) for (const p of PEERS) add('S' + p.id, p.name);
+    if (state.level === 'metro') {
+      for (const [id, m] of Object.entries(metros)) if (at(m.s.e, years[endIdx] - 1) >= 8000) add(id, m.short);
+    }
+    if (state.level === 'county') {
+      for (const p of PEERS) labels.push({ x: labelAt['S' + p.id][0], y: labelAt['S' + p.id][1], text: p.name, color: '#141414', cls: 'pname halo' });
+    }
+    gLabels.selectAll('text').data(labels).join('text')
+      .attr('x', d => d.x).attr('y', d => d.y).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+      .attr('class', d => d.cls).attr('fill', d => d.color)
+      .style('paint-order', d => (d.cls && d.cls.includes('halo') ? 'stroke' : null))
+      .style('stroke', d => (d.cls && d.cls.includes('halo') ? 'rgba(255,255,255,0.85)' : null))
+      .text(d => d.text);
+
+    const levelName = { state: 'States', metro: 'Metro areas', county: 'Counties' }[state.level];
+    document.getElementById('map-sub').textContent =
+      `All manufacturing · ${MEASURES[state.measure]}${state.mode === 'pct' ? ' (% change)' : ''} · ${levelName}`;
+    document.getElementById('map-title').textContent = `${state.start} → ${years[endIdx]}`;
+    const f = v => fmtShort(v);
+    const edges = [`< ${f(-t[2])}`, f(-t[1]), f(-t[0]), '±' + fmtShort(t[0]).slice(1), f(t[0]), f(t[1]), `> ${f(t[2])}`];
+    document.getElementById('legend').innerHTML = `
+      <span>Lost</span>
+      <div class="legend-scale">${COLORS.map((c, i) => `<div><span style="background:${c}"></span><small>${edges[i]}</small></div>`).join('')}</div>
+      <span>Gained</span>
+      <span class="legend-hatch">${state.level === 'metro' ? `<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="${OUTSIDE}" stroke="#C9C9C3"></rect></svg>Outside metro areas` : ''}<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="url(#hatch)"></rect></svg>Not published (confidential)</span>`;
+  }
+
+  function childMoves(id) {
+    const kind = kindOf(id);
+    let ids = [];
+    if (kind === 'state') ids = Object.keys(metros).filter(m => metros[m].states.includes(id.slice(1)));
+    if (kind === 'metro') ids = metros[id].counties;
+    if (kind === 'region') ids = PEERS.map(p => 'S' + p.id);
+    return ids.map(c => ({ id: c, name: names[c], v: change((series(c) || {})[state.measure], 'chg') }))
+      .filter(r => r.v != null).sort((a, b) => b.v - a.v);
+  }
+
+  function tipHtml(id) {
+    const arr = (series(id) || {})[state.measure];
+    const v = change(arr);
+    const ei = endPoint(arr) < 0 ? endIdx : endPoint(arr);
+    let html = `<h3>${names[id]}</h3>
+      <div class="sub">${MEASURES[state.measure]} · All manufacturing · ${state.start} → ${years[ei]}</div>
+      <div class="big ${toneClass(v)}">${fmtLong(v)}</div>`;
+    if (state.mode === 'pct' && v != null) html += `<div class="range">${fmtLong(change(arr, 'chg'), 'chg')}</div>`;
+    html += `<div class="range">${fmtLevel(arr ? arr[startIdx()] : null)} in ${state.start} → ${fmtLevel(arr ? arr[ei] : null)} in ${years[ei]}</div>`;
+    if (ei !== endIdx) html += `<div class="note">${years[endIdx]} not published here; showing ${years[ei]}.</div>`;
+    if (kindOf(id) === 'metro') {
+      html += `<div class="eyebrow">${MEASURES[state.measure]}: change by county</div>`;
+      const rows = childMoves(id).slice().sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+      for (const r of rows.slice(0, 6)) html += `<div class="row"><span>${r.name.replace(/ County.*/, '')}</span><b class="${toneClass(r.v)}">${fmtShort(r.v, 'chg')}</b></div>`;
+      if (rows.length > 6) html += `<div class="note">and ${rows.length - 6} more counties</div>`;
+    }
+    if (kindOf(id) === 'county' && state.level === 'metro') html += '<div class="note">Not part of a metro area.</div>';
+    const sizes = plantsFor(id);
+    if (sizes) html += `<div class="note">${plants.year}: ${d3.format(',')(sizes[2] + sizes[3])} plants with 100+ workers, ${d3.format(',')(d3.sum(sizes))} in all.</div>`;
+    return html;
+  }
+
+  function moveTip(event) {
+    const [x, y] = d3.pointer(event, mapWrap);
+    const node = tip.node();
+    let left = x + 16;
+    if (left + node.offsetWidth > mapWrap.clientWidth) left = x - node.offsetWidth - 16;
+    const top = Math.max(0, Math.min(y - 24, mapWrap.clientHeight - node.offsetHeight));
+    tip.style('left', Math.max(0, left) + 'px').style('top', top + 'px');
+  }
+
+  function enter(event, id) {
+    hoverLine.attr('d', path(shapes[id]));
+    tip.html(tipHtml(id)).attr('hidden', null);
+    moveTip(event);
+  }
+
+  function leave() {
+    hoverLine.attr('d', null);
+    tip.attr('hidden', true);
+  }
+
+  // Select a place: state, metro area and county, each narrowing the one before.
+  function pick(st, metro, county) {
+    state.pick = { st, metro, county };
+    const id = focusId();
+    selLine.attr('d', id ? path(shapes[id]) : null);
+    const [[x0, y0], [x1, y1]] = id ? path.bounds(shapes[id]) : [[0, 0], [W, H]];
+    const k = Math.min(12, 0.85 / Math.max((x1 - x0) / W, (y1 - y0) / H));
+    const transform = id ? d3.zoomIdentity.translate(W / 2, H / 2).scale(k).translate(-(x0 + x1) / 2, -(y0 + y1) / 2) : d3.zoomIdentity;
+    svg.transition().duration(600).call(zoom.transform, transform);
+    leave();
+    render();
+  }
+
+  function pickFromMap(countyId) {
+    const st = 'S' + countyId.slice(0, 2);
+    if (state.level === 'state') pick(st, null, null);
+    else if (state.level === 'metro' && metroOf[countyId]) pick(st, metroOf[countyId], null);
+    else pick(st, metroOf[countyId] || null, countyId);
+  }
+
+  function fillDrill() {
+    const { st, metro, county } = state.pick;
+    const option = (v, label) => `<option value="${v}">${label}</option>`;
+    const stSel = document.getElementById('pick-state');
+    stSel.innerHTML = option('', 'All five states') + PEERS.map(p => option('S' + p.id, p.name)).join('');
+    stSel.value = st || '';
+    const metroIds = Object.keys(metros).filter(m => !st || metros[m].states.includes(st.slice(1))).sort((a, b) => names[a].localeCompare(names[b]));
+    const mSel = document.getElementById('pick-metro');
+    mSel.innerHTML = option('', st ? `All metro areas in ${names[st]}` : 'All metro areas') + metroIds.map(m => option(m, names[m])).join('');
+    mSel.value = metro || '';
+    let countyIds = metro ? metros[metro].counties : st ? countiesOf[st.slice(1)] : [];
+    if (metro && st) countyIds = countyIds.filter(c => c.startsWith(st.slice(1)));
+    const cSel = document.getElementById('pick-county');
+    cSel.disabled = !countyIds.length;
+    cSel.innerHTML = option('', countyIds.length ? 'All counties' : 'Pick a state or metro first') +
+      countyIds.slice().sort((a, b) => names[a].localeCompare(names[b])).map(c => option(c, names[c])).join('');
+    cSel.value = county || '';
+  }
+
+  // Worked example of the change on the map, using the selected place.
+  function drawCalc(name, s) {
+    const arr = s && s[state.measure];
+    const end = years[endIdx];
+    const ei = endPoint(arr);
+    const a = arr ? arr[startIdx()] : null;
+    const b = ei >= 0 ? arr[ei] : null;
+    const chg = change(arr, 'chg');
+    const pc = change(arr, 'pct');
+    const unit = { e: 'jobs', n: 'factories', p: 'average pay' }[state.measure];
+    document.getElementById('calc-summary').innerHTML = a == null || b == null
+      ? `<b>How it's calculated:</b> ${name} doesn't have a published ${unit} figure for both ${state.start} and ${end}, so no change is shown.`
+      : `<b>How it's calculated, for ${name}:</b> ${fmtLevel(b)} in ${years[ei]} − ${fmtLevel(a)} in ${state.start} = ${fmtLong(chg, 'chg')}` +
+        (pc == null ? '.' : `. As a percent: ${fmtLong(chg, 'chg').replace(/ jobs| factories/, '')} ÷ ${fmtLevel(a).replace(/ jobs| factories/, '')} = ${fmtLong(pc, 'pct')}.`);
+    const hint = document.querySelector(`#measure button[data-v="${state.measure}"]`).dataset.hint;
+    const items = [
+      `<b>What's counted.</b> ${hint}`,
+      `<b>Why ${end}.</b> It's the latest full year BLS has published; each year's figures come out the following September. Every year is an annual average: the 12 monthly counts added together and divided by 12${state.measure === 'p' ? ', and pay is the year\'s total wages divided by that average number of jobs' : ''}.` +
+        (b != null && ei !== endIdx ? ` ${end} isn't published for ${name}, so ${years[ei]} is used instead.` : ''),
+      `<b>The starting year.</b> ${state.start}, chosen with the slider. Change is the ${end} figure minus the ${state.start} figure; percent change divides that by the ${state.start} figure. The map shows ${state.mode === 'pct' ? 'percent change' : 'change'} for every place, calculated the same way.`
+    ];
+    if (state.measure === 'p') items.push(`<b>Inflation.</b> Both years are in ${meta.payDollarsYear} dollars: earlier years are raised by the rise in the Consumer Price Index, so the change is after inflation.`);
+    if (state.measure !== 'n' && (estimatedPct(s, startIdx()) || estimatedPct(s, ei))) {
+      items.push('<b>Estimates.</b> BLS withholds some industry figures to protect individual employers. We know the withheld total exactly and split it among those industries by number of plants; figures where this is 10% or more are marked ~.');
+    }
+    document.getElementById('calc-body').innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+  }
+
+  function renderPanel() {
+    const id = focusId();
+    const kind = kindOf(id);
+    const arr = (series(id) || {})[state.measure];
+    const end = years[endIdx];
+    const ei = endPoint(arr);
+    document.getElementById('p-name').textContent = id ? names[id] : 'Five states together';
+    const { st, metro, county } = state.pick;
+    const crumbs = [];
+    if (id) crumbs.push('<button type="button" data-crumb="">All five states</button>');
+    if (st && (metro || county)) crumbs.push(`<button type="button" data-crumb="st">${names[st]}</button>`);
+    if (metro && county) crumbs.push(`<button type="button" data-crumb="metro">${names[metro]}</button>`);
+    document.getElementById('p-crumbs').innerHTML = crumbs.join(' › ');
+    document.getElementById('p-l1').textContent = ei >= 0 && ei !== endIdx
+      ? `${MEASURES[state.measure]}, ${years[ei]} (${end} not published)` : `${MEASURES[state.measure]}, ${end}`;
+    document.getElementById('p-v1').textContent = ei >= 0 ? (state.measure === 'p' ? '$' : '') + d3.format(',')(Math.round(arr[ei])) : 'Not published';
+    document.getElementById('p-l2').textContent = `Change since ${state.start}`;
+    const v = change(arr, 'chg');
+    const pc = change(arr, 'pct');
+    const v2 = document.getElementById('p-v2');
+    v2.textContent = v == null ? 'n/a' : fmtShort(v, 'chg');
+    v2.className = toneClass(v);
+    document.getElementById('p-v2b').textContent = pc == null ? '' : fmtPct(pc);
+    const rate = ei >= 0 ? perYear(arr[startIdx()], arr[ei], years[ei] - state.start) : null;
+    const v3 = document.getElementById('p-v3');
+    v3.textContent = fmtPct(rate);
+    v3.className = toneClass(rate);
+    const q = quarterFor(id);
+    const qv = q ? pct(q[3], q[0]) : null;
+    document.getElementById('p-l4').textContent = `Jobs, Q${quarter.qtr} ${quarter.year} vs Q${quarter.qtr} ${quarter.year - 1}`;
+    const v4 = document.getElementById('p-v4');
+    v4.textContent = q ? fmtPct(qv) : 'n/a';
+    v4.className = toneClass(qv);
+    document.getElementById('p-spark-cap').textContent = `${MEASURES[state.measure]}, all manufacturing, ${years[0]}–${end} (dashed line = ${state.start})`;
+    drawSpark(arr);
+    const sizes = plantsFor(id);
+    document.getElementById('p-sizes-h').textContent = `Plants by number of workers, ${plants.year}`;
+    document.getElementById('p-sizes').innerHTML = sizes
+      ? ['1–19', '20–99', '100–499', '500+'].map((label, i) => `<div><strong>${d3.format(',')(sizes[i])}</strong><span>${label}</span></div>`).join('')
+      : '<div><span>Not published</span></div>';
+    const list = kind === 'county' ? [] : childMoves(id);
+    document.getElementById('p-list-wrap').hidden = !list.length;
+    document.getElementById('p-list-h').textContent =
+      `${{ region: 'States', state: 'Metro areas', metro: 'Counties' }[kind] || ''}: change since ${state.start}`;
+    document.getElementById('p-list').innerHTML = list.map(r =>
+      `<li><button type="button" data-id="${r.id}">${r.name}</button><span class="${toneClass(r.v)}">${fmtShort(r.v, 'chg')}</span></li>`).join('');
+    const notes = [];
+    if (kind === 'county' && metroOf[id]) notes.push(`Part of the ${names[metroOf[id]].replace(/ metro.*/, '')} metro area.`);
+    if (kind === 'metro' && metros[id].partial) notes.push('This metro area reaches beyond the five states; figures cover only its counties in them.');
+    if (sizes && sizes[4]) notes.push(`Census withholds the size of ${sizes[4]} plant${sizes[4] > 1 ? 's' : ''} here.`);
+    document.getElementById('p-note').textContent = notes.join(' ');
+    drawCalc(id ? names[id] : 'the five states together', series(id));
+  }
+
+  function drawSpark(arr) {
+    const sp = d3.select('#spark');
+    sp.selectAll('*').remove();
+    if (!arr || arr.every(v => v == null)) {
+      sp.append('text').attr('x', 150).attr('y', 48).attr('text-anchor', 'middle').attr('fill', '#5C5C57').attr('font-size', 12).text('Not published for this place');
+      return;
+    }
+    const x = d3.scaleLinear().domain([years[0], years[years.length - 1]]).range([4, 296]);
+    const vals = arr.filter(v => v != null);
+    const y = d3.scaleLinear().domain([Math.min(0, d3.min(vals)), d3.max(vals) * 1.08 || 1]).range([86, 6]);
+    sp.append('line').attr('x1', 4).attr('x2', 296).attr('y1', 86).attr('y2', 86).attr('stroke', '#C9C9C3');
+    sp.append('path')
+      .attr('d', d3.line().defined(d => d[1] != null).x(d => x(d[0])).y(d => y(d[1]))(years.map((yr, i) => [yr, arr[i]])))
+      .attr('fill', 'none').attr('stroke', '#141414').attr('stroke-width', 2);
+    sp.append('line').attr('x1', x(state.start)).attr('x2', x(state.start)).attr('y1', 0).attr('y2', 86)
+      .attr('stroke', '#141414').attr('stroke-dasharray', '3 3');
+    for (const i of [startIdx(), endPoint(arr)]) {
+      if (arr[i] != null) sp.append('circle').attr('cx', x(years[i])).attr('cy', y(arr[i])).attr('r', 3.5).attr('fill', '#141414');
+    }
+  }
+
+  function largestPart(f) {
+    if (f.geometry.type !== 'MultiPolygon') return f;
+    let best = null;
+    let bestArea = -1;
+    for (const coords of f.geometry.coordinates) {
+      const g = { type: 'Polygon', coordinates: coords };
+      const a = path.area(g);
+      if (a > bestArea) { bestArea = a; best = g; }
+    }
+    return best;
+  }
+
+  function buildMap(topo, metroDefs) {
+    const ids = PEERS.map(p => p.id);
+    const stateFeatures = topojson.feature(topo, topo.objects.states).features.filter(f => ids.includes(f.id));
+    const list = topojson.feature(topo, topo.objects.counties).features.filter(f => ids.includes(f.id.slice(0, 2)));
+    const region = { type: 'FeatureCollection', features: stateFeatures };
+    const [[x0, y0], [x1, y1]] = d3.geoPath().bounds(region);
+    H = Math.ceil((W - 16) * (y1 - y0) / (x1 - x0)) + 16;
+    projection.fitExtent([[8, 8], [W - 8, H - 8]], region);
+    svg.attr('viewBox', `0 0 ${W} ${H}`);
+    zoom.translateExtent([[0, 0], [W, H]]).extent([[0, 0], [W, H]]);
+    const center = f => path.centroid(largestPart(f));
+    for (const f of stateFeatures) {
+      const id = 'S' + f.id;
+      shapes[id] = f;
+      names[id] = f.properties.name;
+      labelAt[id] = center(f);
+      countiesOf[f.id] = [];
+    }
+    for (const f of list) {
+      shapes[f.id] = f;
+      names[f.id] = `${f.properties.name} County, ${ABBR[f.id.slice(0, 2)]}`;
+      countiesOf[f.id.slice(0, 2)].push(f.id);
+    }
+    const geoms = topo.objects.counties.geometries;
+    for (const [code, m] of Object.entries(metroDefs)) {
+      const members = m.counties.filter(c => shapes[c]);
+      if (!members.length) continue;
+      const id = 'm' + code;
+      const sts = [...new Set(members.map(c => c.slice(0, 2)))];
+      const partial = members.length < m.counties.length;
+      const geometry = topojson.merge(topo, geoms.filter(g => members.includes(g.id)));
+      const feature = { type: 'Feature', properties: {}, geometry };
+      metros[id] = { counties: members, states: sts, partial, short: m.name.split(/[-,]/)[0], s: sumSeries(members) };
+      shapes[id] = feature;
+      names[id] = `${m.name} metro${partial ? ` (${sts.map(s => ABBR[s]).join('–')} part)` : ''}`;
+      labelAt[id] = center(feature);
+      for (const c of members) metroOf[c] = id;
+    }
+    gStateShapes.selectAll('path').data(stateFeatures).join('path')
+      .attr('class', 'state-shape').attr('d', path)
+      .on('pointerenter', (event, d) => enter(event, 'S' + d.id))
+      .on('pointermove', moveTip)
+      .on('pointerleave', leave)
+      .on('click', (event, d) => pick('S' + d.id, null, null));
+    gCounties.selectAll('path').data(list).join('path')
+      .attr('class', 'county').attr('d', path)
+      .on('pointerenter', (event, d) => enter(event, placeFor(d.id)))
+      .on('pointermove', moveTip)
+      .on('pointerleave', leave)
+      .on('click', (event, d) => pickFromMap(d.id));
+    gMetros.selectAll('path').data(Object.keys(metros)).join('path').attr('class', 'metro-line').attr('d', id => path(shapes[id]));
+    gStates.selectAll('path').data(stateFeatures).join('path').attr('class', 'state-line').attr('d', path);
+  }
+
+  function drawIndustries() {
+    const end = years[endIdx];
+    const level = state.view === 'level';
+    const cell = (s) => {
+      const arr = s && s[state.measure];
+      if (level) {
+        const ei = endPoint(arr);
+        const v = ei >= 0 ? arr[ei] : null;
+        return `<td><span>${v == null ? 'n/a' : (state.measure === 'p' ? '$' : '') + d3.format(',')(Math.round(v))}</span></td>`;
+      }
+      const v = change(arr);
+      const est = state.measure !== 'n' && (estimatedPct(s, startIdx()) || estimatedPct(s, endPoint(arr)));
+      let bg = 'transparent';
+      // Shade by percent change so big and small places compare fairly.
+      const pc = change(arr, 'pct');
+      if (v != null && pc != null) bg = d3.interpolateRgb('#F4F4F1', pc < 0 ? '#D27A3F' : '#6FA077')(Math.min(1, Math.abs(pc) / 40));
+      return `<td><span style="background:${bg}">${v == null ? 'n/a' : (est ? '~' : '') + fmtShort(v)}</span></td>`;
+    };
+    document.getElementById('ind-table').innerHTML =
+      `<thead><tr><th>Industry group</th>${PEERS.map(p => `<th>${p.name}</th>`).join('')}<th>U.S.</th></tr></thead><tbody>` +
+      ['all', ...Object.keys(meta.groups)].map(g => {
+        const key = `all|${g}`;
+        return `<tr${g === 'all' ? ' class="is-focus"' : ''}><td>${g === 'all' ? 'All manufacturing' : meta.groups[g]}</td>` +
+          PEERS.map(p => cell(states[p.id].sel[key])).join('') + cell(national.sel[key]) + '</tr>';
+      }).join('') + '</tbody>';
+    const word = { e: 'factory jobs', n: 'factories', p: 'average pay' }[state.measure];
+    document.getElementById('ind-lede').textContent = level
+      ? `${MEASURES[state.measure]} in ${end} by industry group. Switch the measure above to compare jobs, plants or pay.`
+      : `${state.mode === 'pct' ? 'Percent change' : 'Change'} in ${word} by industry group, ${state.start} to ${end}. Shading shows the percent change, so darker cells moved more relative to their size.`;
+    document.getElementById('ind-note').textContent = level ? '' :
+      '~ Part of this figure is our estimate of jobs BLS withheld, split by plant count. n/a means BLS withheld the figure.';
+  }
+
+  function drawPolicy() {
+    const end = years[endIdx];
+    const periods = [[2016, 2021], [2021, end]];
+    const rows = [
+      ...PEERS.map(p => [p.name, states[p.id].sel['all|all'].e, states[p.id].sel['strategic|all'].e, p.id === '01']),
+      ['United States', national.sel['all|all'].e, national.sel['strategic|all'].e, false]
+    ];
+    const rate = (arr, [a, b]) => perYear(at(arr, a), at(arr, b), b - a);
+    const td = v => `<td class="${toneClass(v)}">${fmtPct(v)}</td>`;
+    document.getElementById('policy-table').innerHTML =
+      `<thead><tr><th>Growth per year</th>${periods.map(([a, b]) => `<th>All factory jobs<br>${a}–${b}</th>`).join('')}${periods.map(([a, b]) => `<th>Strategic industries<br>${a}–${b}</th>`).join('')}</tr></thead><tbody>` +
+      rows.map(([name, all, strat, focus]) => `<tr class="${focus ? 'is-focus' : ''}"><td>${name}</td>${periods.map(pr => td(rate(all, pr))).join('')}${periods.map(pr => td(rate(strat, pr))).join('')}</tr>`).join('') +
+      '</tbody>';
+    const faster = rows.filter(([, all]) => rate(all, periods[1]) > rate(all, periods[0])).map(r => r[0]).filter(n => n !== 'United States');
+    document.getElementById('policy-lede').textContent =
+      `Yearly growth in factory jobs before and after the federal CHIPS Act and Inflation Reduction Act (August 2022), with 2021 as the dividing year. ` +
+      `${faster.length} of 5 states grew faster after 2021. "Strategic industries" means the Strategic tech & defense category: semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices.`;
+  }
+
+  function setPressed(groupId, value) {
+    for (const b of document.querySelectorAll(`#${groupId} button`)) b.setAttribute('aria-pressed', String(b.dataset.v === value));
+  }
+
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (MEASURES[p.get('measure')]) state.measure = p.get('measure');
+    if (['chg', 'pct'].includes(p.get('mode'))) state.mode = p.get('mode');
+    const since = Number(p.get('since'));
+    if (years.includes(since) && since < years[endIdx]) state.start = since;
+    if (['state', 'metro', 'county'].includes(p.get('level'))) state.level = p.get('level');
+    const st = shapes[p.get('state')] ? p.get('state') : null;
+    const metro = metros[p.get('metro')] ? p.get('metro') : null;
+    const county = shapes[p.get('county')] && kindOf(p.get('county')) === 'county' ? p.get('county') : null;
+    state.pick = { st, metro, county };
+    setPressed('measure', state.measure);
+    setPressed('level', state.level);
+  }
+
+  function writeHash() {
+    const p = new URLSearchParams({ measure: state.measure, mode: state.mode, since: state.start, level: state.level });
+    for (const [k, v] of Object.entries({ state: state.pick.st, metro: state.pick.metro, county: state.pick.county })) if (v) p.set(k, v);
+    history.replaceState(null, '', '#' + p.toString());
+  }
+
+  function render() {
+    writeHash();
+    const end = years[endIdx];
+    document.getElementById('since-year').textContent = state.start;
+    document.getElementById('since-vs').textContent = `compared with ${end}`;
+    const low = LOWS[state.start];
+    const note = document.getElementById('since-note');
+    note.hidden = !low;
+    if (low) note.textContent = `${state.start} was at or near the bottom of ${low[0]}, so growth since then partly reflects the recovery. For the longer trend, compare with ${low[1]}.`;
+    document.getElementById('mode').value = state.mode;
+    document.getElementById('start').value = state.start;
+    for (const b of document.querySelectorAll('#picks button')) b.setAttribute('aria-pressed', String(Number(b.dataset.v) === state.start));
+    drawRanks();
+    drawVs();
+    drawMap();
+    fillDrill();
+    renderPanel();
+    drawIndustries();
+  }
+
+  function buildControls() {
+    document.getElementById('measure').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b) return;
+      state.measure = b.dataset.v;
+      setPressed('measure', b.dataset.v);
+      render();
+    });
+    document.getElementById('view').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b) return;
+      state.view = b.dataset.v;
+      setPressed('view', b.dataset.v);
+      drawIndustries();
+    });
+    document.getElementById('mode').addEventListener('change', event => { state.mode = event.target.value; render(); });
+    document.getElementById('rank-table').addEventListener('click', event => {
+      const b = event.target.closest('button[data-sort]');
+      if (!b) return;
+      const key = b.dataset.sort;
+      state.sort = { key, dir: state.sort.key === key ? -state.sort.dir : -1 };
+      drawRanks();
+    });
+    document.getElementById('dl-rank').onclick = rankCsv;
+    document.getElementById('level').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b || b.dataset.v === state.level) return;
+      state.level = b.dataset.v;
+      setPressed('level', state.level);
+      leave();
+      render();
+    });
+    document.getElementById('pick-reset').onclick = () => {
+      state.level = 'state';
+      setPressed('level', 'state');
+      pick(null, null, null);
+    };
+    document.getElementById('pick-state').addEventListener('change', event => pick(event.target.value || null, null, null));
+    document.getElementById('pick-metro').addEventListener('change', event => {
+      const m = event.target.value || null;
+      const st = state.pick.st || (m ? 'S' + metros[m].states[0] : null);
+      if (m && state.level === 'state') { state.level = 'metro'; setPressed('level', 'metro'); }
+      pick(st, m, null);
+    });
+    document.getElementById('pick-county').addEventListener('change', event => {
+      const c = event.target.value || null;
+      if (c && state.level !== 'county') { state.level = 'county'; setPressed('level', 'county'); }
+      pick(state.pick.st || (c ? 'S' + c.slice(0, 2) : null), state.pick.metro || (c ? metroOf[c] || null : null), c);
+    });
+    document.getElementById('panel').addEventListener('click', event => {
+      const crumb = event.target.closest('button[data-crumb]');
+      if (crumb) {
+        const { st, metro } = state.pick;
+        if (crumb.dataset.crumb === '') pick(null, null, null);
+        else if (crumb.dataset.crumb === 'st') pick(st, null, null);
+        else pick(st, metro, null);
+        return;
+      }
+      const b = event.target.closest('button[data-id]');
+      if (!b) return;
+      const id = b.dataset.id;
+      const kind = kindOf(id);
+      if (kind === 'state') pick(id, null, null);
+      if (kind === 'metro') {
+        if (state.level === 'state') { state.level = 'metro'; setPressed('level', 'metro'); }
+        pick(state.pick.st || 'S' + metros[id].states[0], id, null);
+      }
+      if (kind === 'county') {
+        if (state.level !== 'county') { state.level = 'county'; setPressed('level', 'county'); }
+        pick('S' + id.slice(0, 2), state.pick.metro, id);
+      }
+    });
+
+    const last = years[years.length - 1];
+    const slider = document.getElementById('start');
+    slider.min = years[0];
+    slider.max = last - 1;
+    slider.addEventListener('input', () => { state.start = Number(slider.value); render(); });
+    const span = last - 1 - years[0];
+    const pos = yr => (yr - years[0]) / span * 100;
+    document.getElementById('ticks').innerHTML =
+      `<span class="end" style="left:0">${years[0]}</span>` +
+      `<span class="event" style="left:${pos(EVENTS[0][0])}%">${EVENTS[0][0]} · ${EVENTS[0][1]}</span>` +
+      `<span class="event low" style="left:${pos(EVENTS[1][0])}%">${EVENTS[1][0]} · ${EVENTS[1][1]}</span>` +
+      `<span class="event right" style="left:${pos(EVENTS[2][0])}%">${EVENTS[2][0]} · ${EVENTS[2][1]}</span>` +
+      `<span class="end" style="right:0">${last - 1}</span>`;
+    const picks = document.getElementById('picks');
+    for (const [yr, label] of PICKS) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pill';
+      b.dataset.v = yr;
+      b.textContent = label;
+      b.onclick = () => { state.start = yr; render(); };
+      picks.appendChild(b);
+    }
+  }
+
+  // Short "how it's measured" notes under buttons that carry data-hint.
+  const hint = document.getElementById('hint');
+  function showHint(el) {
+    const source = document.createElement('span');
+    source.textContent = `Source: ${el.dataset.source}`;
+    hint.replaceChildren(el.dataset.hint, source);
+    hint.hidden = false;
+    const r = el.getBoundingClientRect();
+    const maxLeft = document.documentElement.clientWidth - hint.offsetWidth - 16;
+    hint.style.left = Math.max(16, Math.min(r.left, maxLeft)) + window.scrollX + 'px';
+    hint.style.top = r.bottom + window.scrollY + 8 + 'px';
+  }
+  for (const el of document.querySelectorAll('[data-hint]')) {
+    el.addEventListener('pointerenter', () => showHint(el));
+    el.addEventListener('focus', () => showHint(el));
+    el.addEventListener('pointerleave', () => { hint.hidden = true; });
+    el.addEventListener('blur', () => { hint.hidden = true; });
+  }
+
+  Promise.all([
+    d3.json(ATLAS),
+    d3.json('data/meta.json'),
+    d3.json('data/national.json'),
+    d3.json('data/states.json'),
+    d3.json('data/counties/all--all.json'),
+    d3.json('data/plants.json'),
+    d3.json('data/quarter.json'),
+    d3.json('data/metros.json')
+  ]).then(([topo, m, nat, sts, cty, pl, qt, mets]) => {
+    meta = m;
+    renderCategoryGuide(meta, document.getElementById('guide'));
+    national = nat;
+    states = sts;
+    counties = cty;
+    plants = pl;
+    quarter = qt;
+    years = meta.years;
+    endIdx = years.length - 1;
+    buildMap(topo, mets);
+    buildControls();
+    drawPolicy();
+    document.getElementById('notes').textContent =
+      `Jobs, factories and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, from BLS. Pay is shown in ${meta.payDollarsYear} dollars. ` +
+      `"Five states together" adds up Alabama, Georgia, Tennessee, South Carolina and Mississippi. Industry groups are our own grouping of BLS industry codes. ` +
+      `Metro areas follow the Census Bureau's July 2023 definitions and add up their counties in the five states; a year is left blank if any of those counties is withheld. ` +
+      `When BLS withholds part of a statewide industry figure, we split the withheld total among those industries by their number of plants; figures where this is 10% or more are marked ~. ` +
+      `Data updated ${meta.built}.`;
+    readHash();
+    document.getElementById('loading').remove();
+    pick(state.pick.st, state.pick.metro, state.pick.county);
+  }).catch(err => {
+    document.getElementById('loading').textContent = 'Could not load the data. Please refresh to try again.';
+    console.error(err);
+  });
+</script>
+</body>
+</html>
