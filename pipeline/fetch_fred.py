@@ -14,6 +14,7 @@ HEADERS = {'User-Agent': 'ManufacturingMap research (https://madeinamerica.gerar
 SERIES = {
     'MANEMP': 'Manufacturing employment, thousands (BLS CES)',
     'IPMAN': 'Industrial production: manufacturing, index 2017=100 (Federal Reserve G.17)',
+    'IPX4HTMVS': 'Industrial production: manufacturing excluding hi-tech and motor vehicles & parts, index 2017=100 (Federal Reserve G.17)',
     'TLMFGCONS': 'Construction spending: manufacturing, $ millions SAAR (Census)',
     'CPIAUCSL': 'Consumer price index, all urban consumers (BLS)',
     'PCU236211236211': 'Producer price index: new industrial building construction (BLS)',

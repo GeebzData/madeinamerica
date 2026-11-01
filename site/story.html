@@ -54,6 +54,10 @@
   .watch strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 3.4rem; line-height: 1.15; }
   .watch p { margin: 0.4rem 0 0; font-size: 1.4rem; color: var(--soft); }
   .chapter.full { grid-template-columns: minmax(0, 1fr); }
+  .which { margin-top: 1.6rem; }
+  .figure .al-map { max-width: 36rem; margin: 1rem auto 0; }
+  .figure .county { stroke: var(--card); stroke-width: 0.6; cursor: pointer; vector-effect: non-scaling-stroke; }
+  .figure .al-outline { fill: none; stroke: var(--ink); stroke-width: 1; pointer-events: none; vector-effect: non-scaling-stroke; }
 
   @media (max-width: 900px) {
     .chapter { grid-template-columns: minmax(0, 1fr); gap: 2rem; padding: 3.6rem 0; }
@@ -73,11 +77,11 @@
 <header class="site-header">
   <a class="brand" href="./">Made in America</a>
   <nav class="site-nav" aria-label="Main">
-    <a href="./">Explore</a>
-    <a href="story.html" aria-current="page">Story</a>
     <a href="reindustrialization.html">Reindustrialization</a>
     <a href="alabama.html">Alabama</a>
     <a href="southeast.html">Southeast</a>
+    <a href="./">Explore</a>
+    <a href="story.html" aria-current="page">Story</a>
     <a href="money.html">Money</a>
     <a href="#sources">Data sources</a>
   </nav>
@@ -85,8 +89,12 @@
 
 <main>
   <section class="wrap intro">
-    <h1>American manufacturing, <em>1979 to now</em></h1>
-    <p>Factories make more than they did forty years ago with far fewer people. Most of the jobs left in one decade, some came back, and now the country is building factories again. Here is that story in the official numbers.</p>
+    <h1 id="story-h1">American manufacturing, <em>1979 to now</em></h1>
+    <p id="story-intro">Factories make more than they did forty years ago with far fewer people. Most of the jobs left in one decade, some came back, and now the country is building factories again. Here is that story in the official numbers.</p>
+    <div class="segmented which" id="which" role="group" aria-label="Which story">
+      <button type="button" data-v="national" aria-pressed="true">National story</button>
+      <button type="button" data-v="alabama" aria-pressed="false">Alabama story</button>
+    </div>
   </section>
 
   <section class="wrap" aria-label="How these numbers are calculated" style="padding-top:1.6rem">
@@ -104,10 +112,10 @@
       </div>
       <div class="card figure">
         <h3>Jobs and output, 1979 = 100</h3>
-        <div class="src">Manufacturing jobs (BLS) and industrial production (Federal Reserve)</div>
+        <div class="src">Manufacturing jobs (BLS) and industrial production (Federal Reserve). The dashed line leaves out computers, chips, communications gear and vehicles.</div>
         <p class="readout" id="c1-readout"></p>
         <svg id="c1-chart" role="img" aria-label="Manufacturing jobs and output indexed to 1979"></svg>
-        <div class="key"><span><i style="border-color:#355E3B"></i>Output</span><span><i style="border-color:#141414"></i>Jobs</span></div>
+        <div class="key"><span><i style="border-color:#355E3B"></i>Output</span><span><i class="dash" style="border-color:#355E3B"></i>Output excl. high-tech &amp; vehicles</span><span><i style="border-color:#141414"></i>Jobs</span></div>
       </div>
     </section>
 
@@ -180,7 +188,7 @@
         <div class="chapter-num">6 · One state up close</div>
         <h2 id="c6-h">Alabama traded mills for car plants</h2>
         <p id="c6-text"></p>
-        <a class="go" href="alabama.html">Explore Alabama county by county →</a>
+        <a class="go" href="#alabama" data-story="alabama">Read the Alabama story →</a>
       </div>
       <div class="card figure">
         <h3>Alabama factory jobs in two industries</h3>
@@ -200,6 +208,8 @@
     </section>
   </div>
 
+  <div class="wrap chapters" id="chapters-al" hidden></div>
+
   <section class="wrap guide" id="categories" aria-labelledby="guide-h">
     <div class="card">
       <h2 id="guide-h">What each category includes</h2>
@@ -214,9 +224,12 @@
       <ul>
         <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: jobs by state and industry, private sector, annual averages.</li>
         <li><a href="https://fred.stlouisfed.org/series/MANEMP">BLS Current Employment Statistics</a>: national manufacturing jobs since 1979 (via FRED).</li>
-        <li><a href="https://fred.stlouisfed.org/series/IPMAN">Federal Reserve G.17 Industrial Production</a>: manufacturing output (via FRED).</li>
+        <li><a href="https://fred.stlouisfed.org/series/IPMAN">Federal Reserve G.17 Industrial Production</a>: manufacturing output, and <a href="https://fred.stlouisfed.org/series/IPX4HTMVS">output excluding high-tech and motor vehicles</a> (via FRED).</li>
         <li><a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau Construction Spending</a>: private factory construction, adjusted with the <a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index</a> for industrial building.</li>
-        <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state outlines from the Census Bureau.</li>
+        <li><a href="https://www.bea.gov/data/gdp/gdp-state">Bureau of Economic Analysis</a>: Alabama manufacturing GDP after inflation (Alabama story).</li>
+        <li><a href="https://www.madeinalabama.com/why-alabama/announcements/">Alabama Department of Commerce, New &amp; Expanding Industry reports</a>: announced investment (Alabama story).</li>
+        <li><a href="https://www.usaspending.gov/">USAspending.gov</a>: federal contracts with manufacturers (Alabama story).</li>
+        <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state and county outlines from the Census Bureau.</li>
       </ul>
       <p id="notes"></p>
     </div>
@@ -227,11 +240,17 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="categories.js"></script>
 <script>
-  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/states-albers-10m.json';
+  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
+  const STORIES = {
+    national: ['American manufacturing, <em>1979 to now</em>', 'Factories make more than they did forty years ago with far fewer people. Most of the jobs left in one decade, some came back, and now the country is building factories again. Here is that story in the official numbers.'],
+    alabama: ['Alabama manufacturing, <em>1990 to now</em>', 'Alabama lost its textile mills and gained car plants, and now companies are announcing record investment. Here is the state\'s story in the official numbers, county by county.']
+  };
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
   const PCT = [5, 20, 40];
 
-  let meta, national, states, reind, years, endIdx, stateFeatures;
+  let meta, national, states, reind, years, endIdx, stateFeatures, topo;
+  let al = null;
+  let story = location.hash === '#alabama' ? 'alabama' : 'national';
   const path = d3.geoPath();
 
   function at(arr, year) { return arr[years.indexOf(year)]; }
@@ -322,21 +341,25 @@
   function chapter1() {
     const jobs = national.jobs;
     const out = national.output;
-    const xs = jobs.years.filter(yr => out.years.includes(yr));
+    const core = national.outputExHiTech;
+    const xs = jobs.years.filter(yr => out.years.includes(yr) && core.years.includes(yr));
     const index = s => xs.map(yr => s.values[s.years.indexOf(yr)] / s.values[0] * 100);
     const j = index(jobs);
     const o = index(out);
+    const c = index(core);
     const last = xs.length - 1;
     document.getElementById('c1-text').textContent =
       `In ${jobs.years[0]}, ${jobs.values[0].toFixed(1)} million Americans worked in factories. By ${xs[last]}, it was ${jobs.values[jobs.years.indexOf(xs[last])].toFixed(1)} million. ` +
       `Over the same years, factory output roughly ${o[last] >= 190 ? 'doubled' : `rose ${Math.round(o[last] - 100)}%`}. ` +
-      'Better machines and software explain much of the gap, but not all of it: the steepest job losses came in one decade, when imports surged.';
+      `Much of that output growth is computers and chips, where official figures count faster, better products as more output. Leave them and vehicles out and output ${Math.abs(c[last] - 100) < 10 ? 'is roughly where it was' : c[last] > 100 ? `rose ${Math.round(c[last] - 100)}%` : `fell ${Math.round(100 - c[last])}%`}. ` +
+      'That makes "machines took the jobs" a weaker story than the top line suggests, and the steepest losses came in one decade, when imports surged.';
     document.getElementById('c1-stat').textContent = fmtPct(j[last] - 100);
     document.getElementById('c1-stat-note').textContent = `factory jobs, ${jobs.years[0]}–${xs[last]}, while output rose ${fmtPct(o[last] - 100)}`;
     lineChart('c1-chart', 'c1-readout', xs, [
       { label: 'Output', color: '#355E3B', width: 2.5, vals: o },
+      { label: 'Excl. high-tech & vehicles', color: '#355E3B', width: 2, dash: '5 4', vals: c },
       { label: 'Jobs', color: '#141414', width: 2.5, vals: j }
-    ], { yFmt: v => Math.round(v), base: 100, rest: `${xs[last]}: output ${Math.round(o[last])}, jobs ${Math.round(j[last])} (1979 = 100)` });
+    ], { yFmt: v => Math.round(v), base: 100, rest: `${xs[last]}: output ${Math.round(o[last])}, excl. high-tech & vehicles ${Math.round(c[last])}, jobs ${Math.round(j[last])} (1979 = 100)` });
   }
 
   function chapter2() {
@@ -457,6 +480,318 @@
       `<div class="card"><span>${label}</span><strong class="${tone}">${value}</strong><p>${note}</p></div>`).join('');
   }
 
+  // ---- Alabama story ----
+
+  function chapterHtml(n, kicker, title, figure, { stat = false, link = '' } = {}) {
+    return `<section class="chapter" aria-labelledby="a${n}-h">
+      <div>
+        <div class="chapter-num">${n} · ${kicker}</div>
+        <h2 id="a${n}-h">${title}</h2>
+        <p id="a${n}-text"></p>
+        ${stat ? `<span class="big-stat" id="a${n}-stat"></span><small id="a${n}-stat-note"></small>` : ''}
+        ${link}
+      </div>
+      <div class="card figure">${figure}</div>
+    </section>`;
+  }
+
+  function figureHtml(n, title, src, body) {
+    return `<h3>${title}</h3><div class="src">${src}</div><p class="readout" id="a${n}-readout"></p>${body}`;
+  }
+
+  function buildAlabamaHtml() {
+    const qcew = 'BLS Quarterly Census of Employment and Wages';
+    const mapBody = n => `<svg class="al-map" id="a${n}-map" role="img" aria-label="Map of Alabama counties"></svg><div class="mini-legend" id="a${n}-legend"></div>`;
+    document.getElementById('chapters-al').innerHTML = [
+      chapterHtml(1, 'The long arc', 'More made, by fewer people',
+        figureHtml(1, 'Alabama factory output and jobs, 1997 = 100', 'Manufacturing GDP after inflation (BEA) and factory jobs (BLS)',
+          '<svg id="a1-chart" role="img" aria-label="Alabama manufacturing output and jobs indexed to 1997"></svg><div class="key"><span><i style="border-color:#9E1B32"></i>Alabama output</span><span><i style="border-color:#4A4A46"></i>Alabama jobs</span><span><i class="dash" style="border-color:#8A8A84"></i>U.S. jobs</span></div>'),
+        { stat: true, link: '<a class="go" href="alabama.html#since=2000">Explore Alabama since 2000 →</a>' }),
+      chapterHtml(2, '2000 to 2010', 'The mills close',
+        figureHtml(2, 'Change in factory jobs by county, 2000–2010', `${qcew} · hover a county`, mapBody(2)),
+        { stat: true, link: '<a class="go" href="alabama.html#since=2000&mode=pct">See every county →</a>' }),
+      chapterHtml(3, 'Who took the hit', 'Textiles, furniture and electronics',
+        figureHtml(3, 'Change in Alabama jobs by industry group, 2000–2010', qcew, '<div id="a3-bars" style="margin-top:1.2rem"></div>')),
+      chapterHtml(4, 'Mills to car plants', 'Alabama learns to build cars',
+        figureHtml(4, 'Alabama factory jobs in two industries', qcew,
+          '<svg id="a4-chart" role="img" aria-label="Alabama textile and vehicle jobs since 1990"></svg><div class="key"><span><i style="border-color:#355E3B"></i>Vehicles &amp; EVs</span><span><i style="border-color:#9A4410"></i>Textiles &amp; apparel</span></div>')),
+      chapterHtml(5, '2010 to 2019', 'The rebound',
+        figureHtml(5, 'Change in factory jobs by county, 2010–2019', `${qcew} · hover a county`, mapBody(5)),
+        { stat: true, link: '<a class="go" href="alabama.html#since=2010&geo=metro">Explore Alabama metro areas →</a>' }),
+      chapterHtml(6, '2016 to now', 'Record investment',
+        figureHtml(6, 'Capital investment announced in Alabama each year', 'Alabama Department of Commerce, New &amp; Expanding Industry reports',
+          '<svg id="a6-chart" role="img" aria-label="Announced capital investment by year"></svg><div class="key"><span><i style="border-color:#355E3B;border-top-width:8px"></i>Manufacturing</span><span><i style="border-color:#C9C9C3;border-top-width:8px"></i>Other industries</span></div>'),
+        { stat: true, link: '<a class="go" href="money.html">See the money behind it →</a>' }),
+      `<section class="chapter full" aria-labelledby="a7-h">
+        <div><div class="chapter-num">7 · Where things stand</div><h2 id="a7-h">What to watch in Alabama</h2></div>
+        <div class="watch" id="a7-cards"></div>
+      </section>`
+    ].join('');
+  }
+
+  function alCountyMap(n, a, b, rest) {
+    const el = d3.select(`#a${n}-map`).attr('viewBox', `0 0 ${al.W} ${al.H}`);
+    const scale = d3.scaleThreshold().domain([-PCT[2], -PCT[1], -PCT[0], PCT[0], PCT[1], PCT[2]]).range(COLORS);
+    const readout = document.getElementById(`a${n}-readout`);
+    const value = id => {
+      const e = al.counties[id] && al.counties[id].e;
+      return e ? { v: pct(at(e, a), at(e, b)), a: at(e, a), b: at(e, b) } : { v: null };
+    };
+    const hover = el.append('path').attr('class', 'hover');
+    el.insert('g', '.hover').selectAll('path').data(al.features).join('path')
+      .attr('class', 'county').attr('d', al.path)
+      .attr('fill', d => (value(d.id).v == null ? '#E2E2DD' : scale(value(d.id).v)))
+      .on('pointerenter', (event, d) => {
+        const c = value(d.id);
+        hover.attr('d', al.path(d));
+        readout.textContent = c.v == null
+          ? `${d.properties.name} County: not published`
+          : `${d.properties.name} County: ${fmtPct(c.v, 1)} (${d3.format(',')(c.a)} → ${d3.format(',')(c.b)} jobs)`;
+      })
+      .on('pointerleave', () => { hover.attr('d', null); readout.textContent = rest; });
+    el.append('path').attr('class', 'al-outline').attr('d', al.path(al.outline));
+    readout.textContent = rest;
+    const edges = ['< −40%', '−20%', '−5%', '±5%', '+5%', '+20%', '> +40%'];
+    document.getElementById(`a${n}-legend`).innerHTML = `<span>Lost</span>
+      <div class="legend-scale">${COLORS.map((c, i) => `<div><span style="background:${c}"></span><small>${edges[i]}</small></div>`).join('')}</div>
+      <span>Gained</span>`;
+  }
+
+  // Counties ranked by change, ignoring very small ones where a single plant swings the percent.
+  function countyRanks(a, b, minJobs = 1000) {
+    return al.features.map(f => {
+      const e = al.counties[f.id] && al.counties[f.id].e;
+      const va = e ? at(e, a) : null;
+      const vb = e ? at(e, b) : null;
+      return { name: `${f.properties.name} County`, a: va, b: vb, v: va != null && vb != null ? vb - va : null, p: pct(va, vb) };
+    }).filter(r => r.v != null && r.a >= minJobs);
+  }
+
+  function alChapter1() {
+    const g = al.gdp.states['01'];
+    const e = states['01'].sel['all|all'].e;
+    const us = national.sel['all|all'].e;
+    const xs = al.gdp.years.filter(y => years.includes(y));
+    const base = xs[0];
+    const out = xs.map(y => g.mfgReal[al.gdp.years.indexOf(y)] / g.mfgReal[al.gdp.years.indexOf(base)] * 100);
+    const jobs = xs.map(y => at(e, y) / at(e, base) * 100);
+    const usJobs = xs.map(y => at(us, y) / at(us, base) * 100);
+    const last = xs.length - 1;
+    document.getElementById('a1-text').textContent =
+      `In ${base}, ${d3.format(',')(at(e, base))} Alabamians worked in factories. By ${xs[last]} it was ${d3.format(',')(at(e, xs[last]))}, ${fmtPct(jobs[last] - 100, 0).slice(1)} fewer. ` +
+      `Over the same years, what those factories produced, after inflation, rose ${Math.round(out[last] - 100)}%. ` +
+      `Alabama kept more of its factory jobs than the country did: U.S. factory jobs fell ${fmtPct(usJobs[last] - 100, 0).slice(1)}.`;
+    const stat = document.getElementById('a1-stat');
+    stat.textContent = fmtPct(out[last] - 100, 0);
+    stat.className = 'big-stat is-gain';
+    document.getElementById('a1-stat-note').textContent = `factory output after inflation, ${base}–${xs[last]}, while jobs changed ${fmtPct(jobs[last] - 100, 0)}`;
+    lineChart('a1-chart', 'a1-readout', xs, [
+      { label: 'Output', color: '#9E1B32', width: 3, vals: out },
+      { label: 'Jobs', color: '#4A4A46', width: 2, vals: jobs },
+      { label: 'U.S. jobs', color: '#8A8A84', width: 1.5, dash: '5 4', vals: usJobs }
+    ], { yFmt: v => Math.round(v), base: 100, rest: `${xs[last]}: output ${Math.round(out[last])}, jobs ${Math.round(jobs[last])}, U.S. jobs ${Math.round(usJobs[last])} (${base} = 100)` });
+  }
+
+  function alChapter2() {
+    const e = states['01'].sel['all|all'].e;
+    const us = national.sel['all|all'].e;
+    const lost = at(e, 2000) - at(e, 2010);
+    const tex = states['01'].sel['all|textiles'].e;
+    const ranks = countyRanks(2000, 2010);
+    const losers = al.features.filter(f => {
+      const c = al.counties[f.id] && al.counties[f.id].e;
+      return c && at(c, 2000) != null && at(c, 2010) != null && at(c, 2010) < at(c, 2000);
+    }).length;
+    const measured = al.features.filter(f => al.counties[f.id] && at(al.counties[f.id].e, 2000) != null && at(al.counties[f.id].e, 2010) != null).length;
+    const worst = ranks.slice().sort((x, y) => x.p - y.p).slice(0, 3).map(r => `${r.name} (${fmtPct(r.p, 0)})`);
+    document.getElementById('a2-text').textContent =
+      `Between 2000 and 2010 Alabama lost ${d3.format(',')(lost)} factory jobs, ${fmtPct(pct(at(e, 2000), at(e, 2010)), 0).slice(1)} of the total (U.S. ${fmtPct(pct(at(us, 2000), at(us, 2010)), 0).slice(1)}). ` +
+      `Textile and apparel mills alone shed ${d3.format(',')(at(tex, 2000) - at(tex, 2010))} jobs. ${losers} of ${measured} counties with published figures lost factory jobs; ` +
+      `among counties with at least 1,000 factory jobs, the steepest declines were in ${list(worst)}.`;
+    const stat = document.getElementById('a2-stat');
+    stat.textContent = '−' + d3.format(',')(Math.round(lost / 1000)) + 'K';
+    stat.className = 'big-stat is-loss';
+    document.getElementById('a2-stat-note').textContent = `factory jobs, ${d3.format(',')(at(e, 2000))} in 2000 → ${d3.format(',')(at(e, 2010))} in 2010`;
+    alCountyMap(2, 2000, 2010, "Each color is the percent change in a county's factory jobs. Hover a county for its numbers.");
+  }
+
+  function alChapter3() {
+    const rows = Object.entries(meta.groups).map(([g, name]) => {
+      const e = states['01'].sel[`all|${g}`].e;
+      return { name, v: pct(at(e, 2000), at(e, 2010)), d: at(e, 2010) - at(e, 2000) };
+    }).filter(r => r.v != null).sort((a, b) => a.v - b.v);
+    const max = d3.max(rows, r => Math.abs(r.v));
+    document.getElementById('a3-bars').innerHTML = rows.map(r => {
+      const w = Math.abs(r.v) / max * 50;
+      return `<div class="bar-row"><span>${r.name}</span>
+        <div class="bar-track" aria-hidden="true"><div style="left:${r.v < 0 ? 50 - w : 50}%;width:${w}%;background:${r.v < 0 ? 'var(--loss)' : 'var(--gain)'}"></div></div>
+        <span class="bar-value ${r.v < 0 ? 'is-loss' : 'is-gain'}">${fmtPct(r.v)}</span></div>`;
+    }).join('');
+    const gainers = rows.filter(r => r.v > 0).reverse();
+    const biggestJobs = rows.slice().sort((a, b) => a.d - b.d)[0];
+    document.getElementById('a3-text').textContent =
+      `${biggestJobs.name} lost the most jobs, ${d3.format(',')(-biggestJobs.d)}, as sock, T-shirt and yarn mills in northern and eastern Alabama closed or moved overseas. ` +
+      `Furniture, electronics and paper followed. ` +
+      (gainers.length ? `A few groups grew even through the recession: ${list(gainers.slice(0, 3).map(r => `${r.name.toLowerCase().replace('evs', 'EVs')} (${fmtPct(r.v, 0)})`))}.` : '');
+  }
+
+  function alChapter4() {
+    const sel = states['01'].sel;
+    const tex = sel['all|textiles'].e;
+    const veh = sel['all|vehicles'].e;
+    const end = years[endIdx];
+    const k = v => Math.round(v / 1e3) + 'K';
+    const cross = years.find(y => at(veh, y) > at(tex, y) && y > 2000);
+    document.getElementById('a4-text').textContent =
+      `In 1990 Alabama had ${k(at(tex, 1990))} textile and apparel jobs and ${k(at(veh, 1990))} in vehicles. ` +
+      `Mercedes opened near Tuscaloosa in 1997, Honda followed near Lincoln and Hyundai in Montgomery, and Toyota and Mazda opened in Huntsville in 2021. ` +
+      `Vehicle jobs passed textile jobs in ${cross}. By ${end}, vehicles employed ${k(at(veh, end))} and textiles ${k(at(tex, end))}.`;
+    lineChart('a4-chart', 'a4-readout', years, [
+      { label: 'Vehicles', color: '#355E3B', width: 2.5, vals: veh },
+      { label: 'Textiles', color: '#9A4410', width: 2.5, vals: tex }
+    ], { yFmt: v => d3.format(',')(Math.round(v)), rest: `${end}: vehicles ${d3.format(',')(at(veh, end))}, textiles ${d3.format(',')(at(tex, end))}` });
+  }
+
+  function alChapter5() {
+    const e = states['01'].sel['all|all'].e;
+    const gained = at(e, 2019) - at(e, 2010);
+    const best = countyRanks(2010, 2019).sort((x, y) => y.v - x.v).slice(0, 3).map(r => `${r.name} (+${d3.format(',')(r.v)})`);
+    document.getElementById('a5-text').textContent =
+      `From the 2010 low, Alabama added ${d3.format(',')(gained)} factory jobs by 2019 (${fmtPct(pct(at(e, 2010), at(e, 2019)), 1)}), faster than the U.S. ` +
+      `(${fmtPct(pct(at(national.sel['all|all'].e, 2010), at(national.sel['all|all'].e, 2019)), 1)}). Among counties with at least 1,000 factory jobs, the biggest gains were in ${list(best)}.`;
+    const stat = document.getElementById('a5-stat');
+    stat.textContent = '+' + d3.format(',')(Math.round(gained / 1000)) + 'K';
+    stat.className = 'big-stat is-gain';
+    document.getElementById('a5-stat-note').textContent = `factory jobs, 2010–2019`;
+    alCountyMap(5, 2010, 2019, 'Same colors as the 2000–2010 map. Hover a county for its numbers.');
+  }
+
+  function alChapter6() {
+    const ann = al.ann;
+    const data = ann.years.map(y => ({ y, mfg: ann.state[y][5] / 1e9, other: (ann.state[y][2] - ann.state[y][5]) / 1e9 }));
+    const el = d3.select('#a6-chart');
+    const W = 640, H = 300, M = { t: 24, r: 10, b: 28, l: 44 };
+    el.attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleBand().domain(ann.years).range([M.l, W - M.r]).padding(0.25);
+    const y = d3.scaleLinear().domain([0, d3.max(data, d => d.mfg + d.other) * 1.12]).nice().range([H - M.b, M.t]);
+    el.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8).tickFormat(v => `'${String(v).slice(2)}`))
+      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    el.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(v => '$' + v + 'B'))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    for (const d of data) {
+      el.append('rect').attr('x', x(d.y)).attr('width', x.bandwidth()).attr('y', y(d.mfg)).attr('height', y(0) - y(d.mfg)).attr('fill', '#355E3B');
+      el.append('rect').attr('x', x(d.y)).attr('width', x.bandwidth()).attr('y', y(d.mfg + d.other)).attr('height', y(d.mfg) - y(d.mfg + d.other)).attr('fill', '#C9C9C3');
+    }
+    const last = ann.years[ann.years.length - 1];
+    const recent = ann.years.slice(-5);
+    const total5 = d3.sum(recent, yr => ann.state[yr][5]) / 1e9;
+    const top = ann.projects.filter(p => p.year === last && ['31', '32', '33'].includes(p.naics.slice(0, 2))).sort((a, b) => b.invest - a.invest)[0];
+    const fed = al.contracts.states['01'];
+    const fys = al.contracts.fys;
+    document.getElementById('a6-readout').textContent = `${last}: ${money(data[data.length - 1].mfg)} in factories, ${money(data[data.length - 1].other)} in other industries`;
+    document.getElementById('a6-text').textContent =
+      `Companies announced ${money(ann.state[last][2] / 1e9)} of new and expanding projects in Alabama in ${last}, the most in any year the state has reported, ` +
+      `${money(ann.state[last][5] / 1e9)} of it in factories. ${top ? `The largest was ${top.company.replace(/ (Huntsville|Mobile|Montgomery|Birmingham|Calvert|Decatur)$/, '')}'s ${money(top.invest / 1e9)} plant in ${al.names[top.county]}. ` : ''}` +
+      `Federal contracts with Alabama manufacturers, mostly defense and aerospace, rose from ${money(fed[fys.length - 5] / 1e3)} in FY${fys[fys.length - 5]} to ${money(fed[fys.length - 1] / 1e3)} in FY${fys[fys.length - 1]}. ` +
+      'Announcements are commitments; the jobs and spending arrive over several years.';
+    const stat = document.getElementById('a6-stat');
+    stat.textContent = money(total5);
+    stat.className = 'big-stat is-gain';
+    document.getElementById('a6-stat-note').textContent = `announced factory investment, ${recent[0]}–${last}`;
+  }
+
+  function alChapter7() {
+    const e = states['01'].sel['all|all'].e;
+    const end = years[endIdx];
+    const yoy = at(e, end) - at(e, end - 1);
+    const q = al.quarter.areas['01'];
+    const qUs = al.quarter.areas.US;
+    const g = al.gdp.states['01'];
+    const us = al.gdp.states['00'];
+    const gi = g.mfg.length - 1;
+    const veh = states['01'].sel['all|vehicles'].e;
+    const vehShare = (at(veh, end) - at(veh, end - 10)) / (at(e, end) - at(e, end - 10)) * 100;
+    const qv = q ? pct(q[3], q[0]) : null;
+    const cards = [
+      [`Factory jobs, ${end - 1}–${end}`, (yoy < 0 ? '−' : '+') + d3.format(',')(Math.abs(yoy)), yoy < 0 ? 'is-loss' : 'is-gain',
+        q ? `And ${fmtPct(qv)} in the first quarter of ${al.quarter.year} compared with a year earlier (U.S. ${fmtPct(pct(qUs[3], qUs[0]))}).` : ''],
+      ['Manufacturing share of the economy', (g.mfg[gi] / g.total[gi] * 100).toFixed(1) + '%', '',
+        `of Alabama's GDP in ${al.gdp.years[gi]}, compared with ${(us.mfg[gi] / us.total[gi] * 100).toFixed(1)}% nationally. Factories matter more here than in most states.`],
+      ['Reliance on car plants', Math.round(vehShare) + '%', '',
+        `of Alabama's net new factory jobs since ${end - 10} came from vehicles and parts, so the state's factory economy rises and falls with the auto industry.`]
+    ];
+    document.getElementById('a7-cards').innerHTML = cards.map(([label, value, tone, note]) =>
+      `<div class="card"><span>${label}</span><strong class="${tone}">${value}</strong><p>${note}</p></div>`).join('');
+  }
+
+  function drawCalcAl() {
+    const e = states['01'].sel['all|all'].e;
+    const end = years[endIdx];
+    const f = v => d3.format(',')(Math.round(v));
+    document.getElementById('calc-summary').innerHTML =
+      `<b>How it's calculated:</b> every change compares two yearly averages. For example, Alabama lost ${f(at(e, 2000) - at(e, 2010))} factory jobs from 2000 to 2010: ` +
+      `${f(at(e, 2000))} in 2000 − ${f(at(e, 2010))} in 2010.`;
+    const items = [
+      '<b>Jobs.</b> Private-sector factory jobs from the BLS count of employer tax filings, averaged over each year\'s 12 months, for the state, its counties and its industries.',
+      '<b>Chapter 1.</b> Output is manufacturing GDP from the Bureau of Economic Analysis, adjusted for inflation (2017 dollars). Output and jobs are both set to 100 in 1997, the first year BEA publishes state GDP by industry.',
+      '<b>County maps.</b> Each county\'s jobs at the end of the period minus the start, divided by the start. Counties where BLS withholds a year are gray. County lists leave out counties with fewer than 1,000 factory jobs, where one plant can swing the percent.',
+      '<b>Chapter 6.</b> Announced capital investment from the Alabama Department of Commerce\'s yearly New & Expanding Industry reports; a project counts as manufacturing when its NAICS code starts with 31–33. Federal contracts are dollars obligated to manufacturers for work done in Alabama, from USAspending.gov, by federal fiscal year.',
+      `<b>Why ${end}.</b> It's the latest full year BLS and BEA have published. The first-quarter ${al.quarter.year} figure compares the same quarter a year earlier, because factory hiring is seasonal.`
+    ];
+    document.getElementById('calc-body').innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+  }
+
+  function loadAlabama() {
+    return Promise.all([
+      d3.json('data/counties/all--all.json'),
+      d3.json('data/gdp.json'),
+      d3.json('data/announcements.json'),
+      d3.json('data/contracts.json'),
+      d3.json('data/quarter.json')
+    ]).then(([cty, g, ann, c, q]) => {
+      const outline = topojson.feature(topo, topo.objects.states).features.find(f => f.id === '01');
+      const features = topojson.feature(topo, topo.objects.counties).features.filter(f => f.id.startsWith('01'));
+      const W = 380;
+      const [[x0, y0], [x1, y1]] = d3.geoPath().bounds(outline);
+      const H = Math.ceil((W - 16) * (y1 - y0) / (x1 - x0)) + 16;
+      const path = d3.geoPath(d3.geoIdentity().fitExtent([[8, 8], [W - 8, H - 8]], outline));
+      const names = Object.fromEntries(features.map(f => [f.id, `${f.properties.name} County`]));
+      al = { counties: cty, gdp: g, ann, contracts: c, quarter: q, outline, features, path, W, H, names };
+      buildAlabamaHtml();
+      alChapter1();
+      alChapter2();
+      alChapter3();
+      alChapter4();
+      alChapter5();
+      alChapter6();
+      alChapter7();
+      reveal(document.querySelectorAll('#chapters-al .chapter'));
+    });
+  }
+
+  function reveal(chapters) {
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }, { threshold: 0.12 });
+    for (const c of chapters) { c.classList.add('reveal'); io.observe(c); }
+  }
+
+  function showStory(which) {
+    story = which;
+    for (const b of document.querySelectorAll('#which button')) b.setAttribute('aria-pressed', String(b.dataset.v === which));
+    document.getElementById('story-h1').innerHTML = STORIES[which][0];
+    document.getElementById('story-intro').textContent = STORIES[which][1];
+    document.getElementById('chapters').hidden = which !== 'national';
+    document.getElementById('chapters-al').hidden = which !== 'alabama';
+    history.replaceState(null, '', which === 'alabama' ? '#alabama' : location.pathname);
+    if (which === 'national') { drawCalc(); return; }
+    (al ? Promise.resolve() : loadAlabama()).then(drawCalcAl).catch(err => {
+      document.getElementById('chapters-al').innerHTML = '<p>Could not load the Alabama data. Please refresh to try again.</p>';
+      console.error(err);
+    });
+  }
+
   // How each chapter's comparison is worked out, with the current figures.
   function drawCalc() {
     const end = years[endIdx];
@@ -485,7 +820,8 @@
     d3.json('data/national.json'),
     d3.json('data/states.json'),
     d3.json('data/reindustrialization.json')
-  ]).then(([topo, m, nat, sts, r]) => {
+  ]).then(([tp, m, nat, sts, r]) => {
+    topo = tp;
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -501,17 +837,20 @@
     chapter5();
     chapter6();
     chapter7();
-    drawCalc();
     document.getElementById('notes').textContent =
       `National jobs since 1979 come from the monthly BLS jobs report, averaged by year. State and industry jobs are private-sector annual averages from BLS, ${years[0]}–${years[endIdx]}. ` +
       `Industry groups are our own grouping of BLS industry codes. Construction spending is adjusted for building costs so years compare fairly. Data updated ${meta.built}.`;
-    const chapters = document.querySelectorAll('.chapter');
-    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const io = new IntersectionObserver(entries => {
-        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
-      }, { threshold: 0.12 });
-      for (const c of chapters) { c.classList.add('reveal'); io.observe(c); }
-    }
+    reveal(document.querySelectorAll('#chapters .chapter'));
+    document.getElementById('which').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (b && b.dataset.v !== story) showStory(b.dataset.v);
+    });
+    document.querySelector('[data-story="alabama"]').addEventListener('click', event => {
+      event.preventDefault();
+      showStory('alabama');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    showStory(story);
   }).catch(err => {
     document.getElementById('chapters').insertAdjacentHTML('afterbegin', '<p>Could not load the data. Please refresh to try again.</p>');
     console.error(err);

@@ -126,7 +126,8 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .stat { border-top: 2px solid var(--ink); padding-top: 0.8rem; }
 .stat span { display: block; font-size: 1.2rem; color: var(--muted); }
 .stat strong { display: block; font-size: 2.4rem; font-weight: 600; line-height: 1.2; }
-.stat small { font-size: 1.3rem; }
+.stat small { display: block; font-size: 1.3rem; }
+.stat small + small { color: var(--muted); }
 .spark figcaption { font-size: 1.3rem; color: var(--muted); margin-bottom: 0.6rem; }
 .spark figure, .panel figure { margin: 0; }
 #spark { width: 100%; height: 9rem; display: block; }
@@ -188,6 +189,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .data-table th button { padding: 0; border: none; background: none; font: inherit; color: inherit; cursor: pointer; }
 .data-table th button[aria-sort] { color: var(--ink); font-weight: 600; }
 .data-table small { display: block; font-size: 1.2rem; color: var(--muted); }
+.st-chip { display: inline-block; padding: 0.1rem 0.8rem; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 .tag { display: inline-block; margin-left: 0.6rem; padding: 0.1rem 0.7rem; border: 1px solid var(--gain); border-radius: 999px; font-size: 1.1rem; color: var(--gain); white-space: nowrap; }
 
 .guide { padding-top: 2rem; }
@@ -234,3 +236,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
   .legend-hatch { margin-left: 0; }
   .ticks .event:not(.right) { display: none; }
 }
+
+.since-range { max-width: 72rem; flex-wrap: nowrap; }
+.since-range input { flex: 1; min-width: 12rem; accent-color: var(--ink); min-height: 3.2rem; }
+.since-range strong { font-family: var(--serif); font-weight: 500; font-size: 2.4rem; min-width: 5rem; }

@@ -62,11 +62,11 @@
 <header class="site-header">
   <a class="brand" href="./">Made in America</a>
   <nav class="site-nav" aria-label="Main">
-    <a href="./">Explore</a>
-    <a href="story.html">Story</a>
     <a href="reindustrialization.html" aria-current="page">Reindustrialization</a>
     <a href="alabama.html">Alabama</a>
     <a href="southeast.html">Southeast</a>
+    <a href="./">Explore</a>
+    <a href="story.html">Story</a>
     <a href="money.html">Money</a>
     <a href="#sources">Data sources</a>
   </nav>
@@ -83,6 +83,12 @@
       <span class="control-label">Since</span>
       <div class="segmented" id="since" role="group" aria-label="Since year"></div>
     </div>
+    <div class="control since-range">
+      <label for="since-range" class="control-label">Any year</label>
+      <input type="range" id="since-range" step="1">
+      <strong id="since-year"></strong>
+    </div>
+    <p class="since-note" id="since-note" hidden></p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers">
@@ -110,8 +116,8 @@
       <span class="control-label">Shade by</span>
       <div class="segmented" id="measure" role="group" aria-label="Shade by">
         <button type="button" data-v="n" aria-pressed="true" aria-describedby="hint"
-          data-hint="Change in private manufacturing establishments (plants and shops of any size): openings minus closings, using yearly averages."
-          data-source="BLS Quarterly Census of Employment and Wages">Net new factories</button>
+          data-hint="Change in manufacturing locations with employees (plants and shops of any size), using yearly averages. A 5-person shop counts the same as a car plant, and companies reorganizing payroll filings can add or remove locations without opening or closing anything."
+          data-source="BLS Quarterly Census of Employment and Wages">Net new establishments</button>
         <button type="button" data-v="e" aria-pressed="false" aria-describedby="hint"
           data-hint="Change in private-sector factory jobs, averaged over each year's 12 months."
           data-source="BLS Quarterly Census of Employment and Wages (employer unemployment-insurance filings)">Factory jobs</button>
@@ -128,7 +134,7 @@
         </div>
       </div>
       <div class="map-wrap" id="map-wrap">
-        <svg id="map" viewBox="0 0 1040 610" role="img" aria-label="Map of change in factories by state"></svg>
+        <svg id="map" viewBox="0 0 1040 610" role="img" aria-label="Map of change in establishments by state"></svg>
         <div class="loading" id="loading">Loading data…</div>
         <div class="tooltip" id="tooltip" hidden></div>
       </div>
@@ -148,7 +154,7 @@
         <h3 class="is-loss">Biggest losses</h3>
         <ol id="rank-losses"></ol>
       </div>
-      <p class="panel-note">"Net new factories" counts manufacturing establishments that opened minus those that closed. It includes small shops as well as large plants.</p>
+      <p class="panel-note">"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. Most are small: in the Census Bureau's 2023 plant-size counts, about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
     </aside>
   </section>
 
@@ -206,7 +212,7 @@
       <ul>
         <li><a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau Construction Spending</a>: private factory construction by industry, monthly, seasonally adjusted annual rate. Published nationally only.</li>
         <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a>: used to adjust construction spending for building costs.</li>
-        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: factories (establishments) and jobs by state and industry, private sector, annual averages.</li>
+        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: establishments (plants and shops) and jobs by state and industry, private sector, annual averages.</li>
         <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state outlines from the Census Bureau.</li>
       </ul>
       <p id="notes"></p>
@@ -222,9 +228,15 @@
   const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/states-albers-10m.json';
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
   const THRESH = { n: [20, 100, 400], e: [1000, 5000, 20000] };
-  const MEASURES = { n: 'Net new factories', e: 'Factory jobs' };
-  const UNITS = { n: 'factories', e: 'jobs' };
-  const SINCE = [[2019, '2019 · before COVID'], [2021, '2021'], [2022, '2022 · CHIPS & IRA']];
+  const MEASURES = { n: 'Net new establishments', e: 'Factory jobs' };
+  const UNITS = { n: 'establishments', e: 'jobs' };
+  const SINCE = [[1990, '1990'], [2000, '2000'], [2010, '2010'], [2019, '2019 · before COVID'], [2021, '2021'], [2022, '2022 · CHIPS & IRA']];
+  // Start years at or near the bottom of a downturn, and a fairer year to compare with.
+  const LOWS = {
+    1991: ['the early-1990s recession', 1990], 1992: ['the early-1990s recession', 1990],
+    2009: ['the Great Recession', 2007], 2010: ['the Great Recession', 2007],
+    2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
+  };
   const ABBR = {
     '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL',
     '13': 'GA', '15': 'HI', '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', '22': 'LA', '23': 'ME',
@@ -305,8 +317,28 @@
   function toneClass(v) { return v == null ? '' : v < 0 ? 'is-loss' : v > 0 ? 'is-gain' : ''; }
   function money(v) { return '$' + (v >= 100 ? Math.round(v) : v.toFixed(1)) + 'B'; }
 
+  function nice(x) {
+    const p = 10 ** Math.floor(Math.log10(x));
+    return d3.least([1, 2, 2.5, 5, 10].map(m => m * p), v => Math.abs(Math.log(v / x)));
+  }
+
+  // Color bands follow the spread of the states on the map, so the whole color range stays in use.
+  function thresholds() {
+    const vals = Object.keys(features).map(id => change((series('state', id) || {})[state.measure]))
+      .filter(v => v != null).map(Math.abs).sort(d3.ascending);
+    if (vals.length < 10) return THRESH[state.measure];
+    const t = [];
+    for (const q of [0.12, 0.45, 0.8]) {
+      const prev = t.length ? t[t.length - 1] : 0;
+      let v = nice(Math.max(d3.quantileSorted(vals, q), prev * 1.6, 1));
+      if (v < prev * 1.5) v = nice(prev * 2.2);
+      t.push(v);
+    }
+    return t;
+  }
+
   function colorScale() {
-    const t = THRESH[state.measure];
+    const t = thresholds();
     return d3.scaleThreshold().domain([-t[2], -t[1], -t[0], t[0], t[1], t[2]]).range(COLORS);
   }
 
@@ -383,7 +415,7 @@
 
   function drawMap() {
     const scale = colorScale();
-    const t = THRESH[state.measure];
+    const t = thresholds();
     gStates.selectAll('path').attr('fill', d => {
       const v = change((series('state', d.id) || {})[state.measure]);
       return v == null ? 'url(#hatch)' : scale(v);
@@ -413,7 +445,7 @@
   }
 
   function drawLegend() {
-    const t = THRESH[state.measure];
+    const t = thresholds();
     const edges = [`< ${fmtShort(-t[2])}`, fmtShort(-t[1]), fmtShort(-t[0]), '±' + compact(t[0]), fmtShort(t[0]), fmtShort(t[1]), `> ${fmtShort(t[2])}`];
     document.getElementById('legend').innerHTML = `
       <span>Fewer</span>
@@ -447,7 +479,7 @@
     document.getElementById('k1-label').textContent = 'Factory construction, last 12 months';
     document.getElementById('k1').textContent = money(t.recent) + ' a year';
     document.getElementById('k1-note').textContent = `${(t.recent / t.before).toFixed(1)}× the 2019–21 average of ${money(t.before)}, in ${reind.dollarsOf} dollars`;
-    document.getElementById('k2-label').textContent = `Net new factories, ${state.since}–${end}`;
+    document.getElementById('k2-label').textContent = `Net new establishments, ${state.since}–${end}`;
     document.getElementById('k2').textContent = fmtShort(n);
     document.getElementById('k2').className = toneClass(n);
     document.getElementById('k2-note').textContent = `${d3.format(',')(all.n[endIdx])} manufacturing establishments in ${end}`;
@@ -471,13 +503,13 @@
     const pctOf = (a, b) => `${sign(b - a)}${Math.abs((b - a) / a * 100).toFixed(1)}%`;
     document.getElementById('calc-summary').innerHTML =
       `<b>How it's calculated:</b> each "since" figure is the ${end} annual average minus the ${state.since} annual average. ` +
-      `Net new factories: ${f(all.n[endIdx])} in ${end} − ${f(all.n[idx(state.since)])} in ${state.since} = ${sign(change(all.n))}${f(Math.abs(change(all.n)))}.`;
+      `Net new establishments: ${f(all.n[endIdx])} in ${end} − ${f(all.n[idx(state.since)])} in ${state.since} = ${sign(change(all.n))}${f(Math.abs(change(all.n)))}.`;
     const items = [
       `<b>Factory construction.</b> The Census Bureau reports spending each month at a yearly rate. We average the latest 12 months (${money(t.recent)}) and the 36 months of 2019–2021 (${money(t.before)}), with every month first converted to ${reind.dollarsOf} dollars using the BLS price index for building industrial plants. ${money(t.recent)} ÷ ${money(t.before)} = ${(t.recent / t.before).toFixed(1)}×.`,
-      `<b>Net new factories.</b> Private manufacturing establishments counted by BLS, averaged over the year: ${f(all.n[endIdx])} in ${end} minus ${f(all.n[idx(state.since)])} in ${state.since}. A small shop and a large plant each count as one, so this measures openings minus closings, not size.`,
+      `<b>Net new establishments.</b> Manufacturing locations with employees counted by BLS, averaged over the year: ${f(all.n[endIdx])} in ${end} minus ${f(all.n[idx(state.since)])} in ${state.since}. A small shop and a large plant each count as one, so this is not a count of new plants: it rises when small shops open or when companies split payroll across more locations.`,
       `<b>Strategic-industry jobs.</b> ${f(strategic.e[endIdx])} in ${end} minus ${f(strategic.e[idx(state.since)])} in ${state.since} = ${fmtShort(change(strategic.e))} (${pctOf(strategic.e[idx(state.since)], strategic.e[endIdx])}). Strategic tech & defense covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices.`,
       `<b>All factory jobs.</b> ${f(all.e[endIdx])} in ${end} minus ${f(all.e[idx(state.since)])} in ${state.since} = ${fmtShort(change(all.e))} (${pctOf(all.e[idx(state.since)], all.e[endIdx])}).`,
-      `<b>The map.</b> Each state is shaded by ${state.measure === 'n' ? 'its factory count' : 'its factory jobs'} in ${end} minus ${state.since}, for ${selLabel().toLowerCase()}. If ${end} is withheld for a state, ${end - 1} is used and the hover card says so.`,
+      `<b>The map.</b> Each state is shaded by ${state.measure === 'n' ? 'its establishment count' : 'its factory jobs'} in ${end} minus ${state.since}, for ${selLabel().toLowerCase()}. If ${end} is withheld for a state, ${end - 1} is used and the hover card says so.`,
       `<b>Why ${end}.</b> It's the latest full year BLS has published; each year's figures come out the following September. Each year is the average of its 12 monthly counts.`
     ];
     document.getElementById('calc-body').innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
@@ -659,7 +691,8 @@
     if (meta.stories[p.get('story')]) state.story = p.get('story');
     if (groupsFor(state.story).includes(p.get('group'))) state.group = p.get('group');
     if (MEASURES[p.get('measure')]) state.measure = p.get('measure');
-    if (SINCE.some(([yr]) => yr === Number(p.get('since')))) state.since = Number(p.get('since'));
+    const since = Number(p.get('since'));
+    if (years.includes(since) && since < years[endIdx]) state.since = since;
   }
 
   function writeHash() {
@@ -673,6 +706,11 @@
     setPressed('story-pills', state.story);
     document.getElementById('group-select').value = state.group;
     setPressed('since', state.since);
+    document.getElementById('since-range').value = state.since;
+    document.getElementById('since-year').textContent = state.since;
+    const low = LOWS[state.since];
+    document.getElementById('since-note').hidden = !low;
+    if (low) document.getElementById('since-note').textContent = `${state.since} was at or near the bottom of ${low[0]}, so growth since then partly reflects the recovery. For the longer trend, compare with ${low[1]}.`;
     setPressed('measure', state.measure);
     tip.attr('hidden', true);
     hoverLine.attr('d', null);
@@ -757,11 +795,15 @@
     );
     document.getElementById('group-select').addEventListener('change', event => setSelection(state.story, event.target.value));
     bindSegmented('since', 'since', Number);
+    const range = document.getElementById('since-range');
+    range.min = years[0];
+    range.max = years[endIdx] - 1;
+    range.addEventListener('input', () => { state.since = Number(range.value); render(); });
     bindSegmented('measure', 'measure');
 
     document.getElementById('notes').textContent =
       `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS price index for new industrial building construction; the unadjusted figures are shown for comparison. ` +
-      `Factories and jobs are private-sector annual averages through ${years[endIdx]}. "Strategic tech & defense" covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices; vehicles are counted in their own category. ` +
+      `Establishments and jobs are private-sector annual averages through ${years[endIdx]}. "Strategic tech & defense" covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices; vehicles are counted in their own category. ` +
       `Where BLS withholds part of a state's industry jobs figure, we split the withheld total by plant count; figures where this is 10% or more are marked ~. ` +
       `Data updated ${meta.built}.`;
 

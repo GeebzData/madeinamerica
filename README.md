@@ -87,10 +87,29 @@ category includes" section on each page from `meta.json`, so it always matches t
 
 ## Data notes
 
-- Jobs, factories (establishments) and pay are private-sector annual averages from the BLS Quarterly
-  Census of Employment and Wages, coded by NAICS from 1990 on.
+- Jobs, establishments (plants and shops with employees) and pay are private-sector annual averages
+  from the BLS Quarterly Census of Employment and Wages, coded by NAICS from 1990 on.
 - BLS withholds some county and subsector figures to protect individual employers. The site shows them
   as hatched, never as zero.
 - Pay is converted to the latest year's dollars with CPI-U.
 - Connecticut replaced its 8 counties with 9 planning regions in recent data. The map outlines are the
   older counties, so some Connecticut county figures stop early.
+
+## How changes are measured
+
+- Change = latest year minus start year; percent change divides by the start year. Every change also
+  shows growth per year (compound annual growth) and "vs U.S." (percent change minus the nation's, in
+  percentage points).
+- Counties and metros compare 3-year averages at each end once the span is 6+ years; states use single years.
+- Percent maps dot (don't shade) counties with fewer than 500 factory jobs at the start.
+- Map color bands come from the data on screen (quantiles of the absolute changes, rounded), so every
+  view uses the full range. The legend shows the current bands.
+- Shift-share for states: job change = U.S. trend (start jobs x U.S. growth) + industry mix (each
+  group's start jobs x its U.S. growth minus total U.S. growth) + local edge (the rest).
+- Pay with the industry mix held fixed weights each group's pay by its start-year share of jobs; skipped
+  when withheld figures leave out more than 15% of jobs.
+- Story chapter 1 adds Fed output excluding high-tech and motor vehicles (IPX4HTMVS), since much of total
+  output growth is computers and chips.
+- Caveats shown on the site: temp workers are counted in services, establishments are not new plants,
+  CPI-U may slightly overstate inflation, announced investment is not money spent, and federal contract
+  obligations are commitments for prime contracts only.

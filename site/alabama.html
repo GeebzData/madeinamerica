@@ -100,11 +100,11 @@
 <header class="site-header">
   <a class="brand" href="./">Made in America</a>
   <nav class="site-nav" aria-label="Main">
-    <a href="./">Explore</a>
-    <a href="story.html">Story</a>
     <a href="reindustrialization.html">Reindustrialization</a>
     <a href="alabama.html" aria-current="page">Alabama</a>
     <a href="southeast.html">Southeast</a>
+    <a href="./">Explore</a>
+    <a href="story.html">Story</a>
     <a href="money.html">Money</a>
     <a href="#sources">Data sources</a>
   </nav>
@@ -113,7 +113,7 @@
 <main>
   <section class="wrap intro">
     <h1>Alabama manufacturing, <em>county by county</em></h1>
-    <p>Pick a starting year and a measure. Each of Alabama's 67 counties is shaded by how its factories changed from that year to today. Hover for the numbers; click a county to see what it makes.</p>
+    <p>Pick a starting year and a measure. Each of Alabama's 67 counties is shaded by how its manufacturing changed from that year to today. Hover for the numbers; click a county to see what it makes.</p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers">
@@ -132,8 +132,8 @@
             data-hint="Private-sector factory jobs, averaged over the year's 12 months, counted where people work."
             data-source="BLS Quarterly Census of Employment and Wages (employer unemployment-insurance filings)">Jobs</button>
           <button type="button" data-v="n" aria-pressed="false" aria-describedby="hint"
-            data-hint="Private manufacturing establishments, averaged over the year. Each plant or shop counts once, whatever its size."
-            data-source="BLS Quarterly Census of Employment and Wages">Factories</button>
+            data-hint="Manufacturing locations with employees (plants and shops), averaged over the year. Each counts once, whatever its size, so a 5-person machine shop counts the same as a car plant, and a company reorganizing its payroll filings can add or remove locations without opening or closing anything."
+            data-source="BLS Quarterly Census of Employment and Wages">Establishments</button>
           <button type="button" data-v="p" aria-pressed="false" aria-describedby="hint"
             data-hint="Total yearly wages divided by jobs, adjusted for inflation to latest-year dollars."
             data-source="BLS Quarterly Census of Employment and Wages; BLS Consumer Price Index">Average pay</button>
@@ -142,8 +142,8 @@
       <div class="control">
         <span class="control-label">Show as</span>
         <select class="select" id="mode" aria-label="Show as">
-          <option value="pct">% change</option>
           <option value="chg">Change</option>
+          <option value="pct">% change</option>
         </select>
       </div>
       <div class="control">
@@ -196,7 +196,7 @@
       </div>
       <div class="stats">
         <div class="stat"><span id="p-l1"></span><strong id="p-v1"></strong></div>
-        <div class="stat"><span id="p-l2"></span><strong id="p-v2"></strong><small id="p-v2b"></small></div>
+        <div class="stat"><span id="p-l2"></span><strong id="p-v2"></strong><small id="p-v2b"></small><small id="p-v2c"></small></div>
       </div>
       <figure class="spark">
         <figcaption id="p-spark-cap"></figcaption>
@@ -217,6 +217,11 @@
       <div class="moves makes" id="p-members" hidden>
         <h3 id="p-members-h"></h3>
         <ol id="p-members-list"></ol>
+      </div>
+      <div class="moves makes" id="p-extra" hidden>
+        <h3 id="p-extra-h"></h3>
+        <ol id="p-extra-list"></ol>
+        <p class="panel-note" id="p-extra-note"></p>
       </div>
       <div class="sizes">
         <h3 id="p-sizes-h"></h3>
@@ -285,7 +290,7 @@
   <section class="wrap block" aria-labelledby="glance-h">
     <div class="card">
       <h2 id="glance-h">Alabama at a glance: 5 and 10 years</h2>
-      <p class="lede">Fixed periods that don't move with the slider. All manufacturing, private sector.</p>
+      <p class="lede">Fixed periods that don't move with the slider. All manufacturing, private sector. "Local edge" is what's left of Alabama's job change after taking out the national trend and its mix of industries: how Alabama's plants did against the same industries nationwide.</p>
       <div class="periods" id="periods"></div>
       <div class="insights" id="insights"></div>
     </div>
@@ -327,7 +332,7 @@
     <div class="card">
       <h2>Data sources</h2>
       <ul>
-        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: jobs, factories (establishments) and pay by county, state and industry, private sector, annual averages.</li>
+        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: jobs, establishments (plants and shops) and pay by county, state and industry, private sector, annual averages.</li>
         <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">BLS Consumer Price Index</a>: used to put pay in today's dollars.</li>
         <li><a href="https://www.census.gov/programs-surveys/cbp.html">Census Bureau County Business Patterns</a>: plants by number of employees, county and state.</li>
         <li><a href="https://governor.alabama.gov/newsroom/2023/04/governor-ivey-signs-the-game-plan-legislation-strengthening-alabamas-economic-future/">Office of the Governor</a> and <a href="https://www.revenue.alabama.gov/tax-incentives/growing-alabama-credit/">Alabama Department of Revenue</a>: Alabama incentive laws.</li>
@@ -353,8 +358,9 @@
     pct: [5, 20, 40]
   };
   const OUTSIDE = '#EFEFEB';
-  const MEASURES = { e: 'Jobs', n: 'Factories', p: 'Average pay' };
-  const UNITS = { e: 'jobs', n: 'factories', p: '' };
+  const MEASURES = { e: 'Jobs', n: 'Establishments', p: 'Average pay' };
+  const UNITS = { e: 'jobs', n: 'establishments', p: '' };
+  const SMALL_BASE = 500;
   const PICKS = [[2000, '2000 · before the China shock'], [2015, '2015 · 10 years'], [2019, '2019 · before COVID'], [2021, '2021 · before CHIPS']];
   // Start years at or near the bottom of a downturn, and a fairer year to compare with.
   const LOWS = {
@@ -374,7 +380,7 @@
   const EVENTS = [[2001, 'China joins WTO'], [2008, 'Great Recession'], [2022, 'CHIPS / IRA']];
   const W = 460;
 
-  const state = { measure: 'e', mode: 'pct', geo: 'county', start: 2019, sel: null, hover: null };
+  const state = { measure: 'e', mode: 'chg', geo: 'county', start: 2019, sel: null, hover: null };
   let meta, national, al, states, counties, detail, plants, quarter, years, endIdx, H;
   const names = {};
   const features = {};
@@ -399,6 +405,10 @@
     .attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
   hatch.append('rect').attr('width', 6).attr('height', 6).attr('fill', '#EFEFEB');
   hatch.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 6).attr('stroke', '#B4B4AE').attr('stroke-width', 2);
+  const small = svg.select('defs').append('pattern')
+    .attr('id', 'small').attr('width', 5).attr('height', 5).attr('patternUnits', 'userSpaceOnUse');
+  small.append('rect').attr('width', 5).attr('height', 5).attr('fill', '#F6F6F3');
+  small.append('circle').attr('cx', 2.5).attr('cy', 2.5).attr('r', 0.8).attr('fill', '#B4B4AE');
 
   const zoom = d3.zoom()
     .scaleExtent([1, 6])
@@ -450,16 +460,113 @@
     return arr[endIdx - 1] != null ? endIdx - 1 : -1;
   }
 
-  function change(arr, mode = state.mode) {
+  // Counties and metros compare 3-year averages at each end, which smooths out one-year swings at a
+  // single plant, once the span is long enough that the two windows don't overlap.
+  function smoothed(id) { return Boolean(id) && years[endIdx] - state.start >= 6; }
+
+  // The two values a change is measured between, their labels, and the years between them.
+  function ends(arr, smooth = false) {
     if (!arr) return null;
+    if (smooth) {
+      const avg = (lo, hi) => {
+        const v = arr.slice(Math.max(0, lo), hi + 1).filter(x => x != null);
+        return v.length >= 2 ? d3.mean(v) : null;
+      };
+      const si = startIdx();
+      const a = avg(si - 1, si + 1);
+      const b = avg(endIdx - 2, endIdx);
+      if (a == null || b == null) return null;
+      return { a, b, la: `${years[Math.max(0, si - 1)]}–${years[si + 1]} average`, lb: `${years[endIdx - 2]}–${years[endIdx]} average`, span: years[endIdx] - 1 - state.start };
+    }
+    const ei = endPoint(arr);
     const a = arr[startIdx()];
-    const b = arr[endPoint(arr)];
+    const b = ei >= 0 ? arr[ei] : null;
     if (a == null || b == null) return null;
-    if (mode === 'pct') return a > 0 ? (b - a) / a * 100 : null;
-    return b - a;
+    return { a, b, la: String(state.start), lb: String(years[ei]), span: years[ei] - state.start };
   }
 
-  function thresholds() { return state.mode === 'pct' ? THRESH.pct : THRESH[state.geo][state.measure]; }
+  // mode: 'chg' (difference), 'pct' (percent change) or 'cagr' (compound growth per year).
+  function change(arr, mode = state.mode, smooth = false) {
+    const e = ends(arr, smooth);
+    if (!e) return null;
+    if (mode === 'pct') return e.a > 0 ? (e.b - e.a) / e.a * 100 : null;
+    if (mode === 'cagr') return e.a > 0 && e.b > 0 && e.span > 0 ? ((e.b / e.a) ** (1 / e.span) - 1) * 100 : null;
+    return e.b - e.a;
+  }
+
+  // Gap between a place's percent change and the nation's, all manufacturing, same measure.
+  function vsUS(id, s) {
+    const own = change(s && s[state.measure], 'pct', smoothed(id));
+    const us = change(national.sel['all|all'][state.measure], 'pct', smoothed(id));
+    return own == null || us == null ? null : own - us;
+  }
+
+  // Percent maps fade counties too small for a percent to mean much.
+  function smallBase(id) {
+    if (!id || isMetro(id) || state.mode !== 'pct') return false;
+    const e = ends((counties[id] || {}).e, smoothed(id));
+    return Boolean(e) && e.a < SMALL_BASE;
+  }
+
+  function fmtRate(v) { return v == null ? '' : `${sign(v)}${Math.abs(v).toFixed(1)}% a year`; }
+  function fmtPts(v) { return v == null ? '' : `${sign(v)}${Math.abs(v).toFixed(1)} pts vs U.S.`; }
+
+  function nice(x) {
+    const p = 10 ** Math.floor(Math.log10(x));
+    return d3.least([1, 2, 2.5, 5, 10].map(m => m * p), v => Math.abs(Math.log(v / x)));
+  }
+
+  // Color bands follow the spread of the places on the map, so the whole color range stays in use.
+  function thresholds() {
+    const ids = Object.keys(state.geo === 'metro' ? metros : features).filter(id => !smallBase(id));
+    const vals = ids.map(id => change((series(id) || {})[state.measure], state.mode, smoothed(id)))
+      .filter(v => v != null).map(Math.abs).sort(d3.ascending);
+    if (vals.length < 6) return state.mode === 'pct' ? THRESH.pct : THRESH[state.geo][state.measure];
+    const t = [];
+    for (const q of [0.12, 0.45, 0.8]) {
+      const prev = t.length ? t[t.length - 1] : 0;
+      let v = nice(Math.max(d3.quantileSorted(vals, q), prev * 1.6, 1));
+      if (v < prev * 1.5) v = nice(prev * 2.2);
+      t.push(v);
+    }
+    return t;
+  }
+
+  // Splits a job change three ways (shift-share): what the place would have gained or lost growing at
+  // the national rate, the extra from its mix of industries, and the rest, how its industries did
+  // against the same industries nationwide.
+  function shiftShare(base, y0, y1) {
+    const own = base.sel['all|all'].e;
+    const usRate = pct(at(national.sel['all|all'].e, y0), at(national.sel['all|all'].e, y1));
+    if (at(own, y0) == null || at(own, y1) == null || usRate == null) return null;
+    const total = at(own, y1) - at(own, y0);
+    const nat = at(own, y0) * usRate / 100;
+    let mix = 0;
+    for (const g of Object.keys(meta.groups)) {
+      const e0 = at(base.sel[`all|${g}`] && base.sel[`all|${g}`].e, y0);
+      const rate = pct(at(national.sel[`all|${g}`].e, y0), at(national.sel[`all|${g}`].e, y1));
+      if (e0 && rate != null) mix += e0 * (rate - usRate) / 100;
+    }
+    return { total, nat, mix, local: total - nat - mix };
+  }
+
+  // Average pay with each industry group's share of jobs held at y0, so the change reflects pay within
+  // industries rather than shifts between low- and high-paying ones.
+  function fixedMixPay(base, y0, y1) {
+    let w = 0;
+    let then = 0;
+    let now = 0;
+    for (const g of Object.keys(meta.groups)) {
+      const x = base.sel[`all|${g}`];
+      const e0 = at(x && x.e, y0);
+      if (!e0 || at(x.p, y0) == null || at(x.p, y1) == null) continue;
+      w += e0;
+      then += e0 * at(x.p, y0);
+      now += e0 * at(x.p, y1);
+    }
+    // Skip when withheld figures leave too much of the workforce out.
+    return w >= at(base.sel['all|all'].e, y0) * 0.85 ? { a: then / w, b: now / w } : null;
+  }
 
   function colorScale() {
     const t = thresholds();
@@ -569,17 +676,24 @@
   }
 
   function tipHtml(id) {
-    const arr = (series(id) || {})[state.measure];
-    const v = change(arr);
-    const a = arr ? arr[startIdx()] : null;
+    const s = series(id);
+    const arr = (s || {})[state.measure];
+    const smooth = smoothed(id);
+    const v = change(arr, state.mode, smooth);
     const ei = endPoint(arr) < 0 ? endIdx : endPoint(arr);
-    const b = arr ? arr[ei] : null;
+    const e = ends(arr, smooth);
     let html = `<h3>${names[id]}</h3>
-      <div class="sub">${MEASURES[state.measure]} · All manufacturing · ${state.start} → ${years[ei]}</div>
+      <div class="sub">${MEASURES[state.measure]} · All manufacturing · ${state.start} → ${years[smooth ? endIdx : ei]}</div>
       <div class="big ${toneClass(v)}">${fmtLong(v)}</div>`;
-    if (state.mode === 'pct' && v != null) html += `<div class="range">${fmtLong(change(arr, 'chg'), 'chg')}</div>`;
-    html += `<div class="range">${fmtLevel(a)} in ${state.start} → ${fmtLevel(b)} in ${years[ei]}</div>`;
-    if (ei !== endIdx) html += `<div class="note">${years[endIdx]} not published here; showing ${years[ei]}.</div>`;
+    if (v != null) {
+      const other = state.mode === 'pct' ? fmtLong(change(arr, 'chg', smooth), 'chg') : fmtLong(change(arr, 'pct', smooth), 'pct');
+      html += `<div class="range">${[other, fmtRate(change(arr, 'cagr', smooth)), fmtPts(vsUS(id, s))].filter(Boolean).join(' · ')}</div>`;
+    }
+    html += e
+      ? `<div class="range">${fmtLevel(e.a)} (${e.la}) → ${fmtLevel(e.b)} (${e.lb})</div>`
+      : `<div class="range">${fmtLevel(arr ? arr[startIdx()] : null)} in ${state.start} → ${fmtLevel(arr ? arr[ei] : null)} in ${years[ei]}</div>`;
+    if (!smooth && ei !== endIdx) html += `<div class="note">${years[endIdx]} not published here; showing ${years[ei]}.</div>`;
+    if (smallBase(id)) html += `<div class="note">Fewer than ${SMALL_BASE} factory jobs at the start, so the percent isn't shaded on the map: small numbers swing to big percents.</div>`;
     if (isMetro(id)) {
       html += `<div class="eyebrow">${MEASURES[state.measure]}: change by county</div>`;
       for (const r of memberMoves(id)) html += `<div class="row"><span>${r.name}</span><b class="${toneClass(r.v)}">${fmtLong(r.v, 'chg')}</b></div>`;
@@ -598,7 +712,7 @@
 
   function memberMoves(id) {
     return metros[id].counties
-      .map(c => ({ id: c, name: names[c], v: change((counties[c] || {})[state.measure], 'chg') }))
+      .map(c => ({ id: c, name: names[c], v: change((counties[c] || {})[state.measure], 'chg', smoothed(c)) }))
       .sort((a, b) => Math.abs(b.v || 0) - Math.abs(a.v || 0));
   }
 
@@ -640,15 +754,17 @@
     const byMetro = state.geo === 'metro';
     gCounties.selectAll('path').attr('fill', d => {
       if (byMetro && !metroOf[d.id]) return OUTSIDE;
-      const v = change((series(placeFor(d.id)) || {})[state.measure]);
+      const id = placeFor(d.id);
+      if (smallBase(id)) return 'url(#small)';
+      const v = change((series(id) || {})[state.measure], state.mode, smoothed(id));
       return v == null ? 'url(#hatch)' : scale(v);
     });
     gMetros.style('display', byMetro ? null : 'none');
     const labels = [];
     const places = byMetro ? Object.entries(metros).map(([id, m]) => [id, m.label, m.short]) : Object.values(features).map(f => [f.id, f.label, null]);
     for (const [id, [x, y], short] of places) {
-      const v = change((series(id) || {})[state.measure]);
-      const color = v != null && Math.abs(v) >= t[2] ? '#fff' : '#141414';
+      const v = change((series(id) || {})[state.measure], state.mode, smoothed(id));
+      const color = smallBase(id) ? '#8A8A84' : v != null && Math.abs(v) >= t[2] ? '#fff' : '#141414';
       if (short) labels.push({ x, y: y - 6, text: short, color, cls: 'mname' });
       labels.push({ x, y: short ? y + 6 : y, text: v == null ? '' : fmtShort(v), color, cls: null });
     }
@@ -665,13 +781,15 @@
       <span>Lost</span>
       <div class="legend-scale">${COLORS.map((c, i) => `<div><span style="background:${c}"></span><small>${edges[i]}</small></div>`).join('')}</div>
       <span>Gained</span>
-      <span class="legend-hatch">${state.geo === 'metro' ? `<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="${OUTSIDE}" stroke="#C9C9C3"></rect></svg>Outside metro areas` : ''}<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="url(#hatch)"></rect></svg>Not published (confidential)</span>`;
+      <span class="legend-hatch">${state.geo === 'metro' ? `<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="${OUTSIDE}" stroke="#C9C9C3"></rect></svg>Outside metro areas` : ''}<svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="url(#hatch)"></rect></svg>Not published (confidential)</span>` +
+      (state.geo === 'county' && state.mode === 'pct'
+        ? `<span class="legend-hatch"><svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="url(#small)"></rect></svg>Under ${SMALL_BASE} factory jobs at the start</span>` : '');
   }
 
   function drawHeadings() {
     const end = years[endIdx];
     document.getElementById('map-sub').textContent =
-      `All manufacturing · ${MEASURES[state.measure]}${state.mode === 'pct' ? ' (% change)' : ''} · Alabama ${state.geo === 'metro' ? 'metro areas' : 'counties'}`;
+      `All manufacturing · ${MEASURES[state.measure]}${state.mode === 'pct' ? ' (% change)' : ''} · Alabama ${state.geo === 'metro' ? 'metro areas' : 'counties'}${smoothed('x') ? ' (3-year averages)' : ''}`;
     document.getElementById('map-title').textContent = `${state.start} → ${end}`;
     document.getElementById('since-year').textContent = state.start;
     document.getElementById('since-vs').textContent = `compared with ${end}`;
@@ -700,9 +818,10 @@
     const jobs = change(s.e, 'chg');
     kpi(1, `Factory jobs, ${state.start}–${end}`, fmtShort(jobs, 'chg', 'e'), jobs,
       `${pct(s.e)}, to ${d3.format(',')(s.e[endIdx])} in ${end}. U.S.: ${pct(us.e)}`);
-    const plants = change(s.n, 'chg');
-    kpi(2, `Net new factories, ${state.start}–${end}`, fmtShort(plants, 'chg', 'n'), plants,
-      `${pct(s.n)}, to ${d3.format(',')(s.n[endIdx])} establishments in ${end}`);
+    const net = change(s.n, 'chg');
+    const sizes = plants.states[ST].all;
+    kpi(2, `Net new establishments, ${state.start}–${end}`, fmtShort(net, 'chg', 'n'), net,
+      `${pct(s.n)}, to ${d3.format(',')(s.n[endIdx])} in ${end}. Most are small: ${Math.round(sizes[0] / d3.sum(sizes.slice(0, 4)) * 100)}% have under 20 workers, and ${d3.format(',')(sizes[2] + sizes[3])} have 100 or more (${plants.year})`);
     const pay = change(s.p, 'chg');
     kpi(3, `Average factory pay, ${end}`, '$' + d3.format(',')(Math.round(s.p[endIdx])), pay,
       `${fmtShort(pay, 'chg', 'p')} since ${state.start} after inflation. U.S.: $${d3.format(',')(Math.round(us.p[endIdx]))}`);
@@ -712,31 +831,76 @@
   }
 
   // Worked example of the change on the map, using the selected place.
-  function drawCalc(name, s) {
+  function drawCalc(id, name, s) {
     const arr = s && s[state.measure];
     const end = years[endIdx];
+    const smooth = smoothed(id);
+    const e = ends(arr, smooth);
     const ei = endPoint(arr);
-    const a = arr ? arr[startIdx()] : null;
-    const b = ei >= 0 ? arr[ei] : null;
-    const chg = change(arr, 'chg');
-    const pc = change(arr, 'pct');
-    const unit = { e: 'jobs', n: 'factories', p: 'average pay' }[state.measure];
-    document.getElementById('calc-summary').innerHTML = a == null || b == null
+    const chg = change(arr, 'chg', smooth);
+    const pc = change(arr, 'pct', smooth);
+    const rate = change(arr, 'cagr', smooth);
+    const gap = vsUS(id, s);
+    const unit = { e: 'jobs', n: 'establishments', p: 'average pay' }[state.measure];
+    document.getElementById('calc-summary').innerHTML = !e
       ? `<b>How it's calculated:</b> ${name} doesn't have a published ${unit} figure for both ${state.start} and ${end}, so no change is shown.`
-      : `<b>How it's calculated, for ${name}:</b> ${fmtLevel(b)} in ${years[ei]} − ${fmtLevel(a)} in ${state.start} = ${fmtLong(chg, 'chg')}` +
-        (pc == null ? '.' : `. As a percent: ${fmtLong(chg, 'chg').replace(/ jobs| factories/, '')} ÷ ${fmtLevel(a).replace(/ jobs| factories/, '')} = ${fmtLong(pc, 'pct')}.`);
+      : `<b>How it's calculated, for ${name}:</b> ${fmtLevel(e.b)} (${e.lb}) − ${fmtLevel(e.a)} (${e.la}) = ${fmtLong(chg, 'chg')}` +
+        (pc == null ? '.' : `. As a percent: ${fmtLong(chg, 'chg').replace(/ jobs| establishments/, '')} ÷ ${fmtLevel(e.a).replace(/ jobs| establishments/, '')} = ${fmtLong(pc, 'pct')}.`) +
+        (rate == null ? '' : ` Per year: ${fmtRate(rate)}.`) +
+        (gap == null ? '' : ` That's ${fmtPts(gap)}`);
     const hint = document.querySelector(`#measure button[data-v="${state.measure}"]`).dataset.hint;
     const items = [
       `<b>What's counted.</b> ${hint}`,
       `<b>Why ${end}.</b> It's the latest full year BLS has published; each year's figures come out the following September. Every year is an annual average: the 12 monthly counts added together and divided by 12${state.measure === 'p' ? ', and pay is the year\'s total wages divided by that average number of jobs' : ''}.` +
-        (b != null && ei !== endIdx ? ` ${end} isn't published for ${name}, so ${years[ei]} is used instead.` : ''),
-      `<b>The starting year.</b> ${state.start}, chosen with the slider. Change is the ${end} figure minus the ${state.start} figure; percent change divides that by the ${state.start} figure. The map shows ${state.mode === 'pct' ? 'percent change' : 'change'} for every place, calculated the same way.`
+        (e && !smooth && ei !== endIdx ? ` ${end} isn't published for ${name}, so ${years[ei]} is used instead.` : ''),
+      `<b>The starting year.</b> ${state.start}, chosen with the slider. Change is the ${end} figure minus the ${state.start} figure; percent change divides that by the ${state.start} figure. The map shows ${state.mode === 'pct' ? 'percent change' : 'change'} for every place, calculated the same way.`,
+      `<b>Growth per year.</b> The steady yearly rate that gets from the starting figure to the latest one (compound annual growth). Unlike total percent change, it compares fairly across periods of different lengths.`,
+      `<b>vs U.S.</b> ${name}'s percent change minus the nation's, in percentage points. Most places rise and fall with the national tide; this shows how far ${name} beat or trailed it.`
     ];
-    if (state.measure === 'p') items.push(`<b>Inflation.</b> Both years are in ${meta.payDollarsYear} dollars: earlier years are raised by the rise in the Consumer Price Index, so the change is after inflation.`);
+    if (smooth) items.push(`<b>3-year averages.</b> For counties and metros, each end is a 3-year average (${e ? `${e.la} and ${e.lb}` : 'around the start year and the latest three years'}), so one unusual year at a single plant doesn't swing the result. Growth per year uses the ${e ? e.span : ''} years between the middle of each window. Statewide figures use single years.`);
+    if (state.geo === 'county' && state.mode === 'pct') items.push(`<b>Small counties.</b> Counties with fewer than ${SMALL_BASE} factory jobs at the start are dotted rather than shaded on the percent map and left out of percent rankings: going from 300 to 500 jobs is +67%, which would otherwise outshine a large county losing thousands.`);
+    if (state.measure === 'e') items.push('<b>Temp workers.</b> People placed in factories by staffing agencies are counted by BLS in services, not manufacturing. Alabama\'s auto plants and their suppliers use many, so factory jobs here are somewhat understated.');
+    if (state.measure === 'n') items.push(`<b>Establishments aren't new plants.</b> A rise can be small shops opening, or companies splitting their payroll across more locations. The side panel shows plants by number of workers from the Census Bureau.`);
+    if (state.measure === 'p') {
+      items.push(`<b>Inflation.</b> Both years are in ${meta.payDollarsYear} dollars: earlier years are raised by the rise in the Consumer Price Index, so the change is after inflation. Many economists think this index slightly overstates inflation, which would make real pay growth look a little low.`);
+      items.push(`<b>Industry mix.</b> Average pay rises when low-paying jobs disappear, even if nobody gets a raise. For Alabama as a whole, the side panel shows pay with each industry group's share of jobs held at its ${state.start} level.`);
+    }
     if (state.measure !== 'n' && (estimatedPct(s, startIdx()) || estimatedPct(s, ei))) {
       items.push('<b>Estimates.</b> BLS withholds some industry figures to protect individual employers. We know the withheld total exactly and split it among those industries by number of plants; figures where this is 10% or more are marked ~.');
     }
     document.getElementById('calc-body').innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+  }
+
+  // Statewide only: shift-share for jobs, and pay with the industry mix held fixed.
+  function renderExtra(id) {
+    const rows = [];
+    let head = '';
+    let note = '';
+    const end = years[endIdx];
+    if (!id && state.measure === 'e') {
+      const ss = shiftShare(al, state.start, end);
+      if (ss) {
+        head = `What drove the change, ${state.start}–${end}`;
+        const f = v => fmtShort(v, 'chg', 'e');
+        rows.push(['U.S. trend', f(ss.nat), ss.nat], ['Industry mix', f(ss.mix), ss.mix], ['Local edge', f(ss.local), ss.local]);
+        note = 'U.S. trend: the change if Alabama had grown at the national rate. Industry mix: the extra from having more of the industries that grew or shrank nationally. Local edge: the rest, how Alabama\'s industries did against the same industries nationwide. A standard method called shift-share.';
+      }
+    }
+    if (!id && state.measure === 'p') {
+      const fm = fixedMixPay(al, state.start, end);
+      const actual = change(al.sel['all|all'].p, 'chg');
+      if (fm && actual != null) {
+        head = 'Pay, with the industry mix held fixed';
+        const f = v => fmtShort(v, 'chg', 'p');
+        const held = fm.b - fm.a;
+        rows.push(['Actual change', f(actual), actual], [`Mix held at ${state.start}`, f(held), held], ['From the shift in mix', f(actual - held), actual - held]);
+        note = `The middle line keeps each industry group's share of jobs at its ${state.start} level, so it shows pay changes within industries. The last line is what came from jobs moving between lower- and higher-paying groups.`;
+      }
+    }
+    document.getElementById('p-extra').hidden = !rows.length;
+    document.getElementById('p-extra-h').textContent = head;
+    document.getElementById('p-extra-list').innerHTML = rows.map(([label, text, v]) => `<li><span>${label}</span><span class="${toneClass(v)}">${text}</span></li>`).join('');
+    document.getElementById('p-extra-note').textContent = note;
   }
 
   function renderPanel() {
@@ -750,13 +914,16 @@
       ? `${MEASURES[state.measure]}, ${years[ei]} (${end} not published)` : `${MEASURES[state.measure]}, ${end}`;
     document.getElementById('p-v1').textContent = ei >= 0
       ? (state.measure === 'p' ? '$' : '') + d3.format(',')(Math.round(arr[ei])) : 'Not published';
-    document.getElementById('p-l2').textContent = `Change since ${state.start}`;
-    const v = change(arr, 'chg');
-    const pct = change(arr, 'pct');
+    const smooth = smoothed(id);
+    document.getElementById('p-l2').textContent = `Change since ${state.start}${smooth ? ' (3-year averages)' : ''}`;
+    const v = change(arr, 'chg', smooth);
+    const pct = change(arr, 'pct', smooth);
     const v2 = document.getElementById('p-v2');
     v2.textContent = v == null ? 'n/a' : fmtShort(v, 'chg');
     v2.className = toneClass(v);
-    document.getElementById('p-v2b').textContent = pct == null ? '' : `${sign(pct)}${Math.abs(pct).toFixed(1)}%`;
+    document.getElementById('p-v2b').textContent =
+      [pct == null ? '' : `${sign(pct)}${Math.abs(pct).toFixed(1)}%`, fmtRate(change(arr, 'cagr', smooth))].filter(Boolean).join(' · ');
+    document.getElementById('p-v2c').textContent = fmtPts(vsUS(id, series(id)));
     document.getElementById('p-spark-cap').textContent =
       `${MEASURES[state.measure]}, all manufacturing, ${years[0]}–${end} (dashed line = ${state.start})`;
     drawSpark(arr);
@@ -778,7 +945,7 @@
         : '<li class="empty">No industry detail published</li>';
       if (hidden) notes.push(makesNote(hidden));
     } else {
-      const word = { e: ['job losses', 'job gains'], n: ['factory losses', 'factory gains'], p: ['pay declines', 'pay increases'] }[state.measure];
+      const word = { e: ['job losses', 'job gains'], n: ['establishment losses', 'establishment gains'], p: ['pay declines', 'pay increases'] }[state.measure];
       document.getElementById('p-loss-h').textContent = `Biggest ${word[0]}`;
       document.getElementById('p-gain-h').textContent = `Biggest ${word[1]}`;
       const sorted = groupMoves().filter(m => m.v != null && m.v !== 0).sort((x, y) => x.v - y.v);
@@ -796,7 +963,8 @@
       : '<div><span>Not published</span></div>';
     if (sizes && sizes[4]) notes.push(`Census withholds the size of ${sizes[4]} plant${sizes[4] > 1 ? 's' : ''} here.`);
     document.getElementById('p-note').textContent = notes.join(' ');
-    drawCalc(id ? names[id] : 'Alabama', series(id));
+    renderExtra(id);
+    drawCalc(id, id ? names[id] : 'Alabama', series(id));
   }
 
   function drawSpark(arr) {
@@ -835,7 +1003,7 @@
         <div class="bar-value"><b class="${toneClass(m.v)}">${m.est ? '~' : ''}${fmtLong(m.v)}</b><small>${fmtLevel(m.a)} → ${fmtLevel(m.b)}</small></div>
       </div>`;
     }).join('');
-    const word = { e: 'factory jobs', n: 'factories', p: 'average factory pay' }[state.measure];
+    const word = { e: 'factory jobs', n: 'establishments', p: 'average factory pay' }[state.measure];
     const up = rows.filter(m => m.v > 0);
     const down = rows.filter(m => m.v < 0);
     let lede = `Statewide change in ${word} by industry group, ${state.start} to ${end}.`;
@@ -850,7 +1018,8 @@
   function drawCountyLists() {
     const byMetro = state.geo === 'metro';
     const rows = Object.keys(byMetro ? metros : features)
-      .map(id => ({ id, name: names[id], v: change((series(id) || {})[state.measure]) }))
+      .filter(id => !smallBase(id))
+      .map(id => ({ id, name: names[id], v: change((series(id) || {})[state.measure], state.mode, smoothed(id)) }))
       .filter(r => r.v != null)
       .sort((a, b) => b.v - a.v);
     const row = r => `<li><button type="button" data-id="${r.id}">${r.name}</button><span class="${toneClass(r.v)}">${fmtShort(r.v)}</span></li>`;
@@ -858,10 +1027,11 @@
     const losses = rows.filter(r => r.v < 0).reverse().slice(0, 8);
     document.getElementById('c-gains').innerHTML = gains.length ? gains.map(row).join('') : '<li class="empty">None</li>';
     document.getElementById('c-losses').innerHTML = losses.length ? losses.map(row).join('') : '<li class="empty">None</li>';
-    const word = { e: 'factory jobs', n: 'factories', p: 'average factory pay' }[state.measure];
+    const word = { e: 'factory jobs', n: 'establishments', p: 'average factory pay' }[state.measure];
     document.getElementById('cty-lede').textContent =
       `${state.mode === 'pct' ? 'Percent change' : 'Change'} in ${word}, ${state.start} to ${years[endIdx]}, all manufacturing. ` +
-      `${rows.filter(r => r.v > 0).length} of ${rows.length} ${byMetro ? 'metro areas' : 'counties'} with published figures ${state.measure === 'p' ? 'saw pay rise' : 'gained'}. Click one to see it on the map.`;
+      `${rows.filter(r => r.v > 0).length} of ${rows.length} ${byMetro ? 'metro areas' : 'counties'} with published figures ${state.measure === 'p' ? 'saw pay rise' : 'gained'}. ` +
+      `${smoothed('x') ? 'Each end is a 3-year average. ' : ''}${state.mode === 'pct' && !byMetro ? `Counties with fewer than ${SMALL_BASE} factory jobs at the start are left out of percent rankings. ` : ''}Click one to see it on the map.`;
     document.getElementById('cty-h').textContent = `${byMetro ? 'Metro areas' : 'Counties'} that gained and lost the most`;
   }
 
@@ -878,7 +1048,7 @@
       return b == null || v == null || !b ? null : v / b * 100;
     });
     const lines = [
-      { label: 'Alabama', color: '#141414', width: 2.5, dash: null, vals: index(al.sel['all|all'][state.measure]) },
+      { label: 'Alabama', color: '#9E1B32', width: 3, dash: null, vals: index(al.sel['all|all'][state.measure]) },
       { label: 'United States', color: '#8A8A84', width: 1.5, dash: '5 4', vals: index(national.sel['all|all'][state.measure]) }
     ];
     if (state.sel) {
@@ -902,7 +1072,7 @@
         .attr('fill', 'none').attr('stroke', l.color).attr('stroke-width', l.width).attr('stroke-dasharray', l.dash);
     }
     const last = span.length - 1;
-    const word = { e: 'Factory jobs', n: 'The number of factories', p: 'Average factory pay' }[state.measure];
+    const word = { e: 'Factory jobs', n: 'The number of establishments', p: 'Average factory pay' }[state.measure];
     const pctOf = v => v == null ? 'n/a' : `${sign(v - 100)}${Math.abs(v - 100).toFixed(1)}%`;
     document.getElementById('vs-lede').textContent =
       `${word} in each place, set to 100 in ${state.start}. By ${span[last]}, Alabama was ${pctOf(lines[0].vals[last])} and the U.S. ${pctOf(lines[1].vals[last])}` +
@@ -950,10 +1120,15 @@
       }
       const top = moves[0];
       const bottom = moves[moves.length - 1];
+      const usJobs = pct(at(us.e, y0), at(us.e, end));
+      const ss = shiftShare(al, y0, end);
+      const fm = fixedMixPay(al, y0, end);
+      const k = v => fmtShort(v, 'chg', 'e');
       return `<div class="period"><h3>${title} · ${y0}–${end}</h3><dl>
-        ${row('Factory jobs', jobs, `U.S. ${fmtPct(pct(at(us.e, y0), at(us.e, end)))} · ${ordinal(rank)} of ${ranked.length} states with data`)}
-        ${row('Factories', pct(at(s.n, y0), at(s.n, end)), `U.S. ${fmtPct(pct(at(us.n, y0), at(us.n, end)))}`)}
-        ${row('Average pay, after inflation', pct(at(s.p, y0), at(s.p, end)), `U.S. ${fmtPct(pct(at(us.p, y0), at(us.p, end)))}`)}
+        ${row('Factory jobs', jobs, `${fmtRate(perYear(at(s.e, y0), at(s.e, end), span))} · U.S. ${fmtPct(usJobs)}, so ${Math.abs(jobs - usJobs).toFixed(1)} pts ${jobs >= usJobs ? 'ahead' : 'behind'} · ${ordinal(rank)} of ${ranked.length} states with data`)}
+        ${ss ? `<div><dt>Local edge (shift-share)</dt><dd><b class="${toneClass(ss.local)}">${fmtLong(ss.local, 'chg', 'e')}</b><span>U.S. trend ${k(ss.nat)} · industry mix ${k(ss.mix)} · total ${k(ss.total)}</span></dd></div>` : ''}
+        ${row('Establishments', pct(at(s.n, y0), at(s.n, end)), `U.S. ${fmtPct(pct(at(us.n, y0), at(us.n, end)))}`)}
+        ${row('Average pay, after inflation', pct(at(s.p, y0), at(s.p, end)), `${fm ? `Industry mix held fixed: ${fmtPct(pct(fm.a, fm.b))} · ` : ''}U.S. ${fmtPct(pct(at(us.p, y0), at(us.p, end)))}`)}
         <div><dt>Biggest gain</dt><dd><b class="is-gain">${meta.groups[top.g]}</b><span>${fmtLong(top.v, 'chg', 'e')}</span></dd></div>
         <div><dt>Biggest loss</dt><dd><b class="${toneClass(bottom.v)}">${meta.groups[bottom.g]}</b><span>${fmtLong(bottom.v, 'chg', 'e')}</span></dd></div>
       </dl>${note ? `<p class="panel-note">${note}</p>` : ''}</div>`;
@@ -1001,7 +1176,7 @@
     const periods = [[2016, 2021], [2021, end]];
     const us = national.sel['all|all'];
     const s = al.sel['all|all'];
-    const rows = [['Alabama factory jobs', s.e], ['U.S. factory jobs', us.e], ['Alabama factories', s.n], ['U.S. factories', us.n],
+    const rows = [['Alabama factory jobs', s.e], ['U.S. factory jobs', us.e], ['Alabama establishments', s.n], ['U.S. establishments', us.n],
       ['Alabama strategic-industry jobs', al.sel['strategic|all'].e], ['U.S. strategic-industry jobs', national.sel['strategic|all'].e]];
     const cell = v => `<td class="${toneClass(v)}">${fmtPct(v)}</td>`;
     document.getElementById('policy-table').innerHTML =
@@ -1061,7 +1236,7 @@
     const end = years[endIdx];
     const byMetro = state.geo === 'metro';
     const ids = [null, ...Object.keys(byMetro ? metros : features).sort((a, b) => names[a].localeCompare(names[b]))];
-    const label = { e: 'jobs', n: 'factories', p: 'average pay' }[state.measure];
+    const label = { e: 'jobs', n: 'establishments', p: 'average pay' }[state.measure];
     const rows = [[byMetro ? 'Metro area' : 'County', `${label} ${state.start}`, `${label} latest`, 'latest year', 'change', '% change',
       `plants 1-19 workers (${plants.year})`, 'plants 20-99', 'plants 100-499', 'plants 500+']];
     for (const id of ids) {
@@ -1277,8 +1452,9 @@
     document.getElementById('dl-map').onclick = mapCsv;
     document.getElementById('dl-industries').onclick = industriesCsv;
     document.getElementById('notes').textContent =
-      `Jobs, factories and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
-      `"Factories" counts manufacturing establishments of any size. Pay is shown in ${meta.payDollarsYear} dollars. ` +
+      `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
+      `Establishments are locations with employees of any size, from car plants to small shops; plant sizes come from Census County Business Patterns. Pay is shown in ${meta.payDollarsYear} dollars. ` +
+      `County and metro changes compare 3-year averages at each end. Factory jobs leave out temp workers placed by staffing agencies, who BLS counts in services; Alabama's auto plants use many, so factory employment is understated. ` +
       `The county map covers all manufacturing: BLS withholds most county figures for individual industries to protect employers, so county industry lists show only what is published. ` +
       `Industry groups are our own grouping of BLS industry codes and add up to all of manufacturing. ` +
       `When BLS withholds part of a statewide industry figure, we split the withheld total among those industries by their number of plants; figures where this is 10% or more are marked ~. ` +

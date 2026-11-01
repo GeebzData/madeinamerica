@@ -368,6 +368,7 @@ def main():
         'pc': nation['pc'],
         'jobs': annual(fred, 'MANEMP', 1979, years[-1], 0.001),
         'output': annual(fred, 'IPMAN', 1979, years[-1]),
+        'outputExHiTech': annual(fred, 'IPX4HTMVS', 1979, years[-1]),
         'construction': annual(fred, 'TLMFGCONS', 2002, years[-1], 0.001),
         'latest': {'jobs': latest(fred, 'MANEMP', 0.001), 'output': latest(fred, 'IPMAN'),
                    'construction': latest(fred, 'TLMFGCONS', 0.001)},

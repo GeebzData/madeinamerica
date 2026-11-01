@@ -68,11 +68,11 @@
 <header class="site-header">
   <a class="brand" href="./">Made in America</a>
   <nav class="site-nav" aria-label="Main">
-    <a href="./">Explore</a>
-    <a href="story.html">Story</a>
     <a href="reindustrialization.html">Reindustrialization</a>
     <a href="alabama.html">Alabama</a>
     <a href="southeast.html">Southeast</a>
+    <a href="./">Explore</a>
+    <a href="story.html">Story</a>
     <a href="money.html" aria-current="page">Money</a>
     <a href="#sources">Data sources</a>
   </nav>
@@ -257,11 +257,12 @@
   const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
   const ST = '01';
   const PEERS = [
-    { id: '01', name: 'Alabama', color: '#141414' },
-    { id: '13', name: 'Georgia', color: '#2F6690' },
-    { id: '47', name: 'Tennessee', color: '#7A4E9C' },
-    { id: '45', name: 'South Carolina', color: '#B07A12' },
-    { id: '28', name: 'Mississippi', color: '#2E8B83' }
+    // School colors: Alabama crimson, Georgia red, Tennessee orange, Clemson Regalia purple, Ole Miss navy.
+    { id: '01', name: 'Alabama', color: '#9E1B32', text: '#fff' },
+    { id: '13', name: 'Georgia', color: '#BA0C2F', text: '#fff' },
+    { id: '47', name: 'Tennessee', color: '#FF8200', text: '#141414' },
+    { id: '45', name: 'South Carolina', color: '#522D80', text: '#fff' },
+    { id: '28', name: 'Mississippi', color: '#14213D', text: '#fff' }
   ];
   const SCALE = ['#E4EDE3', '#C4DCC6', '#94BE99', '#6FA077', '#4A7D52', '#355E3B'];
   const NONE = '#F1F1EE';
@@ -325,6 +326,12 @@
   const gLabels = svg.append('g').attr('font-size', 9.5);
   const tip = d3.select('#tooltip');
   const mapWrap = document.getElementById('map-wrap');
+
+  // A state's name on its school color.
+  function chip(name) {
+    const p = PEERS.find(x => x.name === name);
+    return p ? `<span class="st-chip" style="background:${p.color};color:${p.text}">${name}</span>` : name;
+  }
 
   function sign(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; }
   function pct(a, b) { return a && b != null ? (b - a) / a * 100 : null; }
@@ -558,7 +565,7 @@
       `<b>Output per factory worker.</b> Manufacturing GDP divided by the average number of factory jobs that year: ${money(g.mfg[gi])} ÷ ${f(jobs)} jobs = $${f(g.mfg[gi] * 1e6 / jobs)}.`,
       `<b>Factory payroll.</b> Average yearly pay times the average number of jobs: $${f(s.p[endIdx])} × ${f(s.e[endIdx])} = ${money(payroll(s, endIdx))}, in ${meta.payDollarsYear} dollars.`,
       `<b>Announced investment.</b> The capital investment companies committed to in projects the Alabama Department of Commerce announced during ${lastAnn}, counting projects whose industry code is manufacturing (NAICS 31–33): ${money(a[5] / 1e6)} across ${f(a[3])} projects. It is money promised, usually spent over several years, not money already spent.`,
-      `<b>Federal contracts.</b> Contract dollars federal agencies obligated to manufacturers for work done in Alabama during the federal fiscal year (October to September), in each year's dollars: ${money(fed[fyi])} in FY${contracts.fys[fyi]} vs ${money(fed[fyi - 4])} in FY${contracts.fys[fyi - 4]}, a change of ${fmtPct(pct(fed[fyi - 4], fed[fyi]), 0)}.`,
+      `<b>Federal contracts.</b> Contract dollars federal agencies obligated to manufacturers for work done in Alabama during the federal fiscal year (October to September), in each year's dollars: ${money(fed[fyi])} in FY${contracts.fys[fyi]} vs ${money(fed[fyi - 4])} in FY${contracts.fys[fyi - 4]}, a change of ${fmtPct(pct(fed[fyi - 4], fed[fyi]), 0)}. Obligations are commitments, not payments, and cover prime contracts only, so subcontracted work is counted where the prime contractor reports it.`,
       `<b>Why these years.</b> ${gy} is the latest year BEA has published state GDP and BLS has published full-year jobs and pay; county GDP runs a year behind, to ${gdp.countyYears[gdp.countyYears.length - 1]}. FY${contracts.fys[fyi]} is the latest complete federal fiscal year, and ${lastAnn} the latest Commerce report.`
     ];
     document.getElementById('calc-body').innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
@@ -568,7 +575,7 @@
   function lineChart(id, readoutId, xs, lines, { yFmt, base, rest, tipFmt = yFmt, Wc = 640, Hc = 300 }) {
     const el = d3.select('#' + id);
     el.selectAll('*').remove();
-    const M = { t: 16, r: 116, b: 28, l: 48 };
+    const M = { t: 16, r: 134, b: 28, l: 48 };
     el.attr('viewBox', `0 0 ${Wc} ${Hc}`);
     const x = d3.scaleLinear().domain(d3.extent(xs)).range([M.l, Wc - M.r]);
     const vals = lines.flatMap(l => l.vals).filter(v => v != null);
@@ -695,7 +702,8 @@
     document.getElementById('fed-lede').textContent =
       `Federal contract dollars obligated to manufacturers each fiscal year, by where the work is done, in each year's dollars. ` +
       `Alabama received ${money(al[last])} in FY${xs[last]}, ${Math.round(top[0].v / al[last] * 100)}% of it in ${names[top[0].id]} ` +
-      `and ${Math.round(top[1].v / al[last] * 100)}% in ${names[top[1].id]}.`;
+      `and ${Math.round(top[1].v / al[last] * 100)}% in ${names[top[1].id]}. ` +
+      'Obligations are dollars committed when a contract is signed or changed, not money paid out, and only prime contracts are counted: work a prime contractor passes to suppliers shows up where the prime contractor reports it.';
   }
 
   function seRows() {
@@ -723,7 +731,7 @@
     document.getElementById('se-table').innerHTML =
       `<thead><tr><th>State</th><th>Manufacturing GDP, ${gy}</th><th>Share of economy</th><th>Growth after inflation, ${gy - 10}–${gy}</th>` +
       `<th>Output per factory worker</th><th>Factory payroll, ${years[endIdx]}</th><th>Federal contracts, FY${fy}</th></tr></thead><tbody>` +
-      rows.map(r => `<tr class="${r.id === ST ? 'is-focus' : ''}"${r.id === '00' ? ' style="color:var(--soft)"' : ''}><td>${r.name}</td>
+      rows.map(r => `<tr class="${r.id === ST ? 'is-focus' : ''}"${r.id === '00' ? ' style="color:var(--soft)"' : ''}><td>${chip(r.name)}</td>
         <td>${money(r.gdp)}</td><td>${r.share.toFixed(1)}%</td><td class="${toneClass(r.real10)}">${fmtPct(r.real10)}</td>
         <td>${r.perWorker == null ? 'n/a' : '$' + d3.format(',')(Math.round(r.perWorker / 1000)) + 'K'}</td>
         <td>${money(r.payroll)}</td><td>${r.fed == null ? '—' : money(r.fed)}</td></tr>`).join('') + '</tbody>';
