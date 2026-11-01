@@ -125,7 +125,11 @@
         </div>
       </div>
       <div class="map-tools">
-        <span>Hover for figures · click a county for its projects</span>
+        <div class="segmented small" id="proj-scope" role="group" aria-label="Which announced projects">
+          <button type="button" data-v="mfg" aria-pressed="true">Manufacturing</button>
+          <button type="button" data-v="all" aria-pressed="false">All projects</button>
+        </div>
+        <span>The list defaults to factories (NAICS 31–33). All projects labels the rest.</span>
         <div class="zoom">
           <button type="button" class="dl-button" id="dl-projects">Download projects CSV</button>
         </div>
@@ -177,8 +181,8 @@
         <span class="control-label" style="min-width:0">Growth since</span>
         <div class="segmented small" id="gdp-base" role="group" aria-label="Growth since">
           <button type="button" data-v="1997" aria-pressed="false">1997</button>
-          <button type="button" data-v="2015" aria-pressed="true">2015</button>
-          <button type="button" data-v="2019" aria-pressed="false">2019</button>
+          <button type="button" data-v="2015" aria-pressed="false">2015</button>
+          <button type="button" data-v="2019" aria-pressed="true">2019</button>
         </div>
       </div>
     </div>
@@ -223,7 +227,7 @@
       </div>
       <p class="lede" id="se-lede"></p>
       <div class="table-scroll"><table class="data-table" id="se-table"></table></div>
-      <p class="coming">Coming next: exports by industry and factory capital spending from the Census Bureau. Both need a free Census API key.</p>
+      <p class="panel-note">North Carolina and Kentucky are in the Southeast comparison of jobs and industries. This dollar table stays with the five states that have a federal-contract series in the file. Exports are not on this page.</p>
     </div>
   </section>
 
@@ -311,7 +315,7 @@
   };
   const W = 460;
 
-  const state = { layer: 'invest', period: 1, gdpBase: 2015, sel: null };
+  const state = { layer: 'invest', period: 1, gdpBase: 2019, sel: null, mfgOnly: true };
   let meta, states, counties, gdp, ann, contracts, years, endIdx, H;
   const names = {};
   const features = {};
@@ -369,11 +373,12 @@
   function fyYears() { return contracts.fys.slice(-state.period); }
   function periodLabel(list) { return list.length > 1 ? `${list[0]}–${list[list.length - 1]}` : String(list[0]); }
 
-  function isMfg(p) { return ['31', '32', '33'].includes(p.naics.slice(0, 2)); }
+  function isMfg(p) { return ['31', '32', '33'].includes(String(p.naics).slice(0, 2)); }
+  function saneJobs(p) { return !(p.jobs > 100000); }
 
   function projectsIn(id) {
     const ys = annYears();
-    return ann.projects.filter(p => ys.includes(p.year) && isMfg(p) && (!id || p.county === id));
+    return ann.projects.filter(p => ys.includes(p.year) && saneJobs(p) && (!state.mfgOnly || isMfg(p)) && (!id || p.county === id));
   }
 
   // Annual factory payroll in millions of latest-year dollars: average pay × jobs.
@@ -502,11 +507,13 @@
     document.getElementById('p-l4').textContent = `Factory payroll, ${v.payrollYear || 'latest'}`;
     document.getElementById('p-v4').textContent = money(v.payroll);
     const proj = projectsIn(id).sort((a, b) => b.invest - a.invest || b.jobs - a.jobs);
-    document.getElementById('p-list-h').textContent = `Announced factory projects, ${periodLabel(annYears())} (${proj.length})`;
+    document.getElementById('p-list-h').textContent = state.mfgOnly
+      ? `Announced factory projects, ${periodLabel(annYears())} (${proj.length})`
+      : `Announced projects, manufacturing highlighted, ${periodLabel(annYears())} (${proj.length})`;
     document.getElementById('p-list').innerHTML = proj.length
-      ? proj.slice(0, id ? 12 : 10).map(p => `<li><b>${p.company}</b> · ${p.invest ? money(p.invest / 1e6) : 'amount not given'}${p.jobs ? ` · ${d3.format(',')(p.jobs)} jobs` : ''}
+      ? proj.slice(0, id ? 12 : 10).map(p => `<li><b>${p.company}</b> · ${p.invest ? money(p.invest / 1e6) : 'amount not given'}${p.jobs ? ` · ${d3.format(',')(p.jobs)} jobs` : ''}${isMfg(p) ? '' : ' · Not manufacturing'}
           <small>${p.year} · ${p.type === 'new' ? 'New' : 'Expansion'} · ${p.activity || 'NAICS ' + p.naics}${id ? '' : ' · ' + (names[p.county] || '')}</small></li>`).join('')
-      : '<li>No factory projects announced in this period.</li>';
+      : '<li>No projects in this period for the current filter.</li>';
     const notes = [];
     if (v.investAll > v.invest) notes.push(`Including non-manufacturing projects (offices, warehouses, services), announced investment was ${money(v.investAll)}.`);
     if (proj.length > (id ? 12 : 10)) notes.push('Download the CSV for the full list.');
@@ -757,6 +764,7 @@
   function projectsCsv() {
     const rows = [['year', 'county', 'type', 'company', 'NAICS', 'activity', 'jobs', 'capital investment ($)', 'manufacturing']];
     for (const p of ann.projects) {
+      if (!saneJobs(p)) continue;
       rows.push([p.year, (names[p.county] || '').replace(' County', ''), p.type, p.company, p.naics, p.activity, p.jobs, p.invest, isMfg(p) ? 'yes' : '']);
     }
     downloadCsv(`alabama-announced-projects-${ann.years[0]}-${ann.years[ann.years.length - 1]}.csv`, rows);
@@ -833,6 +841,13 @@
       setPressed('gdp-base', state.gdpBase);
       drawGdpCharts();
     });
+    document.getElementById('proj-scope').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b) return;
+      state.mfgOnly = b.dataset.v === 'mfg';
+      setPressed('proj-scope', b.dataset.v);
+      renderPanel();
+    });
     document.getElementById('p-reset').onclick = () => select(null);
     document.getElementById('dl-projects').onclick = projectsCsv;
     document.getElementById('dl-se').onclick = seCsv;
@@ -899,5 +914,6 @@
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>

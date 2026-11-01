@@ -418,17 +418,22 @@
     const dates = m.dates.map(parse);
     const fmtDate = d3.timeFormat('%b %Y');
     const peak = d3.maxIndex(m.real);
+    const peakN = d3.maxIndex(m.nominal);
     const last = m.real.length - 1;
     const t = reind.total;
     const strategic = national.sel['strategic|all'].e;
     const all = national.sel['all|all'].e;
+    const estab = national.sel['all|all'].n;
     const end = years[endIdx];
     const chips = reind.byType.find(d => d.id === 'electronics');
     document.getElementById('c5-text').textContent =
-      `After the CHIPS Act and the Inflation Reduction Act passed in August 2022, spending on new factories more than doubled at its peak. ` +
-      `${chips ? `Computer, electronics and battery plants, ${money(chips.before)} a year before, reached ${money(chips.recent)}. ` : ''}` +
+      `After the CHIPS Act and the Inflation Reduction Act passed in August 2022, spending on new factories rose and then cooled. ` +
+      `Adjusted for building costs, it peaked at ${money(m.real[peak])} in ${fmtDate(dates[peak])}. The unadjusted series peaked at ${money(m.nominal[peakN])} in ${fmtDate(dates[peakN])}. ` +
+      `By ${fmtDate(dates[last])} the inflation-adjusted rate was ${money(m.real[last])}. ` +
+      `${chips ? `Computer, electronics and battery plants, ${money(chips.before)} a year in 2019–21, were ${money(chips.recent)} in the latest 12 months. ` : ''}` +
       `Jobs are slower to follow: plants take years to build and staff, and many are highly automated. Between 2019 and ${end}, jobs in strategic industries changed ` +
-      `${fmtPct(pct(at(strategic, 2019), at(strategic, end)), 1)} and all factory jobs ${fmtPct(pct(at(all, 2019), at(all, end)), 1)}.`;
+      `${fmtPct(pct(at(strategic, 2019), at(strategic, end)), 1)} and all factory jobs ${fmtPct(pct(at(all, 2019), at(all, end)), 1)}. ` +
+      `Establishments with employees changed ${fmtPct(pct(at(estab, 2019), at(estab, end)), 1)} over the same years. More locations and fewer jobs can mean smaller shops, hiring that has not caught up, or payroll split across more filings. The figures do not separate those.`;
     document.getElementById('c5-stat').textContent = `${(t.recent / t.before).toFixed(1)}×`;
     document.getElementById('c5-stat-note').textContent = `construction spending in the last 12 months vs the 2019–21 average, adjusted for building costs`;
     document.getElementById('c5-src').textContent = `Annual rate, ${reind.dollarsOf} dollars · Census Bureau, adjusted with the BLS building-cost index`;
@@ -472,7 +477,7 @@
       [`Factory jobs, ${end - 1}–${end}`, (yoy < 0 ? '−' : '+') + d3.format(',')(Math.abs(yoy)), yoy < 0 ? 'is-loss' : 'is-gain',
         `${yoy < 0 ? 'Down' : 'Up'} for the year, with ${(ces.value).toFixed(2)} million in the latest monthly count (${fmtDate(parse(ces.date))}).`],
       ['Factory construction vs its peak', fmtPct(pct(m.real[peak], m.real[last])), 'is-loss',
-        `Spending peaked in ${fmtDate(parse(m.dates[peak]))} and has eased as big projects finish. It is still well above where it was before 2021.`],
+        `Inflation-adjusted spending peaked in ${fmtDate(parse(m.dates[peak]))} and has eased as big projects finish. The unadjusted series peaked in ${fmtDate(parse(m.dates[d3.maxIndex(m.nominal)]))}. It is still well above where it was before 2021.`],
       ['Pay in factory jobs', '$' + d3.format(',')(Math.round(at(national.sel['all|all'].p, end))), 'is-gain',
         `Average yearly pay in ${end}, ${fmtPct(pct(at(national.sel['all|all'].p, 2000), at(national.sel['all|all'].p, end)))} since 2000 after inflation. The jobs that remain pay more.`]
     ];
@@ -718,7 +723,7 @@
       ['Manufacturing share of the economy', (g.mfg[gi] / g.total[gi] * 100).toFixed(1) + '%', '',
         `of Alabama's GDP in ${al.gdp.years[gi]}, compared with ${(us.mfg[gi] / us.total[gi] * 100).toFixed(1)}% nationally. Factories matter more here than in most states.`],
       ['Reliance on car plants', Math.round(vehShare) + '%', '',
-        `of Alabama's net new factory jobs since ${end - 10} came from vehicles and parts, so the state's factory economy rises and falls with the auto industry.`]
+        `of Alabama's net new factory jobs since ${end - 10} came from vehicles and parts (BLS QCEW), so the state's factory economy rises and falls with the auto industry.`]
     ];
     document.getElementById('a7-cards').innerHTML = cards.map(([label, value, tone, note]) =>
       `<div class="card"><span>${label}</span><strong class="${tone}">${value}</strong><p>${note}</p></div>`).join('');
@@ -856,5 +861,6 @@
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>

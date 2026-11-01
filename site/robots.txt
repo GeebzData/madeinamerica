@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://madeinamerica.gerardbarile.com/sitemap.xml

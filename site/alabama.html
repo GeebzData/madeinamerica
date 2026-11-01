@@ -123,6 +123,23 @@
     <div class="kpi"><span id="k4-label"></span><strong id="k4"></strong><small id="k4-note"></small></div>
   </section>
 
+  <section class="wrap block" aria-labelledby="stand-h">
+    <div class="card">
+      <h2 id="stand-h">Where Alabama stands against its peers</h2>
+      <div class="score-copy">
+        <div>
+          <h3>What is working</h3>
+          <ul id="vs-win"></ul>
+        </div>
+        <div>
+          <h3>What is lagging</h3>
+          <ul id="vs-lag"></ul>
+        </div>
+      </div>
+      <p class="panel-note">The charts, North Carolina and Kentucky, labor-force participation, and the Atlas/SACE investment ranks are on the <a href="southeast.html">Southeast</a> page. Announced dollars and federal contracts are on <a href="money.html">Money</a>. Named plants here are the ones already in the state's Commerce reports and in the Story.</p>
+    </div>
+  </section>
+
   <section class="wrap controls" aria-label="Filters">
     <div class="control-row">
       <div class="control">
@@ -348,6 +365,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="categories.js"></script>
+<script src="region.js"></script>
 <script>
   const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
   const ST = '01';
@@ -453,11 +471,10 @@
     return { e, n, p };
   }
 
-  // When the latest year is withheld, fall back one year rather than drop the place.
   function endPoint(arr) {
     if (!arr) return -1;
-    if (arr[endIdx] != null) return endIdx;
-    return arr[endIdx - 1] != null ? endIdx - 1 : -1;
+    for (let i = endIdx; i >= Math.max(0, endIdx - 2); i -= 1) if (arr[i] != null) return i;
+    return -1;
   }
 
   // Counties and metros compare 3-year averages at each end, which smooths out one-year swings at a
@@ -1430,8 +1447,9 @@
     d3.json(`data/counties/by-state/${ST}.json`),
     d3.json('data/metros.json'),
     d3.json('data/plants.json'),
-    d3.json('data/quarter.json')
-  ]).then(([topo, m, nat, sts, cty, det, mets, pl, qt]) => {
+    d3.json('data/quarter.json'),
+    d3.json('data/context.json')
+  ]).then(([topo, m, nat, sts, cty, det, mets, pl, qt, ctx]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -1449,11 +1467,19 @@
     drawInsights();
     drawPolicy();
     drawTrends();
+    drawRegionBrief({
+      states, national, years, gdp: null, contracts: null, ann: null, ctx,
+      peers: [
+        { id: '01', name: 'Alabama' }, { id: '13', name: 'Georgia' }, { id: '47', name: 'Tennessee' },
+        { id: '45', name: 'South Carolina' }, { id: '37', name: 'North Carolina' }, { id: '21', name: 'Kentucky' },
+        { id: '28', name: 'Mississippi' }
+      ]
+    });
     document.getElementById('dl-map').onclick = mapCsv;
     document.getElementById('dl-industries').onclick = industriesCsv;
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
-      `Establishments are locations with employees of any size, from car plants to small shops; plant sizes come from Census County Business Patterns. Pay is shown in ${meta.payDollarsYear} dollars. ` +
+      `Establishments are locations with employees of any size, from car plants to small shops. ${meta.plantsNote || 'Plant sizes come from Census County Business Patterns.'} Pay is shown in ${meta.payDollarsYear} dollars. ` +
       `County and metro changes compare 3-year averages at each end. Factory jobs leave out temp workers placed by staffing agencies, who BLS counts in services; Alabama's auto plants use many, so factory employment is understated. ` +
       `The county map covers all manufacturing: BLS withholds most county figures for individual industries to protect employers, so county industry lists show only what is published. ` +
       `Industry groups are our own grouping of BLS industry codes and add up to all of manufacturing. ` +
@@ -1468,5 +1494,6 @@
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>
