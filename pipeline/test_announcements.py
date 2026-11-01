@@ -52,6 +52,20 @@ def test_leaves_real_projects_alone():
     check('lilly activity', lilly['activity'] == 'Pharmaceutical Preparation Manufacturing')
 
 
+def test_pike_randolph_2020():
+    data = json.loads(OUT.read_text())
+    pike = data['counties']['01109']['2020']
+    rand = data['counties']['01111']['2020']
+    check('pike 2020 printed totals', pike[:3] == [2, 86, 29_273_303])
+    check('pike 2020 manufacturing is Golden Boy only', pike[3:] == [1, 67, 13_273_303])
+    check('randolph 2020 totals', rand == [3, 94, 27_135_066, 3, 94, 27_135_066])
+    filed = [p for p in data['projects'] if p['year'] == 2020 and p['county'] == '01109']
+    check('pike 2020 project count', len(filed) == 2)
+    check('no randolph project left in pike', all('Randolph ' not in p['company'] for p in filed))
+    moved = [p for p in data['projects'] if p['year'] == 2020 and p['county'] == '01111']
+    check('randolph holds the three plants', {p['company'] for p in moved} >= {'OMM Timber Wadley', 'JELD-WEN Wedowee', 'SteelFab, Inc. Alabama Division Roanoke'})
+
+
 def test_published_file():
     data = json.loads(OUT.read_text())
     validate_projects(data['projects'])
@@ -87,5 +101,6 @@ if __name__ == '__main__':
     test_known_swaps()
     test_leaves_real_projects_alone()
     test_recompute_uses_corrected_jobs()
+    test_pike_randolph_2020()
     test_published_file()
     print('all announcement checks passed')

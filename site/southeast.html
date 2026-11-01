@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Southeast &amp; Battery Belt · Made in America</title>
 <link rel="canonical" href="https://madeinamerica.gerardbarile.com/southeast.html">
 <meta name="description" content="How Alabama compares with Georgia, Tennessee, South Carolina, North Carolina, Kentucky and Mississippi on factory jobs, electrical employment and aerospace.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -125,6 +125,13 @@
           <button type="button" data-v="p" aria-pressed="false" aria-describedby="hint"
             data-hint="Total yearly wages divided by jobs, adjusted for inflation to latest-year dollars."
             data-source="BLS Quarterly Census of Employment and Wages; BLS Consumer Price Index">Average pay</button>
+        </div>
+      </div>
+      <div class="control">
+        <span class="control-label">Peers</span>
+        <div class="segmented" id="peer-set" role="group" aria-label="Which states to compare">
+          <button type="button" data-v="belt" aria-pressed="true">Battery Belt</button>
+          <button type="button" data-v="plus" aria-pressed="false">Add Florida and Texas</button>
         </div>
       </div>
       <div class="control">
@@ -245,7 +252,7 @@
   <section class="wrap block" aria-labelledby="rank-h">
     <div class="card">
       <div class="block-head">
-        <h2 id="rank-h">How the seven states compare</h2>
+        <h2 id="rank-h">How these states compare</h2>
         <button type="button" class="dl-button" id="dl-rank">Download CSV</button>
       </div>
       <p class="lede" id="rank-lede"></p>
@@ -295,6 +302,38 @@
     </div>
   </section>
 
+  <section class="wrap block" id="power" aria-labelledby="power-h">
+    <div class="card">
+      <h2 id="power-h">Industrial electricity prices</h2>
+      <p class="lede">What factories pay per kilowatthour. Alabama is below the U.S. average and above Tennessee.</p>
+      <div data-chart="electricity"></div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="exports" aria-labelledby="exports-h">
+    <div class="card">
+      <h2 id="exports-h">Manufacturing exports</h2>
+      <p class="lede">Census counts the state where the shipment started its trip out of the country. That is not always the state that made the goods.</p>
+      <div data-chart="exports"></div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="robotics" aria-labelledby="robot-h">
+    <div class="card">
+      <h2 id="robot-h">Industrial machinery, including where robots are classified</h2>
+      <p class="lede">There is no separate 2025 QCEW industry for robots alone. Census puts industrial robot manufacturing in NAICS 333999, which is part of 3339.</p>
+      <div data-chart="robotics"></div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="chips-awards" aria-labelledby="chips-award-h">
+    <div class="card">
+      <h2 id="chips-award-h">CHIPS awards by state</h2>
+      <p class="lede">Direct funding on the NIST list that can be assigned to one state. Alabama is highlighted because the list does not include it.</p>
+      <div data-chart="chips"></div>
+    </div>
+  </section>
+
   <section class="wrap sources block" id="sources">
     <div class="card">
       <h2>Data sources</h2>
@@ -308,6 +347,10 @@
         <li><a href="https://atlaspolicy.com/transportation-electrification-in-the-southeast-2025/">Atlas Public Policy and the Southern Alliance for Clean Energy, Transportation Electrification in the Southeast (2025)</a>: announced EV supply-chain investment and jobs through June 30, 2025.</li>
         <li><a href="https://atlaspolicy.com/wp-content/uploads/2026/03/SACE-One-Pager-Alabama-EOY-2025.pdf">Alabama end-of-2025 one-pager</a> from the same project: rank, anticipated jobs and investment through December 31, 2025.</li>
         <li><a href="https://www.bea.gov/data/gdp/gdp-state">Bureau of Economic Analysis</a> and <a href="https://www.usaspending.gov/">USAspending.gov</a>: manufacturing's share of GDP, and federal manufacturing-contract obligations, in the scorecard note.</li>
+        <li><a href="https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=table_5_06_a">EIA Electric Power Monthly, Table 5.6.A</a>: industrial electricity price by state, cents per kilowatthour.</li>
+        <li><a href="https://www.census.gov/foreign-trade/data/STNAICS.html">Census Bureau state exports by NAICS, origin of movement</a>: manufacturing exports, 4-digit codes 31–33, full year 2025.</li>
+        <li><a href="https://www.nist.gov/chips/chips-program-office-awards">NIST CHIPS Program Office awards</a>, updated August 6, 2026: direct funding by state. Multi-state awards are not divided.</li>
+        <li><a href="https://fred.stlouisfed.org/series/SMS01000003000000001">BLS CES, Alabama manufacturing, seasonally adjusted</a> (FRED <code>SMS01000003000000001</code>) and <a href="https://fred.stlouisfed.org/series/ALMFGN">not seasonally adjusted</a> (FRED <code>ALMFGN</code>): the December 2019 comparison next to the QCEW annual-average percent.</li>
       </ul>
       <p id="notes"></p>
     </div>
@@ -315,14 +358,15 @@
 </main>
 <div class="hint" id="hint" role="tooltip" hidden></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
 <script src="region.js"></script>
+<script src="supplements.js"></script>
 <script>
-  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
-  const PEERS = [
-    // School colors: Alabama crimson, Georgia red, Tennessee orange, Clemson Regalia purple, Ole Miss navy.
+  const ATLAS = 'vendor/counties-albers-10m.json';
+  const BELT = [
+    // School colors: Alabama crimson, Georgia red, Tennessee orange, Clemson purple, Carolina blue, Kentucky blue, Ole Miss navy.
     { id: '01', name: 'Alabama', color: '#9E1B32', text: '#fff' },
     { id: '13', name: 'Georgia', color: '#BA0C2F', text: '#fff' },
     { id: '47', name: 'Tennessee', color: '#FF8200', text: '#141414' },
@@ -331,6 +375,11 @@
     { id: '21', name: 'Kentucky', color: '#0033A0', text: '#fff' },
     { id: '28', name: 'Mississippi', color: '#14213D', text: '#fff' }
   ];
+  const EXTRA = [
+    { id: '12', name: 'Florida', color: '#0021A5', text: '#fff' },
+    { id: '48', name: 'Texas', color: '#BF5700', text: '#141414' }
+  ];
+  let PEERS = BELT.slice();
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
   const THRESH = { e: [100, 1000, 5000], n: [3, 15, 50], p: [1000, 5000, 10000], pct: [5, 20, 40] };
   const MEASURES = { e: 'Jobs', n: 'Establishments', p: 'Average pay' };
@@ -344,7 +393,7 @@
     2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
   };
   const W = 960;
-  const ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '37': 'NC', '21': 'KY', '28': 'MS' };
+  const ABBR = { '01': 'AL', '12': 'FL', '13': 'GA', '21': 'KY', '28': 'MS', '37': 'NC', '45': 'SC', '47': 'TN', '48': 'TX' };
   const OUTSIDE = '#EFEFEB';
   const LEVEL_THRESH = {
     state: { e: [2000, 15000, 40000], n: [25, 150, 400], p: [1000, 5000, 10000] },
@@ -352,8 +401,9 @@
     county: { e: [100, 1000, 5000], n: [3, 15, 50], p: [1000, 5000, 10000] }
   };
 
-  const state = { measure: 'e', mode: 'chg', start: 2019, view: 'chg', sort: { key: 'pct', dir: -1 }, level: 'state', pick: { st: null, metro: null, county: null } };
+  const state = { measure: 'e', mode: 'chg', start: 2019, view: 'chg', sort: { key: 'pct', dir: -1 }, level: 'state', peerSet: 'belt', pick: { st: null, metro: null, county: null } };
   let meta, national, states, counties, plants, quarter, years, endIdx, H;
+  let gdpData, contractData, annData, ctxData, supplementData, atlasTopo, atlasMetros;
   const names = {};
   const shapes = {};
   const metros = {};
@@ -924,7 +974,7 @@
     const { st, metro, county } = state.pick;
     const option = (v, label) => `<option value="${v}">${label}</option>`;
     const stSel = document.getElementById('pick-state');
-    stSel.innerHTML = option('', 'All seven states') + PEERS.map(p => option('S' + p.id, p.name)).join('');
+    stSel.innerHTML = option('', `All ${PEERS.length} states`) + PEERS.map(p => option('S' + p.id, p.name)).join('');
     stSel.value = st || '';
     const metroIds = Object.keys(metros).filter(m => !st || metros[m].states.includes(st.slice(1))).sort((a, b) => names[a].localeCompare(names[b]));
     const mSel = document.getElementById('pick-metro');
@@ -1024,7 +1074,7 @@
     document.getElementById('p-name').textContent = id ? names[id] : 'These states together';
     const { st, metro, county } = state.pick;
     const crumbs = [];
-    if (id) crumbs.push('<button type="button" data-crumb="">All seven states</button>');
+    if (id) crumbs.push(`<button type="button" data-crumb="">All ${PEERS.length} states</button>`);
     if (st && (metro || county)) crumbs.push(`<button type="button" data-crumb="st">${names[st]}</button>`);
     if (metro && county) crumbs.push(`<button type="button" data-crumb="metro">${names[metro]}</button>`);
     document.getElementById('p-crumbs').innerHTML = crumbs.join(' › ');
@@ -1102,6 +1152,28 @@
       if (a > bestArea) { bestArea = a; best = g; }
     }
     return best;
+  }
+
+  function clearMap() {
+    for (const bag of [shapes, metros, metroOf, countiesOf, labelAt, names]) {
+      for (const key of Object.keys(bag)) delete bag[key];
+    }
+    gStateShapes.selectAll('*').remove();
+    gCounties.selectAll('*').remove();
+    gMetros.selectAll('*').remove();
+    gStates.selectAll('*').remove();
+  }
+
+  function setPeerSet(which) {
+    state.peerSet = which;
+    PEERS = which === 'plus' ? BELT.concat(EXTRA) : BELT.slice();
+    for (const b of document.querySelectorAll('#peer-set button')) b.setAttribute('aria-pressed', String(b.dataset.v === which));
+    if (state.pick.st && !PEERS.some(p => 'S' + p.id === state.pick.st)) state.pick = { st: null, metro: null, county: null };
+    clearMap();
+    buildMap(atlasTopo, atlasMetros);
+    drawRegionBrief({ states, national, years, gdp: gdpData, contracts: contractData, ann: annData, ctx: ctxData, peers: PEERS });
+    mountSupplements(document, supplementData, PEERS.map(p => p.id));
+    pick(null, null, null);
   }
 
   function buildMap(topo, metroDefs) {
@@ -1247,6 +1319,7 @@
     document.getElementById('mode').value = state.mode;
     document.getElementById('start').value = state.start;
     for (const b of document.querySelectorAll('#picks button')) b.setAttribute('aria-pressed', String(Number(b.dataset.v) === state.start));
+    document.getElementById('rank-h').textContent = `How the ${PEERS.length} states compare`;
     drawRanks();
     drawVs();
     drawMap();
@@ -1256,6 +1329,11 @@
   }
 
   function buildControls() {
+    document.getElementById('peer-set').addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b || b.dataset.v === state.peerSet) return;
+      setPeerSet(b.dataset.v);
+    });
     document.getElementById('measure').addEventListener('click', event => {
       const b = event.target.closest('button');
       if (!b) return;
@@ -1384,8 +1462,9 @@
     d3.json('data/gdp.json'),
     d3.json('data/contracts.json'),
     d3.json('data/announcements.json'),
-    d3.json('data/context.json')
-  ]).then(([topo, m, nat, sts, cty, pl, qt, mets, gdp, contracts, ann, ctx]) => {
+    d3.json('data/context.json'),
+    d3.json('data/supplements.json')
+  ]).then(([topo, m, nat, sts, cty, pl, qt, mets, gdp, contracts, ann, ctx, supplements]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -1395,8 +1474,16 @@
     quarter = qt;
     years = meta.years;
     endIdx = years.length - 1;
+    atlasTopo = topo;
+    atlasMetros = mets;
+    gdpData = gdp;
+    contractData = contracts;
+    annData = ann;
+    ctxData = ctx;
+    supplementData = supplements;
     buildMap(topo, mets);
     drawRegionBrief({ states, national, years, gdp, contracts, ann, ctx, peers: PEERS });
+    mountSupplements(document, supplements, PEERS.map(p => p.id));
     buildControls();
     drawPolicy();
     document.getElementById('notes').textContent =
