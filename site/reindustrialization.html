@@ -75,7 +75,7 @@
 <main>
   <section class="wrap intro">
     <h1>The factories being built <em>now</em></h1>
-    <p>Where new plants are opening, which industries are driving the building boom, and whether the jobs are following. Every figure comes from the Bureau of Labor Statistics or the Census Bureau.</p>
+    <p>Where plants are opening, which industries are driving the buildout, and whether jobs are following. Construction peaked in late 2024 on an inflation-adjusted basis and has cooled. Strategic industries added jobs while factory employment overall is still below 2019. Figures: BLS and Census.</p>
   </section>
 
   <section class="wrap controls" aria-label="Since year">
@@ -154,7 +154,7 @@
         <h3 class="is-loss">Biggest losses</h3>
         <ol id="rank-losses"></ol>
       </div>
-      <p class="panel-note">"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. Most are small: in the Census Bureau's 2023 plant-size counts, about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
+      <p class="panel-note" id="plant-note">"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. Plant-size bands are Census County Business Patterns for 2023, the latest release. Census has not scheduled 2024. Most plants are small: about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
     </aside>
   </section>
 
@@ -198,6 +198,14 @@
     </div>
   </section>
 
+  <section class="wrap block" aria-labelledby="chips-h">
+    <div class="card">
+      <h2 id="chips-h">What happened after CHIPS and the IRA</h2>
+      <p class="lede" id="chips-lede"></p>
+      <p class="panel-note">Announcement trackers are not payroll jobs. The employment figures elsewhere on this page are BLS. Kentucky and Mississippi are outside the six-state Atlas/SACE set. The Southeast page compares Alabama with its peers on electrical employment, which is the battery-belt gap in the QCEW data.</p>
+    </div>
+  </section>
+
   <section class="wrap guide" id="categories" aria-labelledby="guide-h">
     <div class="card">
       <h2 id="guide-h">What each category includes</h2>
@@ -211,7 +219,8 @@
       <h2>Data sources</h2>
       <ul>
         <li><a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau Construction Spending</a>: private factory construction by industry, monthly, seasonally adjusted annual rate. Published nationally only.</li>
-        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a>: used to adjust construction spending for building costs.</li>
+        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a> (FRED <code>PCU236211236211</code>): used to adjust construction spending for building costs. The dashed line on the chart is the unadjusted Census series.</li>
+        <li><a href="https://atlaspolicy.com/transportation-electrification-in-the-southeast-2025/">Atlas Public Policy and the Southern Alliance for Clean Energy</a>: announced EV investment, cancellations, and the Alabama end-of-2025 snapshot in the note below.</li>
         <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: establishments (plants and shops) and jobs by state and industry, private sector, annual averages.</li>
         <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state outlines from the Census Bureau.</li>
       </ul>
@@ -282,11 +291,10 @@
     return states[id] && states[id].sel[key];
   }
 
-  // When the latest year is withheld, fall back one year rather than drop the place.
   function endPoint(arr) {
     if (!arr) return -1;
-    if (arr[endIdx] != null) return endIdx;
-    return arr[endIdx - 1] != null ? endIdx - 1 : -1;
+    for (let i = endIdx; i >= Math.max(0, endIdx - 2); i -= 1) if (arr[i] != null) return i;
+    return -1;
   }
 
   function change(arr) {
@@ -476,9 +484,10 @@
     const sj = change(strategic.e);
     const sjBase = strategic.e[idx(state.since)];
     const t = reind.total;
-    document.getElementById('k1-label').textContent = 'Factory construction, last 12 months';
+    const asOf = d3.timeFormat('%b %Y')(d3.timeParse('%Y-%m')(reind.latest));
+    document.getElementById('k1-label').textContent = `Factory construction, 12 months ending ${asOf}`;
     document.getElementById('k1').textContent = money(t.recent) + ' a year';
-    document.getElementById('k1-note').textContent = `${(t.recent / t.before).toFixed(1)}× the 2019–21 average of ${money(t.before)}, in ${reind.dollarsOf} dollars`;
+    document.getElementById('k1-note').textContent = `${(t.recent / t.before).toFixed(1)}× the 2019–21 average of ${money(t.before)}, inflation-adjusted ${reind.dollarsOf} dollars`;
     document.getElementById('k2-label').textContent = `Net new establishments, ${state.since}–${end}`;
     document.getElementById('k2').textContent = fmtShort(n);
     document.getElementById('k2').className = toneClass(n);
@@ -561,10 +570,11 @@
     el.append('path').attr('d', line(m.nominal)).attr('fill', 'none').attr('stroke', '#8A8A84').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4');
     el.append('path').attr('d', line(m.real)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
     const peak = d3.maxIndex(m.real);
+    const peakN = d3.maxIndex(m.nominal);
     const last = m.real.length - 1;
     const fmtDate = d3.timeFormat('%b %Y');
     document.getElementById('money-lede').textContent =
-      `Monthly spending on new factories, at an annual rate. Adjusted for building costs, it peaked at ${money(m.real[peak])} in ${fmtDate(dates[peak])} and was ${money(m.real[last])} in ${fmtDate(dates[last])}.`;
+      `Monthly spending on new factories, at an annual rate. Adjusted for building costs, it peaked at ${money(m.real[peak])} in ${fmtDate(dates[peak])} and was ${money(m.real[last])} in ${fmtDate(dates[last])}. The unadjusted series peaked earlier, at ${money(m.nominal[peakN])} in ${fmtDate(dates[peakN])}.`;
     const readout = document.getElementById('money-readout');
     const dot = el.append('circle').attr('r', 4).attr('fill', '#355E3B').attr('display', 'none');
     const rest = () => { readout.textContent = `Latest, ${fmtDate(dates[last])}: ${money(m.real[last])} adjusted, ${money(m.nominal[last])} as reported`; dot.attr('display', 'none'); };
@@ -755,8 +765,9 @@
     d3.json('data/meta.json'),
     d3.json('data/national.json'),
     d3.json('data/states.json'),
-    d3.json('data/reindustrialization.json')
-  ]).then(([topo, m, nat, sts, r]) => {
+    d3.json('data/reindustrialization.json'),
+    d3.json('data/context.json')
+  ]).then(([topo, m, nat, sts, r, ctx]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -802,7 +813,8 @@
     bindSegmented('measure', 'measure');
 
     document.getElementById('notes').textContent =
-      `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS price index for new industrial building construction; the unadjusted figures are shown for comparison. ` +
+      `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS producer price index for new industrial building construction (FRED PCU236211236211). The dashed line is the unadjusted Census series (FRED TLMFGCONS). The headline card is the average of the 12 months ending ${reind.latest}. ` +
+      (meta.plantsNote ? meta.plantsNote + ' ' : '') +
       `Establishments and jobs are private-sector annual averages through ${years[endIdx]}. "Strategic tech & defense" covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices; vehicles are counted in their own category. ` +
       `Where BLS withholds part of a state's industry jobs figure, we split the withheld total by plant count; figures where this is 10% or more are marked ~. ` +
       `Data updated ${meta.built}.`;
@@ -813,10 +825,19 @@
     drawBars();
     moneyChart();
     jobsChart();
+    const ev = ctx.ev.june2025;
+    const alEv = ctx.ev.alabamaEoy2025;
+    document.getElementById('chips-lede').textContent =
+      `The CHIPS and Science Act and the Inflation Reduction Act were both signed in August 2022. Through June 30, 2025, Atlas and the Southern Alliance for Clean Energy counted $${ev.regionInvestBillion} billion of announced EV-manufacturing investment and ${d3.format(',')(ev.regionJobs)} anticipated jobs in their six Southeast states. ` +
+      `In the year before that date, new announcements were $${ev.newInvestBillionPrior12Months} billion, down from $${ev.newInvestBillionYearBefore} billion the prior year, and cancellations removed about $${ev.canceledInvestBillion} billion and ${d3.format(',')(ev.canceledJobs)} jobs. ` +
+      `Alabama's end-of-2025 snapshot was still ${d3.format(',')(alEv.jobs)} anticipated EV-manufacturing jobs and $${alEv.investBillion.toFixed(1)} billion, rank ${alEv.rank} of those six states, with no growth during 2025. ${alEv.trainingCenter}`;
+    if (meta.plantsNote) document.getElementById('plant-note').textContent =
+      `"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. ${meta.plantsNote} In the 2023 size counts, about 2 in 3 manufacturing establishments have fewer than 20 workers and fewer than 1 in 10 have 100 or more.`;
   }).catch(err => {
     document.getElementById('loading').textContent = 'Could not load the data. Please refresh to try again.';
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>

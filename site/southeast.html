@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Southeast · Made in America</title>
-<meta name="description" content="Alabama, Georgia, Tennessee, South Carolina and Mississippi side by side: factory jobs, plants, pay and industries since 1990.">
+<title>Southeast &amp; Battery Belt · Made in America</title>
+<meta name="description" content="How Alabama compares with Georgia, Tennessee, South Carolina, North Carolina, Kentucky and Mississippi on factory jobs, electrical employment and aerospace.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
@@ -67,8 +67,47 @@
 
 <main>
   <section class="wrap intro">
-    <h1>The Southeast, <em>side by side</em></h1>
-    <p>Alabama, Georgia, Tennessee, South Carolina and Mississippi compete for many of the same plants. Pick a measure and a starting year to compare them, with the U.S. as a benchmark.</p>
+    <h1>How Alabama stacks up in the <em>Southeast</em></h1>
+    <p>Alabama is an auto and aerospace state, and manufacturing is a larger share of its economy than of the country's. It is not yet a battery-belt peer of Georgia, Tennessee, South Carolina or North Carolina. The comparison adds North Carolina and Kentucky to Alabama, Georgia, Tennessee, South Carolina and Mississippi. The window starts in 2019.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="score-h">
+    <div class="card">
+      <h2 id="score-h">Winning auto and aerospace jobs, not batteries</h2>
+      <p class="lede" id="score-lede"></p>
+      <div class="table-scroll"><table class="data-table" id="score-table"></table></div>
+      <div class="score-grid">
+        <div>
+          <h3>Factory job growth since 2019</h3>
+          <div id="chart-growth"></div>
+        </div>
+        <div>
+          <h3>Electrical employment</h3>
+          <div id="chart-elec"></div>
+        </div>
+        <div>
+          <h3>Vehicles employment</h3>
+          <div id="chart-veh"></div>
+        </div>
+      </div>
+      <p class="panel-note" id="score-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="work-h">
+    <div class="card">
+      <h2 id="work-h">Workforce: participation, not just job counts</h2>
+      <p class="lede">New plants do not staff themselves. The headline labor-force participation rate is the share of the civilian population that is working or looking for work. Alabama's rate is below Georgia, Tennessee and the United States.</p>
+      <div id="work-chart"></div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="chips-h">
+    <div class="card">
+      <h2 id="chips-h">CHIPS, the IRA, and the EV announcement cycle</h2>
+      <p class="lede" id="chips-lede"></p>
+      <p class="panel-note">These are company announcements tracked by Atlas Public Policy and the Southern Alliance for Clean Energy, not BLS employment. Cancellations are included in the way that tracker counts them. Sources are linked under Data sources. Kentucky and Mississippi are not in that six-state set.</p>
+    </div>
   </section>
 
   <section class="wrap controls" aria-label="Filters">
@@ -135,11 +174,11 @@
         <div class="zoom">
           <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
           <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
-          <button type="button" id="zoom-reset" aria-label="Show all five states">⟲</button>
+          <button type="button" id="zoom-reset" aria-label="Show the whole region">⟲</button>
         </div>
       </div>
       <div class="map-wrap" id="map-wrap">
-        <svg id="map" role="img" aria-label="Map of manufacturing change in five Southeast states"></svg>
+        <svg id="map" role="img" aria-label="Map of manufacturing change in the Southeast and Battery Belt"></svg>
         <div class="loading" id="loading">Loading data…</div>
         <div class="tooltip" id="tooltip" hidden></div>
       </div>
@@ -205,7 +244,7 @@
   <section class="wrap block" aria-labelledby="rank-h">
     <div class="card">
       <div class="block-head">
-        <h2 id="rank-h">How the five states compare</h2>
+        <h2 id="rank-h">How the seven states compare</h2>
         <button type="button" class="dl-button" id="dl-rank">Download CSV</button>
       </div>
       <p class="lede" id="rank-lede"></p>
@@ -219,7 +258,7 @@
       <h2 id="vs-h">Over time</h2>
       <p class="lede" id="vs-lede"></p>
       <p class="readout" id="vs-readout"></p>
-      <svg id="vs" role="img" aria-label="Five Southeast states and the U.S. indexed to the starting year"></svg>
+      <svg id="vs" role="img" aria-label="Southeast states and the U.S. indexed to the starting year"></svg>
     </div>
   </section>
 
@@ -264,6 +303,10 @@
         <li><a href="https://www.census.gov/programs-surveys/cbp.html">Census Bureau County Business Patterns</a>: plants by number of employees.</li>
         <li><a href="https://www.census.gov/geographies/reference-files/time-series/demo/metro-micro/delineation-files.html">Census Bureau metro area definitions</a> (July 2023).</li>
         <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: county and state outlines from the Census Bureau.</li>
+        <li><a href="https://fred.stlouisfed.org/series/CIVPART">BLS labor force participation</a> via FRED: U.S. series <code>CIVPART</code> and state LAUS series <code>LBSSA</code> plus the state FIPS code. Seasonally adjusted.</li>
+        <li><a href="https://atlaspolicy.com/transportation-electrification-in-the-southeast-2025/">Atlas Public Policy and the Southern Alliance for Clean Energy, Transportation Electrification in the Southeast (2025)</a>: announced EV supply-chain investment and jobs through June 30, 2025.</li>
+        <li><a href="https://atlaspolicy.com/wp-content/uploads/2026/03/SACE-One-Pager-Alabama-EOY-2025.pdf">Alabama end-of-2025 one-pager</a> from the same project: rank, anticipated jobs and investment through December 31, 2025.</li>
+        <li><a href="https://www.bea.gov/data/gdp/gdp-state">Bureau of Economic Analysis</a> and <a href="https://www.usaspending.gov/">USAspending.gov</a>: manufacturing's share of GDP, and federal manufacturing-contract obligations, in the scorecard note.</li>
       </ul>
       <p id="notes"></p>
     </div>
@@ -274,6 +317,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script src="categories.js"></script>
+<script src="region.js"></script>
 <script>
   const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
   const PEERS = [
@@ -282,6 +326,8 @@
     { id: '13', name: 'Georgia', color: '#BA0C2F', text: '#fff' },
     { id: '47', name: 'Tennessee', color: '#FF8200', text: '#141414' },
     { id: '45', name: 'South Carolina', color: '#522D80', text: '#fff' },
+    { id: '37', name: 'North Carolina', color: '#4B9CD3', text: '#141414' },
+    { id: '21', name: 'Kentucky', color: '#0033A0', text: '#fff' },
     { id: '28', name: 'Mississippi', color: '#14213D', text: '#fff' }
   ];
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
@@ -297,7 +343,7 @@
     2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
   };
   const W = 960;
-  const ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '28': 'MS' };
+  const ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '37': 'NC', '21': 'KY', '28': 'MS' };
   const OUTSIDE = '#EFEFEB';
   const LEVEL_THRESH = {
     state: { e: [2000, 15000, 40000], n: [25, 150, 400], p: [1000, 5000, 10000] },
@@ -369,8 +415,8 @@
 
   function endPoint(arr) {
     if (!arr) return -1;
-    if (arr[endIdx] != null) return endIdx;
-    return arr[endIdx - 1] != null ? endIdx - 1 : -1;
+    for (let i = endIdx; i >= Math.max(0, endIdx - 2); i -= 1) if (arr[i] != null) return i;
+    return -1;
   }
 
   // Metros and counties compare 3-year averages at each end, which smooths out one-year swings at a
@@ -524,7 +570,7 @@
     const regionQ = PEERS.map(p => quarter.areas[p.id]).filter(Boolean);
     const places = [
       ...PEERS.map(p => ({ id: p.id, name: p.name, s: states[p.id].sel['all|all'], sizes: plants.states[p.id].all, q: quarter.areas[p.id], focus: p.id === '01' })),
-      { id: 'SE', name: 'Five states together', s: region, sizes: regionPlants[0].map((v, i) => d3.sum(regionPlants, r => r[i])), q: regionQ.length === PEERS.length ? regionQ[0].map((v, i) => d3.sum(regionQ, r => r[i])) : null, total: true },
+      { id: 'SE', name: 'These states together', s: region, sizes: regionPlants[0].map((v, i) => d3.sum(regionPlants, r => r[i])), q: regionQ.length === PEERS.length ? regionQ[0].map((v, i) => d3.sum(regionQ, r => r[i])) : null, total: true },
       { id: 'US', name: 'United States', s: national.sel['all|all'], sizes: null, q: quarter.areas.US, total: true }
     ];
     return places.map(r => {
@@ -581,8 +627,8 @@
     document.getElementById('rank-lede').textContent =
       `Change in ${word} from ${state.start} to ${end}. ` +
       (byPct[0] === al
-        ? `Alabama did best of the five (${fmtPct(al.pct)}); ${byPct[1].name} was next (${fmtPct(byPct[1].pct)}). `
-        : `${byPct[0].name} did best (${fmtPct(byPct[0].pct)}); Alabama ranks ${byPct.indexOf(al) + 1} of 5 (${fmtPct(al.pct)}). `) +
+        ? `Alabama did best of these ${PEERS.length} (${fmtPct(al.pct)}); ${byPct[1].name} was next (${fmtPct(byPct[1].pct)}). `
+        : `${byPct[0].name} did best (${fmtPct(byPct[0].pct)}); Alabama ranks ${byPct.indexOf(al) + 1} of ${PEERS.length} (${fmtPct(al.pct)}). `) +
       'Click a column to sort.';
     document.getElementById('rank-note').textContent =
       `"Per year" is the compound yearly growth rate, which compares fairly across periods of different lengths. "vs U.S." is the state's percent change minus the nation's, in percentage points. ` +
@@ -877,7 +923,7 @@
     const { st, metro, county } = state.pick;
     const option = (v, label) => `<option value="${v}">${label}</option>`;
     const stSel = document.getElementById('pick-state');
-    stSel.innerHTML = option('', 'All five states') + PEERS.map(p => option('S' + p.id, p.name)).join('');
+    stSel.innerHTML = option('', 'All seven states') + PEERS.map(p => option('S' + p.id, p.name)).join('');
     stSel.value = st || '';
     const metroIds = Object.keys(metros).filter(m => !st || metros[m].states.includes(st.slice(1))).sort((a, b) => names[a].localeCompare(names[b]));
     const mSel = document.getElementById('pick-metro');
@@ -941,7 +987,7 @@
     let note = '';
     const end = years[endIdx];
     const get = kind === 'region' ? getterFor('SE') : kind === 'state' ? getterFor(id.slice(1)) : null;
-    const name = id ? names[id] : 'the five states';
+    const name = id ? names[id] : 'these states';
     if (get && state.measure === 'e') {
       const ss = shiftShare(get);
       if (ss) {
@@ -974,10 +1020,10 @@
     const arr = (series(id) || {})[state.measure];
     const end = years[endIdx];
     const ei = endPoint(arr);
-    document.getElementById('p-name').textContent = id ? names[id] : 'Five states together';
+    document.getElementById('p-name').textContent = id ? names[id] : 'These states together';
     const { st, metro, county } = state.pick;
     const crumbs = [];
-    if (id) crumbs.push('<button type="button" data-crumb="">All five states</button>');
+    if (id) crumbs.push('<button type="button" data-crumb="">All seven states</button>');
     if (st && (metro || county)) crumbs.push(`<button type="button" data-crumb="st">${names[st]}</button>`);
     if (metro && county) crumbs.push(`<button type="button" data-crumb="metro">${names[metro]}</button>`);
     document.getElementById('p-crumbs').innerHTML = crumbs.join(' › ');
@@ -1017,11 +1063,11 @@
       `<li><button type="button" data-id="${r.id}">${r.name}</button><span class="${toneClass(r.v)}">${fmtShort(r.v, 'chg')}</span></li>`).join('');
     const notes = [];
     if (kind === 'county' && metroOf[id]) notes.push(`Part of the ${names[metroOf[id]].replace(/ metro.*/, '')} metro area.`);
-    if (kind === 'metro' && metros[id].partial) notes.push('This metro area reaches beyond the five states; figures cover only its counties in them.');
+    if (kind === 'metro' && metros[id].partial) notes.push('This metro area reaches beyond these states; figures cover only its counties in them.');
     if (sizes && sizes[4]) notes.push(`Census withholds the size of ${sizes[4]} plant${sizes[4] > 1 ? 's' : ''} here.`);
     document.getElementById('p-note').textContent = notes.join(' ');
     renderExtra(id);
-    drawCalc(id, id ? names[id] : 'the five states together', series(id));
+    drawCalc(id, id ? names[id] : 'these states together', series(id));
   }
 
   function drawSpark(arr) {
@@ -1160,7 +1206,7 @@
     const faster = rows.filter(([, all]) => rate(all, periods[1]) > rate(all, periods[0])).map(r => r[0]).filter(n => n !== 'United States');
     document.getElementById('policy-lede').textContent =
       `Yearly growth in factory jobs before and after the federal CHIPS Act and Inflation Reduction Act (August 2022), with 2021 as the dividing year. ` +
-      `${faster.length} of 5 states grew faster after 2021. "Strategic industries" means the Strategic tech & defense category: semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices.`;
+      `${faster.length} of ${PEERS.length} states grew faster after 2021. "Strategic industries" means the Strategic tech & defense category: semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices.`;
   }
 
   function setPressed(groupId, value) {
@@ -1333,8 +1379,12 @@
     d3.json('data/counties/all--all.json'),
     d3.json('data/plants.json'),
     d3.json('data/quarter.json'),
-    d3.json('data/metros.json')
-  ]).then(([topo, m, nat, sts, cty, pl, qt, mets]) => {
+    d3.json('data/metros.json'),
+    d3.json('data/gdp.json'),
+    d3.json('data/contracts.json'),
+    d3.json('data/announcements.json'),
+    d3.json('data/context.json')
+  ]).then(([topo, m, nat, sts, cty, pl, qt, mets, gdp, contracts, ann, ctx]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -1345,13 +1395,15 @@
     years = meta.years;
     endIdx = years.length - 1;
     buildMap(topo, mets);
+    drawRegionBrief({ states, national, years, gdp, contracts, ann, ctx, peers: PEERS });
     buildControls();
     drawPolicy();
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, from BLS. Establishments are locations with employees, from car plants to small shops. Pay is shown in ${meta.payDollarsYear} dollars. ` +
       `Metro and county changes compare 3-year averages at each end; states use single years. Factory jobs leave out temp workers placed by staffing agencies, who BLS counts in services; the region's auto plants use many, so factory employment is understated. ` +
-      `"Five states together" adds up Alabama, Georgia, Tennessee, South Carolina and Mississippi. Industry groups are our own grouping of BLS industry codes. ` +
-      `Metro areas follow the Census Bureau's July 2023 definitions and add up their counties in the five states; a year is left blank if any of those counties is withheld. ` +
+      `"These states together" adds up ${PEERS.map(p => p.name).join(', ')}. Industry groups are our own grouping of BLS industry codes. ` +
+      `Metro areas follow the Census Bureau's July 2023 definitions and add up their counties in these states; a year is left blank if any of those counties is withheld. ` +
+      `${meta.plantsNote || ''} ` +
       `When BLS withholds part of a statewide industry figure, we split the withheld total among those industries by their number of plants; figures where this is 10% or more are marked ~. ` +
       `Data updated ${meta.built}.`;
     readHash();
@@ -1362,5 +1414,6 @@
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>

@@ -27,6 +27,7 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 
 .site-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.6rem; padding: 2rem 3.2rem; border-bottom: 1px solid var(--line); }
 .brand { font-family: var(--serif); font-style: italic; font-size: 2.6rem; text-decoration: none; }
+.nav-toggle { display: none; }
 .site-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; font-size: 1.5rem; }
 .site-nav a, .site-nav span { padding: 1.2rem 1.4rem; text-decoration: none; }
 .site-nav [aria-current] { font-weight: 600; border-bottom: 2px solid var(--ink); }
@@ -167,6 +168,26 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .chart .readout { font-size: 1.4rem; margin: 0.6rem 0 0.4rem; min-height: 2.1rem; }
 .chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
 .chart text { font-family: var(--sans); font-size: 10px; fill: var(--soft); }
+.chart-wide { grid-column: 1 / -1; }
+.chart-wide h3 { font-family: var(--serif); font-weight: 500; font-size: 2.4rem; }
+.key { display: flex; flex-wrap: wrap; gap: 1.6rem; font-size: 1.2rem; color: var(--soft); margin-bottom: 0.8rem; }
+.key span { display: inline-flex; align-items: center; gap: 0.6rem; }
+.key i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid; }
+
+.hbar { display: grid; gap: 0.15rem; }
+.hbar .row { display: grid; grid-template-columns: 13rem minmax(0, 1fr) 7.2rem; gap: 0.8rem; align-items: center; padding: 0.28rem 0; }
+.hbar .track { background: #E6E6E1; height: 1.1rem; border-radius: 2px; }
+.hbar .track div { height: 100%; border-radius: 2px; }
+.hbar .name, .hbar .val { font-size: 1.3rem; }
+.hbar .row.is-focus .name { font-weight: 600; }
+.score-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin-top: 1.6rem; }
+.score-grid h3 { margin: 0 0 0.8rem; font-size: 1.5rem; font-weight: 600; }
+.score-copy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.4rem; }
+.score-copy h3 { margin: 0 0 0.6rem; font-size: 1.4rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+.score-copy ul { margin: 0; padding-left: 1.6rem; display: grid; gap: 0.7rem; font-size: 1.4rem; color: var(--soft); }
+.site-footer { max-width: 1376px; margin: 0 auto; padding: 2.4rem 3.2rem 4.8rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.8rem 2.4rem; font-size: 1.3rem; color: var(--soft); }
+.site-footer p { margin: 0; max-width: 72rem; }
+.site-footer a { color: var(--ink); }
 
 .calc { border-top: 1px solid var(--line-soft); padding-top: 1rem; font-size: 1.35rem; color: var(--soft); }
 .calc summary { cursor: pointer; list-style: none; color: var(--ink); }
@@ -216,12 +237,19 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
   .guide-grid { grid-template-columns: minmax(0, 1fr); }
   .explore { grid-template-columns: minmax(0, 1fr); }
   .charts { grid-template-columns: minmax(0, 1fr); }
+  .score-grid, .score-copy { grid-template-columns: minmax(0, 1fr); }
   .intro h1 { font-size: 3.6rem; }
+  .nav-toggle { display: inline-flex; align-items: center; margin-left: auto; min-height: 4rem; padding: 0 1.4rem; border: 1px solid var(--ink); border-radius: 0.8rem; background: #fff; cursor: pointer; font-size: 1.4rem; }
+  .site-nav { display: none; flex-basis: 100%; flex-direction: column; gap: 0; }
+  .site-header.nav-open .site-nav { display: flex; }
+  .site-nav a, .site-nav span { border-bottom: 1px solid var(--line-soft); }
 }
 
 @media (max-width: 600px) {
   .wrap { padding: 0 1.6rem; }
   .site-header { padding: 1.4rem 1.6rem; }
+  .site-footer { padding: 2rem 1.6rem 4rem; }
+  .hbar .row { grid-template-columns: 9.6rem minmax(0, 1fr) 6.4rem; }
   .site-nav a, .site-nav span { padding: 1rem 0.8rem; }
   .intro h1 { font-size: 3rem; }
   .control-label { min-width: 0; width: 100%; }

@@ -9,10 +9,8 @@ out manufacturing (NAICS 31-33). Years whose parsed projects don't match the pri
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
-
-import pdfplumber
-import requests
 
 ROOT = Path(__file__).resolve().parent
 RAW = ROOT / 'raw' / 'alcommerce'
@@ -37,16 +35,79 @@ COUNTIES = {
 }
 ALIASES = {'AUTUAGA': 'AUTAUGA', 'ST CLAIR': 'ST. CLAIR', 'SAINT CLAIR': 'ST. CLAIR', 'DE KALB': 'DEKALB'}
 
+# A project line with this many "jobs" is an investment figure that the parser put in the wrong column.
+JOB_CAP = 50_000
 TYPE = r'(New|Expansion|Expanding|N|E)'
-PROJECT = re.compile(TYPE + r'\s+(.*?)\s(\d{3,6}),?\s+(.*?)\s*(—|-|[\d,]+)?\s*(—|-|\$[\d,]+)?\s*$')
+# The 2016–2019 PDFs sometimes put a space after the dollar sign ("620 $ 361,000,000").
+PROJECT = re.compile(TYPE + r'\s+(.*?)\s(\d{3,6}),?\s+(.*?)\s*(—|-|[\d,]+)?\s*(—|-|\$\s*[\d,]+)?\s*$')
 # A project whose NAICS code wrapped onto the line above.
-BARE = re.compile(TYPE + r'\s+(.*?)\s+(—|-|[\d,]+)\s+(—|-|\$[\d,]+)\s*$')
+BARE = re.compile(TYPE + r'\s+(.*?)\s+(—|-|[\d,]+)\s+(—|-|\$\s*[\d,]+)\s*$')
 LEADING_NAICS = re.compile(r'^(\d{3,6}),?\s')
 TOTALS = re.compile(r'^TOTALS? FOR (.+?)\s*\((\d+) PROJECTS?\)\s*(—|[\d,]+)?\s*(—|\$[\d,]+)?\s*$')
 
 
 def number(text):
     return int(re.sub(r'[^\d]', '', text)) if text and re.search(r'\d', text) else 0
+
+
+def sanitize_project(project):
+    """Put investment dollars back in the investment field when a report line was misread.
+
+    On a few 2016–2019 lines the dollar amount was parsed as jobs and the real job count
+    stayed at the end of the activity text (for example "Playground Equipment 29" with
+    jobs of 4,000,000). Jobs at or above JOB_CAP are treated as investment.
+    """
+    jobs = int(project.get('jobs') or 0)
+    invest = int(project.get('invest') or 0)
+    activity = project.get('activity') or ''
+    if jobs >= JOB_CAP:
+        tail = re.search(r'(\d{1,5})\s*\$?\s*$', activity)
+        real_jobs = int(tail.group(1)) if tail and int(tail.group(1)) < JOB_CAP else 0
+        if invest == 0:
+            invest = jobs
+        jobs = real_jobs
+        if tail:
+            activity = re.sub(r'\s+\d{1,5}\s*\$?\s*$', '', activity).strip()
+    project['jobs'] = jobs
+    project['invest'] = invest
+    project['activity'] = activity
+    return project
+
+
+def validate_projects(projects):
+    """Fail the build if any row still has an implausible job count."""
+    bad = [p for p in projects if not isinstance(p.get('jobs'), int) or p['jobs'] < 0 or p['jobs'] >= JOB_CAP]
+    if bad:
+        sample = '; '.join(f"{p.get('year')} {p.get('company')}: {p.get('jobs')} jobs" for p in bad[:8])
+        raise SystemExit(f'{len(bad)} announcement rows have jobs >= {JOB_CAP:,}: {sample}')
+
+
+def recompute_manufacturing(out):
+    """Rebuild the manufacturing columns from project lines.
+
+    Printed county totals (project count, jobs, investment) stay as published.
+    The manufacturing split is positions 3–5 and has to come from the project lines,
+    so a jobs/investment swap would otherwise inflate those totals.
+    """
+    mfg = defaultdict(lambda: defaultdict(lambda: [0, 0, 0]))
+    for project in out['projects']:
+        if str(project['naics'])[:2] in ('31', '32', '33'):
+            row = mfg[project['county']][str(project['year'])]
+            row[0] += 1
+            row[1] += int(project['jobs'])
+            row[2] += int(project['invest'])
+    for fips, years in out['counties'].items():
+        for year, row in years.items():
+            part = mfg[fips][str(year)]
+            row[3], row[4], row[5] = part
+    state = {str(year): [0, 0, 0, 0, 0, 0] for year in out['years']}
+    for years in out['counties'].values():
+        for year, row in years.items():
+            acc = state.setdefault(str(year), [0, 0, 0, 0, 0, 0])
+            for i in range(6):
+                acc[i] += row[i]
+    out['state'] = state
+    return out
 
 
 def county_of(name):
@@ -56,6 +117,7 @@ def county_of(name):
 
 
 def download(year):
+    import requests
     path = RAW / f'{year}.pdf'
     if not path.exists():
         r = requests.get(URL.format(year=year), headers=HEADERS, timeout=300)
@@ -69,6 +131,7 @@ def download(year):
 
 def parse(path):
     """Projects and printed county totals from the report's county-by-county section."""
+    import pdfplumber
     projects, totals = [], {}
     county = None
     in_counties = False
@@ -117,10 +180,10 @@ def parse(path):
                     if len(words) > n and county_of(' '.join(words[:n])) == county:
                         rest = ' '.join(words[n:])
                         break
-                projects.append({
+                projects.append(sanitize_project({
                     'county': county, 'type': 'new' if kind[0] == 'N' else 'expansion', 'company': rest.strip(),
                     'naics': naics, 'activity': activity.strip(), 'jobs': number(jobs), 'invest': number(invest),
-                })
+                }))
     return projects, totals
 
 
@@ -162,9 +225,24 @@ def main():
         flag = '' if gap < 5 else '  <-- check parser'
         print(f'{year}: {len(projects)} projects, ${state[2] / 1e9:.1f}B announced, ${state[5] / 1e9:.1f}B manufacturing; '
               f'parsed vs printed totals differ {gap:.1f}%{flag}')
+    validate_projects(out['projects'])
     OUT.write_text(json.dumps(out, separators=(',', ':')))
     print(f'Wrote {len(out["years"])} years to {OUT}')
 
 
+def repair_file(path=OUT):
+    """Correct jobs/investment swaps already written to announcements.json and rebuild totals."""
+    out = json.loads(Path(path).read_text())
+    for project in out['projects']:
+        sanitize_project(project)
+    recompute_manufacturing(out)
+    validate_projects(out['projects'])
+    Path(path).write_text(json.dumps(out, separators=(',', ':')))
+    print(f'Repaired {len(out["projects"])} projects in {path}')
+
+
 if __name__ == '__main__':
-    sys.exit(main())
+    if len(sys.argv) > 1 and sys.argv[1] == '--repair':
+        repair_file()
+    else:
+        sys.exit(main())

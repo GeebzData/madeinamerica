@@ -28,7 +28,7 @@
 <main>
   <section class="wrap intro">
     <h1>Where American manufacturing <em>went</em>, and where it's coming back</h1>
-    <p>Pick a category or an industry group, and a starting year. Each place is shaded by how its factory jobs changed from that year to today. Hover for the numbers; click to see what it makes and what it lost.</p>
+    <p id="hero-lede">The buildout is real. The employment recovery is partial and concentrated. Factory construction surged after 2021, peaked in late 2024 once building costs are taken out, and has cooled. The map starts in 2019. Use the year slider for the longer history back to 1990.</p>
   </section>
 
   <section class="wrap controls" aria-label="Filters">
@@ -138,12 +138,12 @@
     <div class="card">
       <div class="since">
         <span class="eyebrow">Change since</span>
-        <strong id="since-year">2000</strong>
+        <strong id="since-year">2019</strong>
         <small id="since-vs"></small>
       </div>
       <div class="slider">
         <label for="start">Drag to pick a starting year</label>
-        <input type="range" id="start" min="1990" max="2024" step="1" value="2000">
+        <input type="range" id="start" min="1990" max="2024" step="1" value="2019">
         <div class="ticks" id="ticks"></div>
       </div>
       <div class="picks">
@@ -174,9 +174,20 @@
       </div>
       <div class="card chart">
         <h3>Factory construction</h3>
-        <div class="src">Construction spending, $ billions a year · Census</div>
+        <div class="src">As reported, not adjusted for inflation · $ billions a year · Census</div>
         <p class="readout" id="r-construction"></p>
-        <svg id="c-construction" role="img" aria-label="Manufacturing construction spending since 2002"></svg>
+        <svg id="c-construction" role="img" aria-label="Manufacturing construction spending since 2002, not adjusted for inflation"></svg>
+      </div>
+      <div class="card chart chart-wide">
+        <h3>Construction and jobs together</h3>
+        <div class="src">Left axis: factory construction adjusted for building costs, $ billions a year. Right axis: factory jobs, millions. · Census and BLS</div>
+        <div class="key">
+          <span><i style="border-color:#355E3B"></i>Construction, inflation-adjusted</span>
+          <span><i style="border-color:#141414"></i>Factory jobs</span>
+        </div>
+        <p class="readout" id="dual-readout"></p>
+        <svg id="dual" role="img" aria-label="Inflation-adjusted manufacturing construction and manufacturing employment since 2015"></svg>
+        <p class="panel-note" id="dual-note"></p>
       </div>
     </div>
   </section>
@@ -196,8 +207,9 @@
         <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: jobs, establishments (plants and shops) and pay by county, state and industry, private sector, annual averages.</li>
         <li><a href="https://fred.stlouisfed.org/series/MANEMP">BLS Current Employment Statistics</a>: national manufacturing jobs since 1979 (via FRED).</li>
         <li><a href="https://fred.stlouisfed.org/series/IPMAN">Federal Reserve G.17 Industrial Production</a>: manufacturing output (via FRED).</li>
-        <li><a href="https://fred.stlouisfed.org/series/TLMFGCONS">Census Construction Spending</a>: manufacturing construction (via FRED).</li>
-        <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">BLS Consumer Price Index</a>: used to put pay in today's dollars.</li>
+        <li><a href="https://fred.stlouisfed.org/series/TLMFGCONS">Census Construction Spending</a> (FRED <code>TLMFGCONS</code>): manufacturing construction, as reported. The combined chart uses the inflation-adjusted series from the Reindustrialization page.</li>
+        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a> (FRED <code>PCU236211236211</code>): the building-cost deflator. Pay uses the Consumer Price Index instead.</li>
+        <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">BLS Consumer Price Index</a> (FRED <code>CPIAUCSL</code>): used to put pay in today's dollars.</li>
         <li><a href="https://www.census.gov/programs-surveys/cbp.html">Census Bureau County Business Patterns</a>: plants by number of employees.</li>
         <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: county and state outlines from the Census Bureau.</li>
       </ul>
@@ -221,7 +233,7 @@
   const MEASURES = { e: 'Jobs', n: 'Establishments', p: 'Average pay' };
   const UNITS = { e: 'jobs', n: 'establishments', p: '' };
   const SMALL_BASE = 500;
-  const PICKS = [[1990, '1990'], [2000, '2000 · before the China shock'], [2010, '2010 · the low'], [2021, '2021 · before CHIPS']];
+  const PICKS = [[1990, '1990'], [2000, '2000 · before the China shock'], [2010, '2010 · the low'], [2019, '2019 · before COVID'], [2021, '2021 · before CHIPS']];
   // Start years at or near the bottom of a downturn, and a fairer year to compare with.
   const LOWS = {
     1991: ['the early-1990s recession', 1990], 1992: ['the early-1990s recession', 1990],
@@ -239,7 +251,7 @@
   };
   const CALLOUTS = ['50', '33', '25', '44', '09', '34', '10', '24', '11'];
 
-  const state = { story: 'all', group: 'all', measure: 'e', mode: 'chg', geo: 'state', start: 2000, sel: { kind: 'nation', id: 'US' }, hover: null };
+  const state = { story: 'all', group: 'all', measure: 'e', mode: 'chg', geo: 'state', start: 2019, sel: { kind: 'nation', id: 'US' }, hover: null };
   let meta, national, states, plants, years, endIdx;
   const countyData = {};
   const countyLoads = {};
@@ -331,11 +343,27 @@
     return countyData[key][id] || (countyData['all|all'][id] ? zero : undefined);
   }
 
-  // When the latest year is withheld, fall back one year rather than drop the place.
+  // When the latest year is withheld, use the newest published year in the last three rather than dropping the place.
   function endPoint(arr) {
     if (!arr) return -1;
-    if (arr[endIdx] != null) return endIdx;
-    return arr[endIdx - 1] != null ? endIdx - 1 : -1;
+    for (let i = endIdx; i >= Math.max(0, endIdx - 2); i -= 1) if (arr[i] != null) return i;
+    return -1;
+  }
+
+  function lagSentence() {
+    const groups = new Map();
+    for (const [id, name] of Object.entries(names.state)) {
+      const e = states[id] && states[id].sel['all|all'] && states[id].sel['all|all'].e;
+      if (!e || e[endIdx] != null) continue;
+      let y = null;
+      for (let i = endIdx - 1; i >= 0; i -= 1) if (e[i] != null) { y = years[i]; break; }
+      if (y == null) continue;
+      if (!groups.has(y)) groups.set(y, []);
+      groups.get(y).push(name);
+    }
+    if (!groups.size) return '';
+    const bits = [...groups.entries()].sort((a, b) => b[0] - a[0]).map(([y, list]) => `${list.sort().join(', ')} (${y})`);
+    return ` Some places have no published ${years[endIdx]} manufacturing-employment figure. The map uses the latest year BLS released, and the hover card names it: ${bits.join('; ')}. Those values are not estimated.`;
   }
 
   // Counties compare 3-year averages at each end, which smooths out one-year swings at a single
@@ -933,10 +961,69 @@
     const lastCon = con.values.length - 1;
     const pre = con.years.indexOf(2021);
     const multiple = pre >= 0 ? (con.values[lastCon] / con.values[pre]).toFixed(1) + '×' : '';
+    const y2024 = con.years.indexOf(2024);
+    const cooled = y2024 >= 0 && con.years[lastCon] > 2024
+      ? ` Annual spending was $${Math.round(con.values[y2024])}B in 2024 and $${Math.round(con.values[lastCon])}B in ${con.years[lastCon]}.`
+      : '';
     lineChart('c-construction', 'r-construction', con, {
       fmt: v => '$' + Math.round(v) + 'B', zero: true, color: '#355E3B',
-      note: `$${Math.round(con.values[lastCon])}B in ${con.years[lastCon]}${multiple ? `, ${multiple} the 2021 level` : ''}`
+      note: `$${Math.round(con.values[lastCon])}B in ${con.years[lastCon]}, as reported, not adjusted for inflation${multiple ? `. That is ${multiple} the 2021 level` : ''}.${cooled}`
     });
+  }
+
+  function drawDual(reind, ctx) {
+    const W = 960, H = 280, M = { t: 16, r: 48, b: 28, l: 46 };
+    const el = d3.select('#dual').attr('viewBox', `0 0 ${W} ${H}`);
+    const parse = d3.timeParse('%Y-%m');
+    const fmt = d3.timeFormat('%b %Y');
+    const start = parse('2015-01');
+    const dates = reind.monthly.dates.map(parse);
+    const jobs = new Map(ctx.jobsMonthly.dates.map((d, i) => [d, ctx.jobsMonthly.thousands[i] / 1000]));
+    const rows = reind.monthly.dates.map((d, i) => ({ date: dates[i], key: d, real: reind.monthly.real[i], jobs: jobs.get(d) })).filter(d => d.date >= start && d.jobs != null);
+    const x = d3.scaleTime().domain(d3.extent(rows, d => d.date)).range([M.l, W - M.r]);
+    const yL = d3.scaleLinear().domain([0, d3.max(rows, d => d.real) * 1.08]).nice().range([H - M.b, M.t]);
+    const yR = d3.scaleLinear().domain([d3.min(rows, d => d.jobs) * 0.96, d3.max(rows, d => d.jobs) * 1.02]).nice().range([H - M.b, M.t]);
+    el.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(6).tickSize(0).tickPadding(8)).call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    el.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(yL).ticks(4).tickSize(-(W - M.l - M.r)).tickFormat(v => '$' + v)).call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    el.append('g').attr('transform', `translate(${W - M.r},0)`).call(d3.axisRight(yR).ticks(4).tickFormat(v => v)).call(g => g.select('.domain').remove());
+    const line = (get, y) => d3.line().x(d => x(d.date)).y(d => y(get(d)));
+    el.append('path').attr('d', line(d => d.real, yL)(rows)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.4);
+    el.append('path').attr('d', line(d => d.jobs, yR)(rows)).attr('fill', 'none').attr('stroke', '#141414').attr('stroke-width', 2);
+    const mark = (key, label, anchor) => {
+      const d = rows.find(r => r.key === key);
+      if (!d) return;
+      el.append('line').attr('x1', x(d.date)).attr('x2', x(d.date)).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('stroke-dasharray', '3 3');
+      el.append('text').attr('x', x(d.date) + (anchor === 'end' ? -4 : 4)).attr('y', M.t + 12).attr('text-anchor', anchor || 'start').text(label);
+    };
+    const peak = rows.reduce((best, d) => (d.real > best.real ? d : best), rows[0]);
+    const nomPeak = reind.monthly.nominal.reduce((best, v, i) => (v > reind.monthly.nominal[best] ? i : best), 0);
+    mark('2022-08', 'CHIPS & IRA', 'start');
+    mark(peak.key, 'Real peak', 'end');
+    const last = rows[rows.length - 1];
+    const e = national.sel['all|all'].e;
+    const n = national.sel['all|all'].n;
+    const s = national.sel['strategic|all'].e;
+    const i19 = years.indexOf(2019);
+    const fmtJobs = v => `${v > 0 ? '+' : '−'}${d3.format(',')(Math.abs(Math.round(v)))}`;
+    document.getElementById('dual-note').textContent =
+      `Inflation-adjusted construction peaked at $${peak.real.toFixed(1)} billion a year in ${fmt(peak.date)}. The unadjusted series peaked at $${reind.monthly.nominal[nomPeak].toFixed(1)} billion in ${fmt(parse(reind.monthly.dates[nomPeak]))}. ` +
+      `Latest inflation-adjusted point: $${last.real.toFixed(1)} billion in ${fmt(last.date)}, with ${last.jobs.toFixed(2)} million factory jobs (CES, seasonally adjusted). ` +
+      `Since 2019, BLS QCEW factory jobs are ${fmtJobs(e[endIdx] - e[i19])}, strategic-industry jobs ${fmtJobs(s[endIdx] - s[i19])}, and establishments ${fmtJobs(n[endIdx] - n[i19])}. ` +
+      'More establishments with fewer jobs can mean smaller shops, hiring that has not caught up, or payroll split across more locations.';
+    const readout = document.getElementById('dual-readout');
+    const rest = () => { readout.textContent = `${fmt(last.date)}: $${last.real.toFixed(1)}B construction (adjusted), ${last.jobs.toFixed(2)} million jobs`; };
+    el.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const when = x.invert(d3.pointer(event)[0]);
+        const d = rows[d3.bisectCenter(rows.map(r => r.date), when)];
+        readout.textContent = `${fmt(d.date)}: $${d.real.toFixed(1)}B construction (adjusted), ${d.jobs.toFixed(2)} million jobs`;
+      })
+      .on('pointerleave', rest);
+    rest();
+    const hero = document.getElementById('hero-lede');
+    hero.textContent =
+      `The buildout is real; the employment recovery is partial and concentrated. Since 2019, manufacturing establishments are ${fmtJobs(n[endIdx] - n[i19])} while all factory jobs are ${fmtJobs(e[endIdx] - e[i19])} and strategic industries are ${fmtJobs(s[endIdx] - s[i19])}. ` +
+      `Construction adjusted for building costs peaked in ${fmt(peak.date)} and was $${last.real.toFixed(0)} billion a year by ${fmt(last.date)}. The map starts in 2019. The year slider goes back to 1990. Figures: BLS and Census.`;
   }
 
   function setPressed(groupId, value) {
@@ -1171,8 +1258,10 @@
     d3.json('data/national.json'),
     d3.json('data/states.json'),
     d3.json('data/plants.json'),
-    loadCounties('all|all')
-  ]).then(([topo, m, nat, sts, pl]) => {
+    loadCounties('all|all'),
+    d3.json('data/reindustrialization.json'),
+    d3.json('data/context.json')
+  ]).then(([topo, m, nat, sts, pl, , reind, ctx]) => {
     meta = m;
     plants = pl;
     renderCategoryGuide(meta, document.getElementById('guide'));
@@ -1184,16 +1273,17 @@
     buildMap(topo);
     buildControls();
     buildCharts();
+    drawDual(reind, ctx);
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
-      `Establishments are locations with employees, from car plants to small shops; plant sizes come from Census County Business Patterns, ${plants.year}. Pay is shown in ${meta.payDollarsYear} dollars. ` +
+      `Establishments are locations with employees, from car plants to small shops; plant-size bands are Census County Business Patterns for ${plants.year}. ${meta.plantsNote || ''} Pay is shown in ${meta.payDollarsYear} dollars. ` +
       `County changes compare 3-year averages at each end. Factory jobs leave out temp workers placed by staffing agencies, who BLS counts in services; auto plants use many, so factory employment is understated and its decline somewhat overstated. ` +
       `Categories and industry groups are our own grouping of BLS industry codes; each industry belongs to exactly one group and one category, so they add up to all of manufacturing. See "What each category includes" above. ` +
       `Ammunition and ordnance sit inside Metal fabrication in BLS data, and government-owned plants such as Navy shipyards are not included. ` +
       `When BLS withholds part of a state's industry figure, we know the withheld total exactly (the published subsector total minus its published parts) and split it among the withheld industries by their number of plants; figures where this is 10% or more are marked ~. ` +
       `BLS withholds some county and industry figures to protect individual employers; those show as hatched. ` +
       `Connecticut replaced its counties with planning regions in recent data, so some Connecticut county figures stop early. ` +
-      `Data updated ${meta.built}.`;
+      `Data updated ${meta.built}.` + lagSentence();
     readHash();
     document.getElementById('loading').remove();
     select(state.sel.kind, state.sel.id);
@@ -1203,5 +1293,6 @@
     console.error(err);
   });
 </script>
+<script src="chrome.js"></script>
 </body>
 </html>
