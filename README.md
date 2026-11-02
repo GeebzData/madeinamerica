@@ -29,7 +29,7 @@ site/
   alabama.html               Alabama counties and metro areas, 5- and 10-year trends, incentives
   southeast.html             Alabama, Georgia, Tennessee, South Carolina and Mississippi compared, state → metro → county
   money.html                 Alabama in dollars: GDP, payroll, announced investment, federal contracts
-  commerce.html              State recruiting: each Southeast commerce agency's own projects, jobs and investment, 2021-2025
+  commerce.html              Commerce Dept: each Southeast commerce agency's own projects, jobs and investment, 2021-2025
   styles.css                 Shared styles
   data/                      Generated JSON
 ```
@@ -136,7 +136,7 @@ category includes" section on each page from `meta.json`, so it always matches t
 
 `site/data/incentives.json` is hand-compiled: one entry per major state/local package with a source link. Update it by hand when big deals are announced or change.
 
-## State recruiting (commerce.html)
+## Commerce Dept (commerce.html)
 
 Seven states' recruiting results, each as its own economic development agency published them: projects, committed jobs and promised investment, 2021–2025, scaled by Census population. Alabama is built from `announcements.json`; the other six are hand-compiled in `site/data/commerce.json` with a source link for every state-year.
 
