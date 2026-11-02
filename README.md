@@ -16,6 +16,11 @@ pipeline/
   fetch_bea.py    BEA GDP by state and county, manufacturing (writes site/data/gdp.json)
   fetch_usaspending.py   Federal contracts with manufacturers, by state and Alabama county (writes site/data/contracts.json)
   fetch_alcommerce.py    Alabama Commerce New & Expanding Industry reports, parsed from PDF (writes site/data/announcements.json)
+  fetch_industries.py    BLS QCEW by area: every sector and detailed manufacturing industry, U.S. + 5 Southeast states, with location quotients (writes site/data/industries.json)
+  fetch_conditions.py    EIA industrial power prices, Census population, BLS union membership, all states (writes site/data/conditions.json)
+  fetch_federal.py       USAspending economic-development grants for a fixed program list, 5 Southeast states (writes site/data/federal.json)
+  fetch_sba.py           SBA 7(a)/504 loans, totals only by state, year, sector and industry (writes site/data/sba.json)
+  fetch_formation.py     Census business applications and Business Dynamics startups/survival (writes site/data/formation.json)
   export.py       Warehouse tables -> compact JSON in site/data/
 site/
   index.html                 Explore page
@@ -52,6 +57,11 @@ python3.12 -m venv .venv
 .venv/bin/python pipeline/fetch_bea.py
 .venv/bin/python pipeline/fetch_usaspending.py
 .venv/bin/python pipeline/fetch_alcommerce.py   # prints how well each year's parsed projects match the report totals
+.venv/bin/python pipeline/fetch_industries.py
+.venv/bin/python pipeline/fetch_conditions.py
+.venv/bin/python pipeline/fetch_federal.py
+.venv/bin/python pipeline/fetch_sba.py         # first run downloads ~500 MB of SBA loan files; borrower rows never leave pipeline/raw/
+.venv/bin/python pipeline/fetch_formation.py
 ```
 
 No API keys are needed.
@@ -113,3 +123,17 @@ category includes" section on each page from `meta.json`, so it always matches t
 - Caveats shown on the site: temp workers are counted in services, establishments are not new plants,
   CPI-U may slightly overstate inflation, announced investment is not money spent, and federal contract
   obligations are commitments for prime contracts only.
+
+## Who's growing (Alabama and Southeast pages)
+
+`site/momentum.js` draws four sections on both pages (the Southeast page adds a state picker):
+
+- **Best-positioned industries**: 10-year job change, BLS location quotient, and local edge (job change beyond the same industry's national rate). Leader = 1.5× concentration or more, adding jobs, and 5+ points faster than the nation; Rising = under 1.5×, up 20%+, and 10+ points faster.
+- **Why plants are coming**: power price, factory pay, union rate, population growth and manufacturing concentration, with ranks among the states; Alabama's announced projects by industry.
+- **Public vs private money**: federal development grants (program list in `fetch_federal.py`), federal contracts with manufacturers, major incentive packages, announced private investment (Alabama only) and SBA-backed loans, five years against the five before.
+- **Small business**: business applications, startups, five-year survival and jobs kept by sector, and SBA lending.
+
+`site/data/incentives.json` is hand-compiled: one entry per major state/local package with a source link. Update it by hand when big deals are announced or change.
+
+Waiting on a Census API key: exports by state and industry, and Annual Survey of Manufactures capital spending.
+

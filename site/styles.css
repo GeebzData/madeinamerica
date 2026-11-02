@@ -268,3 +268,49 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .since-range { max-width: 72rem; flex-wrap: nowrap; }
 .since-range input { flex: 1; min-width: 12rem; accent-color: var(--ink); min-height: 3.2rem; }
 .since-range strong { font-family: var(--serif); font-weight: 500; font-size: 2.4rem; min-width: 5rem; }
+
+/* Shared "who's growing" sections (momentum.js) on the Alabama and Southeast pages */
+.mo-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.mo-states { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.mo-sort { display: inline-flex; align-items: center; gap: 0.8rem; font-size: 1.3rem; color: var(--muted); }
+.mo-sort .select { min-height: 3.6rem; color: var(--ink); background-color: #fff; }
+.mo-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.6rem; margin: 0 0 2rem; }
+.mo-cards .insight { border-top: 2px solid var(--ink); padding-top: 1rem; }
+.mo-cards .insight span { display: block; font-size: 1.2rem; color: var(--muted); }
+.mo-cards .insight strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 2.4rem; line-height: 1.2; }
+.mo-cards .insight p { margin: 0.4rem 0 0; font-size: 1.3rem; color: var(--soft); }
+.mo-h3 { margin: 2.4rem 0 0.8rem; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+.mo-sub { margin: -0.2rem 0 1rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
+.mo-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3.2rem; }
+.mo-list { list-style: none; margin: 0; padding: 0; }
+.mo-list li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line-soft); font-size: 1.4rem; }
+.mo-list li:last-child { border-bottom: none; }
+.mo-notes { margin: 0; }
+.mo-notes div { padding: 0.8rem 0; border-bottom: 1px solid var(--line-soft); }
+.mo-notes div:last-child { border-bottom: none; }
+.mo-notes dt { font-weight: 600; font-size: 1.4rem; }
+.mo-notes dd { margin: 0.2rem 0 0; font-size: 1.4rem; color: var(--soft); }
+.data-table td.mo-focus { background: #ECEEE6; font-weight: 600; }
+.data-table tr.mo-group td { padding-top: 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); }
+.mo-indent { padding-left: 1.6rem; color: var(--soft); }
+.mo-deals td:first-child { min-width: 30rem; }
+.mo-deals td small { white-space: normal; }
+.tag.tag-warn { border-color: var(--loss); color: var(--loss); }
+.mo-key { display: flex; flex-wrap: wrap; gap: 1.6rem; font-size: 1.2rem; color: var(--soft); margin-bottom: 0.8rem; }
+.mo-key span { display: inline-flex; align-items: center; gap: 0.6rem; }
+.mo-key i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid; }
+.mo-key i.dash { border-top-style: dashed; }
+#mo-apps { width: 100%; height: auto; display: block; }
+#mo-apps text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+#mo-apps text.end-label { font-size: 12px; font-weight: 600; }
+#mo-more { margin-top: 1rem; }
+
+@media (max-width: 900px) {
+  .mo-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mo-two { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+
+@media (max-width: 600px) {
+  .mo-cards { grid-template-columns: minmax(0, 1fr); }
+  .mo-deals td:first-child { min-width: 22rem; }
+}
