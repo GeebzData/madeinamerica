@@ -31,7 +31,7 @@
       const end = meta.years[meta.years.length - 1];
       const plants = meta.plantsNote ? ` ${meta.plantsNote}` : '';
       document.getElementById('site-built').textContent =
-        `Employment and establishment figures run through ${end}. Data files built ${meta.built}.${plants}`;
+        `Employment and establishment figures run through ${end}; the core BLS files were built ${meta.built}, and each section's sources and dates are listed under Data sources.${plants}`;
     })
     .catch(() => {
       document.getElementById('site-built').textContent = '';

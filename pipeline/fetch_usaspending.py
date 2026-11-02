@@ -36,8 +36,8 @@ def query(fy, geo_layer, extra):
 
 def main():
     today = date.today()
-    # A fiscal year is complete once September is over; allow a month for reporting.
-    last = today.year if today.month >= 11 else today.year - 1
+    # Defense contracts post to USAspending 90 days late, so a fiscal year counts once the January after it ends.
+    last = today.year - 1
     fys = list(range(FIRST_FY, last + 1))
     out = {'fys': fys, 'states': {f: [] for f in STATES.values()}, 'counties': {}}
     for i, fy in enumerate(fys):

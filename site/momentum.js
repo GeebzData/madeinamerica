@@ -34,7 +34,7 @@ function renderMomentum(el, opts) {
       <div class="mo-states" id="mo-state" role="group" aria-label="State">
         ${MO_ORDER.map(f => `<button type="button" class="pill" data-v="${f}" aria-pressed="${f === state.focus}">${MO_STATES[f]}</button>`).join('')}
       </div></div>
-      <p class="lede">The four sections below follow the state you pick: its best-positioned industries, why plants are coming, where the money comes from, and which small businesses are starting and lasting.</p></div></section>` : ''}
+      <p class="lede">The four sections below follow the state you pick: its best-positioned industries, what each state offers a new plant, where the money comes from, and which small businesses are starting and lasting.</p></div></section>` : ''}
     <section class="wrap block" aria-labelledby="mo-best-h"><div class="card">
       <div class="block-head"><h2 id="mo-best-h"></h2>
         <div class="mo-tools">
@@ -213,7 +213,7 @@ function renderMomentum(el, opts) {
       ['Population growth', `${C.pop.years[0]}–${C.pop.years[1]}`, f => pctFmt(popg[f], 1), f => rank(popg, f, false), 'fastest'],
       ['Manufacturing concentration', `share of jobs vs U.S., ${I.years[n]}`, f => (f === 'US' ? '1.0×' : mfg(f)?.lq ? mfg(f).lq.toFixed(2) + '×' : 'n/a'), () => '', '']
     ];
-    $('mo-why-h').textContent = `Why plants are choosing ${name()}`;
+    $('mo-why-h').textContent = `What ${name()} offers a new plant`;
     $('mo-score').innerHTML =
       `<thead><tr><th></th>${cols.map(f => `<th>${f === 'US' ? 'U.S.' : MO_ABBR[f]}</th>`).join('')}<th>${name()}'s rank<br>among states</th></tr></thead><tbody>` +
       rows.map(([label, unit, val, rk, dir]) => `<tr><td>${label}<small>${unit}</small></td>` +

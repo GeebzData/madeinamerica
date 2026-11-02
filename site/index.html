@@ -156,7 +156,7 @@
         <h3 class="is-loss">Biggest losses</h3>
         <ol id="rank-losses"></ol>
       </div>
-      <p class="panel-note" id="plant-note">"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. Plant-size bands are Census County Business Patterns for 2023, the latest release. Census has not scheduled 2024. Most plants are small: about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
+      <p class="panel-note" id="plant-note">"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant-size bands are Census County Business Patterns for 2023, the latest release. Census has not scheduled 2024. Most plants are small: about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
     </aside>
   </section>
 
@@ -202,7 +202,7 @@
 
   <section class="wrap block" id="output" aria-labelledby="output-h">
     <div class="card wide-chart">
-      <h2 id="output-h">Output is near a high. Employment is not.</h2>
+      <h2 id="output-h">Factory GDP is at a record. Jobs are not.</h2>
       <p class="lede" id="output-lede"></p>
       <div class="key">
         <span><i style="border-color:#355E3B"></i>Real manufacturing GDP</span>
@@ -814,11 +814,12 @@
     const signed = v => `${v > 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}%`;
     const chg = (a, b) => (b - a) / a * 100;
     const gdpHigh = rLast >= rPeak - 1;
+    document.getElementById('output-h').textContent = gdpHigh ? 'Factory GDP is at a record. Jobs are not.' : 'Factory output has recovered. Jobs have not.';
     document.getElementById('output-lede').textContent =
       `Real manufacturing GDP was $${(rLast / 1e6).toFixed(2)} trillion in ${rYear}, ${signed(chg(r19, rLast))} since 2019${gdpHigh ? ', the highest year in the BEA series' : ''}. ` +
       `The Fed's manufacturing production index was ${latestO.value.toFixed(1)} in ${fmtMonth(parseMonth(latestO.date))} (2017 = 100), against ${o19.toFixed(1)} for 2019 and a peak of ${out.values[oPeakI].toFixed(1)} in ${out.years[oPeakI]}. ` +
       `Factory jobs were ${latestJ.value.toFixed(2)} million in ${fmtMonth(parseMonth(latestJ.date))}, still under ${j19.toFixed(2)} million in 2019 and ${jobs.values[jPeakI].toFixed(1)} million in ${jobs.years[jPeakI]}. ` +
-      'Automation and higher output per worker are why the sector can produce this much with fewer people on the payroll.';
+      'Each worker produces more than before, but much of the measured gain is in computers and chips, where better products count as more output; the Story page shows how imports and automation each played a part.';
     const lastI = span.length - 1;
     const readout = document.getElementById('output-readout');
     const rest = () => {
@@ -934,7 +935,7 @@
       `In the year before that date, new announcements were $${ev.newInvestBillionPrior12Months} billion, down from $${ev.newInvestBillionYearBefore} billion the prior year, and cancellations removed about $${ev.canceledInvestBillion} billion and ${d3.format(',')(ev.canceledJobs)} jobs. ` +
       `Alabama's end-of-2025 snapshot was still ${d3.format(',')(alEv.jobs)} anticipated EV-manufacturing jobs and $${alEv.investBillion.toFixed(1)} billion, rank ${alEv.rank} of those six states, with no growth during 2025. ${alEv.trainingCenter}`;
     if (meta.plantsNote) document.getElementById('plant-note').textContent =
-      `"Net new establishments" counts manufacturing locations with employees, from small shops to large plants. ${meta.plantsNote} In the 2023 size counts, about 2 in 3 manufacturing establishments have fewer than 20 workers and fewer than 1 in 10 have 100 or more.`;
+      `"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant sizes come from a separate source: ${meta.plantsNote} In those 2023 counts, about 2 in 3 manufacturing establishments have fewer than 20 workers and fewer than 1 in 10 have 100 or more.`;
   }).catch(err => {
     document.getElementById('loading').textContent = 'Could not load the data. Please refresh to try again.';
     console.error(err);

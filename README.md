@@ -131,7 +131,7 @@ category includes" section on each page from `meta.json`, so it always matches t
 `site/momentum.js` draws four sections on both pages (the Southeast page adds a state picker):
 
 - **Best-positioned industries**: 10-year job change, BLS location quotient, and local edge (job change beyond the same industry's national rate). Leader = 1.5× concentration or more, adding jobs, and 5+ points faster than the nation; Rising = under 1.5×, up 20%+, and 10+ points faster.
-- **Why plants are coming**: power price, factory pay, union rate, population growth and manufacturing concentration, with ranks among the states; Alabama's announced projects by industry.
+- **What each state offers a new plant**: power price, factory pay, union rate, population growth and manufacturing concentration, with ranks among the states; Alabama's announced projects by industry.
 - **Public vs private money**: federal development grants (program list in `fetch_federal.py`), federal contracts with manufacturers, major incentive packages, announced private investment (Alabama only) and SBA-backed loans, five years against the five before.
 - **Small business**: business applications, startups, five-year survival and jobs kept by sector, and SBA lending.
 
