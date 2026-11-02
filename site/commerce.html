@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State Recruiting · Made in America</title>
+<link rel="canonical" href="https://madeinamerica.gerardbarile.com/commerce.html">
+<meta name="description" content="Southeast states' own recruiting results, side by side: projects, committed jobs and promised investment from each state's economic development agency, 2021 to 2025, scaled by population.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .block { padding-top: 2rem; }
+  .block .card { padding: 2rem; }
+  .block h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 2.6rem; }
+  .block .lede { margin: 0.4rem 0 1.6rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
+  .intro .who { margin-top: 1rem; font-size: 1.4rem; color: var(--muted); }
+
+  .rc-findings { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.8rem; font-size: 1.5rem; max-width: 92rem; }
+  .rc-findings b { font-weight: 600; }
+  .rank { color: var(--muted); font-size: 1.2rem; font-weight: 400; margin-left: 0.4rem; }
+  .data-table tr.is-focus .rank { font-weight: 600; color: var(--gain); }
+  .approx { color: var(--muted); }
+
+  #rc-chart { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  #rc-chart text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+  #rc-chart text.end-label { font-size: 12px; font-weight: 600; }
+  .rc-chart-wrap { max-width: 96rem; }
+  #rc-years { margin-top: 1.6rem; }
+
+  .rc-scope td { white-space: normal; text-align: left; vertical-align: top; }
+  .rc-scope td:nth-child(2) { min-width: 18rem; }
+  .rc-scope td:last-child { min-width: 28rem; color: var(--soft); }
+  .rc-scope th { text-align: left; }
+
+  .rc-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 3.2rem; }
+  .rc-facts h3 { margin: 1.6rem 0 0.4rem; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .rc-facts ul { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.6rem; font-size: 1.4rem; color: var(--soft); }
+  .rc-facts a { color: var(--muted); font-size: 1.2rem; }
+
+  .rc-fair { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.6rem; font-size: 1.4rem; color: var(--soft); max-width: 92rem; }
+
+  @media (max-width: 900px) {
+    .rc-facts { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .block .card { padding: 1.4rem; }
+    .intro h1 { font-size: 3.4rem; }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="./">Made in America</a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="./">Reindustrialization</a>
+    <a href="alabama.html">Alabama</a>
+    <a href="southeast.html">Southeast</a>
+    <a href="commerce.html" aria-current="page">Recruiting</a>
+    <a href="explore.html">Explore</a>
+    <a href="story.html">Story</a>
+    <a href="money.html">Money</a>
+    <a href="#sources">Data sources</a>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap intro">
+    <h1>Who is landing the projects? <em>By each state's own count</em></h1>
+    <p>Every Southeast state's economic development agency publishes what it landed each year: how many projects, how many jobs companies committed to, and how much they promised to invest. This page puts those official figures side by side for 2021 to 2025, scaled by population so large and small states compare fairly. Alabama is highlighted.</p>
+    <p class="who">Every project, job and dollar figure here comes from the states' own agencies. The only outside number is population, from the Census Bureau, used to put states on the same scale.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-al-h">
+    <div class="card">
+      <p class="eyebrow">Alabama, 2021–2025</p>
+      <h2 id="rc-al-h">Where Alabama stands among seven peers</h2>
+      <p class="lede" id="rc-al-lede"></p>
+      <div class="mo-cards" id="rc-kpis"><div class="loading" id="loading">Loading data…</div></div>
+      <ul class="rc-findings" id="rc-findings"></ul>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-score-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="rc-score-h">Five-year scorecard</h2>
+        <div class="mo-tools">
+          <label class="mo-sort">Sort by <select class="select" id="rc-sort">
+            <option value="jpc">Jobs per resident</option>
+            <option value="ipc">Investment per resident</option>
+            <option value="ipj">Investment per job</option>
+            <option value="j">Jobs committed</option>
+            <option value="inv">Investment</option>
+            <option value="mj">2025 jobs vs earlier years</option>
+          </select></label>
+          <button type="button" class="dl-button" id="rc-dl">Download CSV</button>
+        </div>
+      </div>
+      <p class="lede">Totals for the five years each agency reported for 2021 to 2025. Ranks are out of seven. Project counts are shown but not ranked, because each state decides differently which projects count.</p>
+      <div class="table-scroll"><table class="data-table" id="rc-score"></table></div>
+      <p class="panel-note" id="rc-score-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-year-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="rc-year-h">Year by year</h2>
+        <div class="segmented small" id="rc-metric" role="group" aria-label="Measure">
+          <button type="button" data-v="jpc" aria-pressed="true">Jobs per resident</button>
+          <button type="button" data-v="ipc" aria-pressed="false">Investment per resident</button>
+          <button type="button" data-v="p" aria-pressed="false">Projects</button>
+        </div>
+      </div>
+      <p class="lede" id="rc-year-lede"></p>
+      <div class="rc-chart-wrap">
+        <div class="mo-key" id="rc-key"></div>
+        <svg id="rc-chart" role="img" aria-label="Recruiting results by state and year"></svg>
+      </div>
+      <div class="table-scroll"><table class="data-table" id="rc-years"></table></div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-facts-h">
+    <div class="card">
+      <h2 id="rc-facts-h">In each agency's own words</h2>
+      <p class="lede">Context the agencies published alongside their totals: rural reach, foreign investment, expansions of companies already in the state, and the projects that tip a year one way or the other.</p>
+      <div class="rc-facts" id="rc-facts"></div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-scope-h">
+    <div class="card">
+      <h2 id="rc-scope-h">What each state counts</h2>
+      <p class="lede">The agencies don't use one definition. Read the scorecard with these differences in mind.</p>
+      <div class="table-scroll"><table class="data-table rc-scope" id="rc-scope"></table></div>
+      <h3 class="mo-h3">Reading this fairly</h3>
+      <ul class="rc-fair">
+        <li>These are announcements: jobs companies committed to and investment they promised. Some projects arrive late, shrink or are cancelled, and no state reports a five-year follow-up in the same release.</li>
+        <li>Alabama counts every new or expanding project it records, with or without incentives. Most peers count only projects their agency worked. Under the narrower rule Alabama's totals would be smaller, so where Alabama trails, the real gap is likely wider.</li>
+        <li>Georgia and Mississippi report state fiscal years ending June 30. Their 2025 column is July 2024 to June 2025, six months ahead of the calendar-year states.</li>
+        <li>Rounded figures from a release ("more than 34,000") are used as published and marked with a ~.</li>
+        <li>Per-resident figures divide by population estimated for each year from the Census Bureau's 2020 and 2025 counts. Investment is in each year's dollars, not adjusted for inflation.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap sources block" id="sources">
+    <div class="card">
+      <h2>Data sources</h2>
+      <ul id="rc-sources"></ul>
+      <p id="notes"></p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+  // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
+  const ORDER = ['01', '13', '47', '45', '28', '21', '37'];
+  const FOCUS = '01';
+  const fmt = d3.format(',');
+  const $ = id => document.getElementById(id);
+  const money = m => (m == null ? 'n/a' : m >= 1000 ? `$${(m / 1000).toFixed(1)}B` : `$${Math.round(m)}M`);
+  const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '');
+  const pctFmt = v => (v == null || !isFinite(v) ? 'n/a' : sign(v) + Math.abs(Math.round(v)) + '%');
+  const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  let C, S, years, metric = 'jpc', sortKey = 'jpc';
+
+  // Alabama's rows come from the Department of Commerce reports already parsed into announcements.json.
+  function alabamaRows(ann) {
+    const rows = {};
+    for (const y of C.years) {
+      const s = ann.state[String(y)];
+      const list = ann.projects.filter(p => p.year === y);
+      rows[y] = {
+        p: s[0], j: s[1], inv: s[2] / 1e6, src: C.states['01'].src.replace('{year}', y),
+        expShare: list.filter(p => p.type === 'expansion').length / list.length * 100,
+        top: list.slice().sort((a, b) => (b.invest || 0) - (a.invest || 0)).slice(0, 3)
+      };
+    }
+    return rows;
+  }
+
+  function build(ann, cond) {
+    years = C.years;
+    const pop = cond.pop;
+    const popAt = (f, y) => {
+      const [a, b] = pop.states[f];
+      return a + (b - a) * (y - pop.years[0]) / (pop.years[1] - pop.years[0]);
+    };
+    S = ORDER.map(f => {
+      const st = C.states[f];
+      const rows = f === '01' ? alabamaRows(ann) : st.rows;
+      const list = years.map(y => ({ y, ...rows[y], pop: popAt(f, y) }));
+      for (const r of list) {
+        r.jpc = r.j / r.pop * 1e4;
+        r.ipc = r.inv * 1e6 / r.pop;
+      }
+      const j = d3.sum(list, r => r.j), inv = d3.sum(list, r => r.inv);
+      const avgPop = d3.mean(list, r => r.pop);
+      const early = list.slice(0, -1), last = list[list.length - 1];
+      return {
+        f, name: st.name, st, list, j, inv,
+        p: list.every(r => r.p != null) ? d3.sum(list, r => r.p) : null,
+        approx: list.some(r => r.approx),
+        jpc: j / avgPop * 1e4, ipc: inv * 1e6 / avgPop, ipj: inv * 1e6 / j,
+        mj: (last.j / d3.mean(early, r => r.j) - 1) * 100,
+        mi: (last.inv / d3.mean(early, r => r.inv) - 1) * 100
+      };
+    });
+    for (const k of ['jpc', 'ipc', 'ipj', 'j', 'inv', 'mj', 'mi']) {
+      S.slice().sort((a, b) => b[k] - a[k]).forEach((s, i) => { s['r_' + k] = i + 1; });
+    }
+  }
+
+  const al = () => S.find(s => s.f === FOCUS);
+  const leader = k => S.slice().sort((a, b) => b[k] - a[k])[0];
+
+  function drawKpis() {
+    const a = al();
+    const n = S.length;
+    const last = a.list[a.list.length - 1];
+    $('rc-al-lede').textContent = `Alabama's Department of Commerce recorded ${fmt(a.p)} projects from 2021 to 2025, with ${fmt(a.j)} committed jobs and ${money(a.inv)} in promised investment. Here is how that compares with Georgia, Tennessee, South Carolina, Mississippi, Kentucky and North Carolina, each by its own agency's count.`;
+    $('rc-kpis').innerHTML = [
+      ['Committed jobs per 10,000 residents', a.jpc.toFixed(0), `${ordinal(a.r_jpc)} of ${n}. ${leader('jpc').name} leads with ${leader('jpc').jpc.toFixed(0)}.`],
+      ['Promised investment per resident', `$${fmt(Math.round(a.ipc / 10) * 10)}`, `${ordinal(a.r_ipc)} of ${n}. ${leader('ipc').name} leads with $${fmt(Math.round(leader('ipc').ipc / 10) * 10)}.`],
+      ['Investment per committed job', `$${fmt(Math.round(a.ipj / 1000))}K`, `${ordinal(a.r_ipj)} of ${n}. A higher figure means more capital-heavy projects.`],
+      [`2025 investment vs 2021–24 average`, pctFmt(a.mi), `${money(last.inv)} in 2025, the most in any year shown. Jobs: ${pctFmt(a.mj)}.`]
+    ].map(([l, v, p]) => `<div class="insight"><span>${l}</span><strong>${v}</strong><p>${esc(p)}</p></div>`).join('');
+
+    const top = last.top[0];
+    const top25 = `${top.company} at ${money(top.invest / 1e6)}, ${Math.round(top.invest / 1e6 / last.inv * 100)}% of the year`;
+    const expAvg = d3.mean(a.list, r => r.expShare);
+    const jl = leader('jpc');
+    const behind = S.filter(s => s.jpc > a.jpc).map(s => s.name);
+    const items = [
+      `<b>Jobs are where Alabama trails.</b> Per resident, ${behind.join(', ').replace(/, ([^,]*)$/, ' and $1')} landed more committed jobs. ${jl.name}'s rate is ${(jl.jpc / a.jpc).toFixed(1)} times Alabama's.`,
+      `<b>Investment holds up better.</b> Alabama ranks ${ordinal(a.r_ipc)} on promised investment per resident and ${ordinal(a.r_ipj)} on investment per job, so its projects tend to be large and capital-heavy rather than labor-heavy.`,
+      `<b>2025 was Alabama's biggest investment year</b> at ${money(last.inv)}, led by ${top25}. Committed jobs (${fmt(last.j)}) were ${pctFmt(a.mj)} against the 2021–24 average.`,
+      `<b>Most of Alabama's wins are expansions.</b> On average ${Math.round(expAvg)}% of the projects it recorded each year were companies already in the state growing. South Carolina's dashboard shows 44% to 67% over the same years; Georgia reported 71% to 79%.`,
+      `<b>Counting rules flatter Alabama, not the peers.</b> Alabama includes every project it records; Tennessee, Georgia, South Carolina, Mississippi and North Carolina count only projects their agencies worked. See "What each state counts" below.`
+    ];
+    $('rc-findings').innerHTML = items.map(t => `<li>${t}</li>`).join('');
+  }
+
+  const COLS = [
+    { k: 'p', h: 'Projects', v: s => (s.p == null ? 'not published' : fmt(s.p)), rank: false },
+    { k: 'j', h: 'Jobs committed', v: s => fmt(Math.round(s.j)) },
+    { k: 'inv', h: 'Investment', v: s => money(s.inv) },
+    { k: 'jpc', h: 'Jobs per<br>10,000 residents', v: s => s.jpc.toFixed(0) },
+    { k: 'ipc', h: 'Investment<br>per resident', v: s => `$${fmt(Math.round(s.ipc / 10) * 10)}` },
+    { k: 'ipj', h: 'Investment<br>per job', v: s => `$${fmt(Math.round(s.ipj / 1000))}K` },
+    { k: 'mj', h: '2025 jobs vs<br>2021–24 avg', v: s => `<span class="${s.mj < 0 ? 'is-loss' : 'is-gain'}">${pctFmt(s.mj)}</span>` },
+    { k: 'mi', h: '2025 investment<br>vs 2021–24 avg', v: s => `<span class="${s.mi < 0 ? 'is-loss' : 'is-gain'}">${pctFmt(s.mi)}</span>` }
+  ];
+
+  function drawScore() {
+    const rows = S.slice().sort((a, b) => b[sortKey] - a[sortKey]);
+    $('rc-score').innerHTML = `<thead><tr><th>State<small>period</small></th>${COLS.map(c => `<th>${c.h}</th>`).join('')}</tr></thead><tbody>` +
+      rows.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}${s.approx ? ' <span class="approx">~</span>' : ''}<small>${/fiscal/i.test(s.st.period) ? 'FY2021–FY2025' : '2021–2025'}</small></td>` +
+        COLS.map(c => `<td>${c.v(s)}${c.rank === false || c.k === 'j' || c.k === 'inv' ? '' : `<span class="rank">${ordinal(s['r_' + c.k])}</span>`}</td>`).join('') + '</tr>').join('') + '</tbody>';
+    $('rc-score-note').textContent = '~ includes at least one year the agency published as a rounded figure. Fiscal-year states (FY) end June 30. The last two columns compare 2025 with the average of 2021 to 2024; a single large project can swing them.';
+  }
+
+  const METRICS = {
+    jpc: { label: 'Committed jobs per 10,000 residents', v: r => r.jpc, f: v => v.toFixed(1) },
+    ipc: { label: 'Promised investment per resident', v: r => r.ipc, f: v => `$${fmt(Math.round(v))}` },
+    p: { label: 'Projects counted by each agency (definitions differ)', v: r => r.p, f: v => fmt(v) }
+  };
+
+  function drawYears() {
+    const M = METRICS[metric];
+    const lines = S.map(s => ({ s, v: s.list.map(r => (M.v(r) == null ? null : M.v(r))) }));
+    const svg = d3.select('#rc-chart');
+    // Draw at the container's width so labels stay readable on phones.
+    const W = Math.round(Math.min(760, Math.max(330, svg.node().getBoundingClientRect().width || 760)));
+    const H = W < 500 ? 300 : 280, m = { t: 14, r: W < 500 ? 118 : 150, b: 24, l: 44 };
+    svg.attr('viewBox', `0 0 ${W} ${H}`).selectAll('*').remove();
+    const x = d3.scaleLinear().domain(d3.extent(years)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(lines, l => d3.max(l.v)) * 1.05]).nice().range([H - m.b, m.t]);
+    const tick = metric === 'ipc' ? (v => `$${d3.format('~s')(v)}`) : d3.format('~s');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(years.length).tickFormat(W < 500 ? (v => `'${String(v).slice(2)}`) : d3.format('d')).tickSizeOuter(0));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(tick).tickSize(-(W - m.l - m.r)))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('.tick line').attr('stroke', '#E6E6E1'));
+    const line = d3.line().defined(v => v != null).x((_, i) => x(years[i])).y(v => y(v));
+    // End labels for every state, nudged apart so they don't overlap.
+    const labeled = lines.filter(l => l.v[l.v.length - 1] != null).map(l => ({ l, y: y(l.v[l.v.length - 1]) + 4 })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labeled.length; i++) labeled[i].y = Math.max(labeled[i].y, labeled[i - 1].y + 14);
+    const over = labeled.length ? labeled[labeled.length - 1].y - (H - m.b + 4) : 0;
+    if (over > 0) labeled.forEach(o => { o.y -= over; });
+    for (const l of lines.slice().sort((a, b) => (a.s.f === FOCUS) - (b.s.f === FOCUS))) {
+      const focus = l.s.f === FOCUS;
+      const color = focus ? '#355E3B' : '#9C9C96';
+      svg.append('path').attr('d', line(l.v)).attr('fill', 'none').attr('stroke', color).attr('stroke-width', focus ? 2.6 : 1.2);
+      svg.append('g').selectAll('circle').data(l.v.map((v, i) => [v, i]).filter(d => d[0] != null)).join('circle')
+        .attr('cx', d => x(years[d[1]])).attr('cy', d => y(d[0])).attr('r', focus ? 3.2 : 2).style('fill', color);
+      const lab = labeled.find(o => o.l === l);
+      if (lab) {
+        svg.append('text').attr('class', focus ? 'end-label' : null).attr('x', W - m.r + 8).attr('y', lab.y)
+          .style('fill', focus ? color : '#4A4A46').text(`${W < 500 ? l.s.st.abbr : l.s.name} ${M.f(l.v[l.v.length - 1])}`);
+      }
+    }
+    $('rc-key').innerHTML = `<span><i style="border-color:#355E3B"></i>Alabama</span><span><i style="border-color:#9C9C96"></i>Peer states</span><span>${M.label}</span>`;
+    $('rc-year-lede').textContent = metric === 'p'
+      ? 'Project counts depend most on each state\'s rules: Alabama lists every project it records, while most peers count only projects their agency worked. Mississippi does not publish a count.'
+      : metric === 'jpc'
+        ? 'Committed jobs scaled by population. Single megaprojects show up as spikes: Georgia\'s Rivian and Hyundai plants in FY2022 and North Carolina\'s JetZero in 2025.'
+        : 'Promised investment scaled by population. Data centers lift Mississippi in FY2024 and FY2025, and Alabama\'s 2025 is its largest year in the series.';
+    $('rc-years').innerHTML = `<thead><tr><th>${M.label}</th>${years.map(y => `<th>${y}</th>`).join('')}</tr></thead><tbody>` +
+      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}</td>${s.list.map(r => {
+        const v = M.v(r);
+        return `<td>${v == null ? 'n/a' : (r.approx ? '~' : '') + M.f(v)}</td>`;
+      }).join('')}</tr>`).join('') + '</tbody>';
+  }
+
+  function drawText() {
+    $('rc-facts').innerHTML = S.map(s => {
+      const facts = s.st.facts.slice();
+      if (s.f === FOCUS) {
+        const e = s.list.map(r => Math.round(r.expShare));
+        facts.unshift({ text: `Expansions of companies already in Alabama were ${d3.min(e)}% to ${d3.max(e)}% of the projects recorded each year from 2021 to 2025.`, src: C.states['01'].src.replace('{year}', 2025) });
+      }
+      return `<div><h3>${s.name}</h3><ul>${facts.map(t => `<li>${esc(t.text)} <a href="${t.src}">Source</a></li>`).join('')}</ul></div>`;
+    }).join('');
+    $('rc-scope').innerHTML = '<thead><tr><th>State</th><th>Agency and report</th><th>Period</th><th>What is counted</th></tr></thead><tbody>' +
+      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}</td><td>${esc(s.st.agency)}<small>${esc(s.st.report)}</small></td><td>${esc(s.st.period)}</td><td>${esc(s.st.scope)}</td></tr>`).join('') + '</tbody>';
+    $('rc-sources').innerHTML = S.map(s => {
+      const links = s.list.map(r => `<a href="${r.src}">${r.y}</a>`).join(', ');
+      return `<li>${esc(s.st.agency)}, ${esc(s.st.report)}: ${links}.</li>`;
+    }).join('') + '<li><a href="https://www.census.gov/programs-surveys/popest.html">Census Bureau population estimates</a> (vintage 2025): used only to scale figures per resident.</li>';
+    $('notes').textContent = `${C.note} Compiled ${C.updated}.`;
+  }
+
+  function downloadCsv() {
+    const rows = [['state', 'year', 'period', 'projects', 'jobs committed', 'investment ($M)', 'population (est.)', 'jobs per 10,000 residents', 'investment per resident ($)', 'rounded in source', 'source']];
+    for (const s of S) {
+      for (const r of s.list) {
+        rows.push([s.name, r.y, s.st.period, r.p, Math.round(r.j), Math.round(r.inv), Math.round(r.pop), r.jpc.toFixed(1), Math.round(r.ipc), r.approx ? 'yes' : '', r.src]);
+      }
+    }
+    const csv = rows.map(r => r.map(v => (v == null ? '' : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v)).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = `southeast-state-recruiting-${years[0]}-${years[years.length - 1]}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  Promise.all([
+    d3.json('data/commerce.json'),
+    d3.json('data/announcements.json'),
+    d3.json('data/conditions.json')
+  ]).then(([c, ann, cond]) => {
+    C = c;
+    build(ann, cond);
+    drawKpis();
+    drawScore();
+    drawYears();
+    drawText();
+    $('rc-sort').addEventListener('change', e => { sortKey = e.target.value; drawScore(); });
+    $('rc-dl').addEventListener('click', downloadCsv);
+    let width = innerWidth;
+    addEventListener('resize', () => {
+      if (innerWidth === width) return;
+      width = innerWidth;
+      drawYears();
+    });
+    $('rc-metric').addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      metric = b.dataset.v;
+      $('rc-metric').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      drawYears();
+    });
+  }).catch(err => {
+    $('rc-kpis').innerHTML = '<p>Could not load the data. Please refresh to try again.</p>';
+    console.error(err);
+  });
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

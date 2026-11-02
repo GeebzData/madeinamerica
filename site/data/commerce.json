@@ -1,0 +1,120 @@
+{
+  "note": "Hand-compiled from each state's economic development agency. Projects, committed jobs and promised capital investment, as each agency reported them for the year. These are announcements, not finished projects, and each agency counts a different set of projects (see scope). Alabama's figures are built from the Department of Commerce's New & Expanding Industry reports in announcements.json. Investment is in millions of each year's dollars.",
+  "updated": "2026-11-01",
+  "years": [2021, 2022, 2023, 2024, 2025],
+  "states": {
+    "01": {
+      "name": "Alabama", "abbr": "AL", "agency": "Alabama Department of Commerce", "report": "New & Expanding Industry report",
+      "period": "Calendar year",
+      "scope": "Every new or expanding project the department records in the year, with or without state incentives, including small and non-manufacturing projects.",
+      "from": "announcements",
+      "src": "https://www.madeinalabama.com/resources/documents/new-expanding-industry-report-{year}/",
+      "facts": [
+        {"text": "Targeted rural counties drew 57 projects, more than 1,600 jobs and $1.2 billion in 2024, and $7 billion and nearly 9,000 jobs since 2020.", "src": "https://www.madeinalabama.com/2025/11/report-new-investment-drives-growth-and-opportunities-for-rural-alabama/"}
+      ]
+    },
+    "13": {
+      "name": "Georgia", "abbr": "GA", "agency": "Georgia Department of Economic Development", "report": "Fiscal-year results (Global Commerce)",
+      "period": "State fiscal year ending June 30 (FY2025 = July 2024 to June 2025)",
+      "scope": "New locations and expansions supported by the department's Global Commerce team.",
+      "rows": {
+        "2021": {"p": 379, "j": 33439, "inv": 10970, "src": "https://gov.georgia.gov/press-releases/2021-08-11/gov-kemp-announces-record-breaking-jobs-and-investment-georgia"},
+        "2022": {"p": 358, "j": 51132, "inv": 21200, "src": "https://gov.georgia.gov/press-releases/2022-08-10/gov-kemp-georgia-shatters-investment-and-job-records-fy22"},
+        "2023": {"p": 426, "j": 38400, "inv": 24000, "src": "https://gov.georgia.gov/press-releases/2023-08-08/gov-kemp-georgia-breaks-economic-development-records-third-year-row"},
+        "2024": {"p": 429, "j": 26900, "inv": 20300, "src": "https://gov.georgia.gov/press-releases/2024-08-29/gov-kemp-georgia-job-creation-remains-strong"},
+        "2025": {"p": 423, "j": 23200, "inv": 26300, "src": "https://gov.georgia.gov/press-releases/2025-09-15/gov-kemp-economic-development-investments-break-new-record"}
+      },
+      "facts": [
+        {"text": "FY2022 includes Rivian and Hyundai, the two largest projects in state history. Without them the year was 35,532 jobs and $10.7 billion.", "src": "https://gov.georgia.gov/press-releases/2022-08-10/gov-kemp-georgia-shatters-investment-and-job-records-fy22"},
+        {"text": "82% of FY2023's new jobs were outside metro Atlanta.", "src": "https://gov.georgia.gov/press-releases/2023-08-08/gov-kemp-georgia-breaks-economic-development-records-third-year-row"},
+        {"text": "In FY2025 expansions were 74% of projects, and foreign companies committed 6,500 jobs and $3 billion.", "src": "https://gov.georgia.gov/press-releases/2025-09-15/gov-kemp-economic-development-investments-break-new-record"},
+        {"text": "Latest: FY2026 (July 2025 to June 2026) set another record, with 436 projects, 25,300 jobs and $35.2 billion. Expansions were 79% of projects.", "src": "https://gov.georgia.gov/press-releases/2026-09-03/gov-kemp-announces-another-record-breaking-year-economic-development"}
+      ]
+    },
+    "47": {
+      "name": "Tennessee", "abbr": "TN", "agency": "Tennessee Department of Economic and Community Development", "report": "Annual report and year in review",
+      "period": "Calendar year",
+      "scope": "Projects the department worked and landed (TNECD-assisted). Projects that came without the department are not counted.",
+      "rows": {
+        "2021": {"p": 130, "j": 34000, "inv": 12800, "src": "https://tnecd.com/news/2021-a-year-for-the-record-books/", "approx": true},
+        "2022": {"p": 100, "j": 16000, "inv": 8600, "src": "https://tnecd.com/news/the-top-five-projects-of-2022/", "approx": true},
+        "2023": {"p": 104, "j": 13136, "inv": 3980, "src": "https://tnecd.com/wp-content/uploads/2024/03/ECD-Report-Card-9.pdf"},
+        "2024": {"p": 67, "j": 9666, "inv": 7200, "src": "https://tnecd.com/wp-content/uploads/2025/02/TNECD_2024_AnnualReport.pdf"},
+        "2025": {"p": 75, "j": 8086, "inv": 11200, "src": "https://tnecd.com/wp-content/uploads/2026/04/Annual_Report_2025_DOWNLOADABLE.pdf"}
+      },
+      "facts": [
+        {"text": "56% of 2025's committed jobs were in rural counties, up from 53% in 2024 and 49% in 2023.", "src": "https://tnecd.com/wp-content/uploads/2026/04/Annual_Report_2025_DOWNLOADABLE.pdf"},
+        {"text": "Foreign companies made up half of 2025's jobs (4,030) and 70% of its investment, led by Korea Zinc's $6.6 billion project.", "src": "https://tnecd.com/wp-content/uploads/2026/04/Annual_Report_2025_DOWNLOADABLE.pdf"},
+        {"text": "The department called 2024 slower because companies delayed decisions in an election year.", "src": "https://tnecd.com/wp-content/uploads/2025/02/TNECD_2024_AnnualReport.pdf"},
+        {"text": "The 2021 and 2022 figures are the rounded totals the department published (\"over 34,000\", \"approximately 100\").", "src": "https://tnecd.com/news/2021-a-year-for-the-record-books/"}
+      ]
+    },
+    "45": {
+      "name": "South Carolina", "abbr": "SC", "agency": "South Carolina Department of Commerce", "report": "Project recruitment data dashboard",
+      "period": "Calendar year",
+      "scope": "New and expansion projects announced with the department.",
+      "rows": {
+        "2021": {"p": 123, "j": 15588, "inv": 4320, "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        "2022": {"p": 120, "j": 14083, "inv": 10266, "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        "2023": {"p": 81, "j": 14120, "inv": 9215, "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        "2024": {"p": 78, "j": 5509, "inv": 8189, "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        "2025": {"p": 83, "j": 8137, "inv": 9128, "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"}
+      },
+      "facts": [
+        {"text": "Rural Tier III and IV counties drew 44% of 2025's jobs and 46% of its investment, the highest shares since 2010.", "src": "https://governor.sc.gov/news/2026-01/south-carolina-industry-recruitment-reaches-912-billion-2025"},
+        {"text": "Foreign companies accounted for 43% of 2025's jobs and 17% of its investment (dashboard, by home country).", "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        {"text": "2026 so far (dashboard, year to date): 38 projects, 6,254 jobs and $5.2 billion.", "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"},
+        {"text": "The department's January 2022 release put 2021 at 153 projects and $5.7 billion; its dashboard now shows 123 and $4.3 billion, which is the figure used here.", "src": "https://www.sccommerce.com/state-economy/project-recruitment-data"}
+      ]
+    },
+    "28": {
+      "name": "Mississippi", "abbr": "MS", "agency": "Mississippi Development Authority", "report": "Fiscal-year annual report",
+      "period": "State fiscal year ending June 30 (FY2025 = July 2024 to June 2025)",
+      "scope": "Recruitment and expansion projects the authority assisted. It does not publish a project count.",
+      "rows": {
+        "2021": {"p": null, "j": 6060, "inv": 1300, "src": "https://mississippi.org/wp-content/uploads/21-0513-Annual-Report-2021-FINAL.pdf", "approx": true},
+        "2022": {"p": null, "j": 3360, "inv": 1450, "src": "https://mississippi.org/wp-content/uploads/MDA-Annual-Report-2022-FINAL.pdf", "approx": true},
+        "2023": {"p": null, "j": 3340, "inv": 4340, "src": "https://mississippi.org/wp-content/uploads/Annual-Report-2023-FINAL.pdf", "approx": true},
+        "2024": {"p": null, "j": 5000, "inv": 12630, "src": "https://mississippi.org/wp-content/uploads/24-0344-MDA-Annual-Report-2024.pdf", "approx": true},
+        "2025": {"p": null, "j": 3674, "inv": 12640, "src": "https://mississippi.org/wp-content/uploads/MDA-Annual-Report-2025-FINAL.pdf"}
+      },
+      "facts": [
+        {"text": "Data centers drive the recent jump: Amazon Web Services' $10 billion in FY2024 and Compass Datacenters' $10 billion in FY2025 bring large investment but relatively few jobs.", "src": "https://mississippi.org/wp-content/uploads/MDA-Annual-Report-2025-FINAL.pdf"},
+        {"text": "In FY2025, expansions of existing companies made up 2,014 of the 3,674 jobs.", "src": "https://mississippi.org/wp-content/uploads/MDA-Annual-Report-2025-FINAL.pdf"},
+        {"text": "FY2021 to FY2024 use the rounded totals in the director's letter (\"more than\"), which can differ slightly from the sum of the division pages.", "src": "https://mississippi.org/wp-content/uploads/24-0344-MDA-Annual-Report-2024.pdf"}
+      ]
+    },
+    "21": {
+      "name": "Kentucky", "abbr": "KY", "agency": "Kentucky Cabinet for Economic Development", "report": "Governor's year-end release",
+      "period": "Calendar year",
+      "scope": "All announced private-sector new locations and expansions, excluding retail, restaurants, hospitality, nonprofits, schools, farms and government.",
+      "rows": {
+        "2021": {"p": 264, "j": 18100, "inv": 11200, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20220103_2021_YearEnd_Recap", "approx": true},
+        "2022": {"p": 248, "j": 16000, "inv": 10500, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20221228_EOYRecap", "approx": true},
+        "2023": {"p": 180, "j": 8500, "inv": 4600, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20231222_Kentucky_C", "approx": true},
+        "2024": {"p": 170, "j": 9425, "inv": 6900, "src": "https://www.marshallcountydaily.com/?p=138960", "approx": true},
+        "2025": {"p": 185, "j": 9600, "inv": 10500, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20251218_Gov._Beshe", "approx": true}
+      },
+      "facts": [
+        {"text": "Manufacturing made up nearly $9.5 billion and 7,600 jobs of 2025's totals.", "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20251218_Gov._Beshe"},
+        {"text": "Year-end releases come out in late December, so the totals are as of that date (2023's was December 22).", "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20231222_Kentucky_C"}
+      ]
+    },
+    "37": {
+      "name": "North Carolina", "abbr": "NC", "agency": "N.C. Department of Commerce and the Economic Development Partnership of North Carolina", "report": "Annual report to the General Assembly",
+      "period": "Calendar year",
+      "scope": "Projects the department and its recruiting partner (EDPNC) competed for and won.",
+      "rows": {
+        "2021": {"p": 174, "j": 23747, "inv": 10015, "src": "https://webservices.ncleg.gov/ViewDocSiteFile/94639"},
+        "2022": {"p": 151, "j": 27144, "inv": 15588, "src": "https://webservices.ncleg.gov/ViewDocSiteFile/94639"},
+        "2023": {"p": 111, "j": 10824, "inv": 4866, "src": "https://webservices.ncleg.gov/ViewDocSiteFile/94639"},
+        "2024": {"p": 140, "j": 16555, "inv": 14836, "src": "https://webservices.ncleg.gov/ViewDocSiteFile/94639"},
+        "2025": {"p": 127, "j": 33877, "inv": 24400, "src": "https://webservices.ncleg.gov/ViewDocSiteFile/105354", "approx": true}
+      },
+      "facts": [
+        {"text": "JetZero's 14,500-job aircraft plant in Greensboro, the largest job commitment in state history, is about 43% of 2025's jobs.", "src": "https://edpnc.com/news/edpnc-releases-2025-annual-report-rewriting-the-record-books/"},
+        {"text": "In 2024, the poorer Tier 1 and 2 counties drew 94 of 140 projects and 57% of jobs.", "src": "https://webservices.ncleg.gov/ViewDocSiteFile/94639"}
+      ]
+    }
+  }
+}
