@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Commerce Dept · Made in America</title>
 <link rel="canonical" href="https://madeinamerica.gerardbarile.com/commerce.html">
 <meta name="description" content="Southeast states' own recruiting results, side by side: projects, committed jobs and promised investment from each state's economic development agency, 2021 to 2025, scaled by population.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css">
 <style>
@@ -236,8 +236,8 @@
   </section>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
 <script>
   // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
   const ORDER = ['01', '13', '47', '45', '28', '21', '37'];
@@ -430,7 +430,7 @@
   }
 
   // ---------- Maps ----------
-  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
+  const ATLAS = 'vendor/counties-albers-10m.json';
   const NO_COUNTY = ['13', '47', '28'];
   let topo, CC, ANN, mapMetric = 'jpc', mapYear = 'all', ctyMetric = 'j';
   const path = d3.geoPath();

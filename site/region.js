@@ -33,8 +33,14 @@ function drawRegionBrief(deps) {
   const lede = document.getElementById('score-lede');
   if (lede) {
     const peersUp = rows.filter(r => r.id !== '01').map(r => `${r.name} ${fmtPct(r.pct)}`).join(', ');
+    const ces = ctx && ctx.alMfgJobs;
+    const cesPct = v => `${v > 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}%`;
+    const cesNote = ces
+      ? ` The seasonally adjusted payroll survey (FRED ${ces.cesSa.series}) was ${ces.cesSa.dec2019} thousand in December 2019 and ${ces.cesSa.latest} thousand in ${ces.cesSa.latestMonth} (${cesPct(ces.cesSa.pctVsDec2019)}). The monthly series that is not seasonally adjusted (FRED ${ces.cesNsa.series}) was ${ces.cesNsa.dec2019} thousand in December 2019 and ${ces.cesNsa.latest} thousand in ${ces.cesNsa.latestMonth} (${cesPct(ces.cesNsa.pctVsDec2019)}).`
+      : '';
     lede.textContent =
-      `Since 2019 Alabama's factory jobs are ${fmtPct(al.pct)} (${fmtK(al.jobs)} in ${end}). ${peersUp}. ` +
+      `From the 2019 annual average to the ${end} annual average, Alabama factory jobs are ${fmtPct(al.pct)} (${d3.format(',')(al.jobs)} in ${end}, from ${d3.format(',')(at('01', 'all|all', i19))} in 2019). That is BLS QCEW private employment, not seasonally adjusted, and it is not a December comparison. ${peersUp}. ` +
+      cesNote + ' ' +
       `Vehicles are ${fmtK(al.veh)} jobs and about ${vehShare15.toFixed(0)}% of Alabama's net new factory jobs since 2015. ` +
       `Aerospace is ${fmtK(al.aero)}. Electrical equipment and batteries are ${fmtK(al.elec)}, ${al.elecShare.toFixed(1)}% of Alabama manufacturing, against a much larger base in North Carolina, Georgia, South Carolina and Tennessee.`;
   }
@@ -56,7 +62,7 @@ function drawRegionBrief(deps) {
   };
   const by = (key) => rows.slice().sort((a, b) => b[key] - a[key]);
   bars('chart-growth', by('pct').map(r => ({ id: r.id, name: r.name, v: r.pct })), fmtPct,
-    'Factory job growth since 2019, the pre-COVID year. Alabama is among the regional leaders. National factory employment is still below 2019.');
+    `Percent change in the annual average, 2019 to ${end}. BLS QCEW, private sector, not seasonally adjusted. Not December 2019, and not the seasonally adjusted CES series.`);
   bars('chart-elec', by('elec').map(r => ({ id: r.id, name: r.name, v: r.elec })), v => d3.format(',')(v),
     `Batteries, grid equipment and other electrical manufacturing in ${end}. This is Alabama's scale gap. Source: BLS QCEW.`);
   bars('chart-veh', by('veh').map(r => ({ id: r.id, name: r.name, v: r.veh })), v => d3.format(',')(v),
@@ -90,8 +96,8 @@ function drawRegionBrief(deps) {
 
   const work = document.getElementById('work-chart');
   if (work && ctx) {
-    const order = ['01', '13', '47', '45', '37', '21', '28', 'US'];
-    const list = order.map(id => ({ id, name: ctx.lfpr.states[id].name, v: ctx.lfpr.states[id].latest }));
+    const order = [...peers.map(p => p.id), 'US'];
+    const list = order.filter(id => ctx.lfpr.states[id]).map(id => ({ id, name: ctx.lfpr.states[id].name, v: ctx.lfpr.states[id].latest }));
     bars('work-chart', list.sort((a, b) => b.v - a.v), v => v.toFixed(1) + '%',
       `Labor force participation, seasonally adjusted, ${ctx.lfpr.asOf}. Alabama was ${ctx.lfpr.states['01'].avg2019}% on a 2019 average and ${ctx.lfpr.states['01'].latest}% in the latest month; the U.S. was ${ctx.lfpr.states.US.avg2019}% and ${ctx.lfpr.states.US.latest}%. Source: BLS LAUS (state series LBSSA) and CIVPART, via FRED. This is the headline rate, not prime-age participation.`);
   }
@@ -113,7 +119,7 @@ function drawRegionBrief(deps) {
     win.innerHTML = [
       `<b>Auto assembly.</b> Mercedes near Vance, Hyundai in Montgomery, Honda in Lincoln, and Mazda Toyota in Huntsville. Vehicles employment is ${fmtK(al.veh)} and is up ${fmtPct((at('01', 'all|vehicles', years.length - 1) / at('01', 'all|vehicles', i19) - 1) * 100)} since 2019.`,
       `<b>Aerospace.</b> ${fmtK(al.aero)} jobs, in the same range as Georgia and well ahead of Tennessee and Kentucky. Huntsville and Mobile are the two poles.`,
-      `<b>Factory jobs since 2019.</b> ${fmtPct(al.pct)}, ahead of Tennessee, Kentucky and Mississippi in this peer set.`
+      `<b>Factory jobs since 2019.</b> ${fmtPct(al.pct)} on the QCEW annual average, not seasonally adjusted, ahead of Tennessee, Kentucky and Mississippi in this peer set.`
     ].map(t => `<li>${t}</li>`).join('');
     lag.innerHTML = [
       `<b>Electrical and batteries.</b> ${fmtK(al.elec)} jobs, ${al.elecShare.toFixed(1)}% of Alabama manufacturing. North Carolina, Georgia, South Carolina and Tennessee are several times larger.`,

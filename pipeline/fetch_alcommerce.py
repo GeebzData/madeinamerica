@@ -184,7 +184,48 @@ def parse(path):
                     'county': county, 'type': 'new' if kind[0] == 'N' else 'expansion', 'company': rest.strip(),
                     'naics': naics, 'activity': activity.strip(), 'jobs': number(jobs), 'invest': number(invest),
                 }))
+    return correct_pike_randolph(projects, totals)
+
+
+def correct_pike_randolph(projects, totals):
+    """Put Randolph's 2020 projects back in Randolph County.
+
+    The 2020 Commerce PDF lists them under Randolph (OMM Timber, JELD-WEN, SteelFab:
+    3 projects, 94 jobs, $27,135,066). The parser left them in Pike and stored
+    Randolph's totals on Pike's row. Pike's own line is 2 projects, 86 jobs, $29,273,303.
+    """
+    moved = False
+    for project in projects:
+        company = project['company']
+        if project['county'] != '01109':
+            continue
+        if not any(name in company for name in ('OMM Timber', 'JELD-WEN', 'SteelFab')):
+            continue
+        if company.startswith('Randolph '):
+            project['company'] = company[len('Randolph '):].strip()
+        project['county'] = '01111'
+        moved = True
+    if moved:
+        totals['01109'] = [2, 86, 29_273_303]
+        totals['01111'] = [3, 94, 27_135_066]
     return projects, totals
+
+
+def fix_pike_randolph_file(out):
+    """Apply the 2020 Pike/Randolph correction to a saved announcements file."""
+    projects = [p for p in out['projects'] if p['year'] == 2020]
+    totals = {}
+    correct_pike_randolph(projects, totals)
+    if not totals:
+        return out
+    pike = out['counties'].setdefault('01109', {})
+    rand = out['counties'].setdefault('01111', {})
+    pike['2020'] = pike.get('2020', [0, 0, 0, 0, 0, 0])
+    rand['2020'] = rand.get('2020', [0, 0, 0, 0, 0, 0])
+    pike['2020'][:3] = totals['01109']
+    rand['2020'][:3] = totals['01111']
+    recompute_manufacturing(out)
+    return out
 
 
 def main():
@@ -235,6 +276,7 @@ def repair_file(path=OUT):
     out = json.loads(Path(path).read_text())
     for project in out['projects']:
         sanitize_project(project)
+    fix_pike_randolph_file(out)
     recompute_manufacturing(out)
     validate_projects(out['projects'])
     Path(path).write_text(json.dumps(out, separators=(',', ':')))
