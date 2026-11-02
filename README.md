@@ -16,11 +16,12 @@ pipeline/
   fetch_bea.py    BEA GDP by state and county, manufacturing (writes site/data/gdp.json)
   fetch_usaspending.py   Federal contracts with manufacturers, by state and Alabama county (writes site/data/contracts.json)
   fetch_alcommerce.py    Alabama Commerce New & Expanding Industry reports, parsed from PDF (writes site/data/announcements.json)
-  fetch_industries.py    BLS QCEW by area: every sector and detailed manufacturing industry, U.S. + 5 Southeast states, with location quotients (writes site/data/industries.json)
+  fetch_industries.py    BLS QCEW by area: every sector and detailed manufacturing industry, U.S. + 7 Southeast states, with location quotients (writes site/data/industries.json)
   fetch_conditions.py    EIA industrial power prices, Census population, BLS union membership, all states (writes site/data/conditions.json)
-  fetch_federal.py       USAspending economic-development grants for a fixed program list, 5 Southeast states (writes site/data/federal.json)
+  fetch_federal.py       USAspending economic-development grants for a fixed program list, 7 Southeast states (writes site/data/federal.json)
   fetch_sba.py           SBA 7(a)/504 loans, totals only by state, year, sector and industry (writes site/data/sba.json)
   fetch_formation.py     Census business applications and Business Dynamics startups/survival (writes site/data/formation.json)
+  commerce/              State commerce-agency county data for the Commerce Dept page (writes site/data/commerce_counties.json)
   export.py       Warehouse tables -> compact JSON in site/data/
 site/
   index.html                 Explore page
@@ -143,6 +144,9 @@ Seven states' recruiting results, each as its own economic development agency pu
 - Georgia and Mississippi report fiscal years ending June 30; the others are calendar years.
 - South Carolina's figures come from S.C. Commerce's Power BI recruitment dashboard (read year by year with the Year filter), which matches its published totals for 2022–2025.
 - North Carolina uses Commerce's annual report to the General Assembly on EDPNC.
+- Kentucky uses the Cabinet's Location and Expansion Search database (exact, with county), which differs slightly from its rounded year-end releases.
+- Rebuild the county file with `python pipeline/commerce/build_commerce_counties.py`. It reads cached inputs in `pipeline/raw/commerce/`: North Carolina's report PDFs (downloaded automatically), and page reads from `pipeline/commerce/sc_dashboard.py` (South Carolina) and `pipeline/commerce/ky_search.py` (Kentucky). Those two drive Google Chrome headlessly through each agency's public page, so they need Chrome and `websocket-client`.
+- Maps: a seven-state map (jobs or investment per resident, by year) and a county bubble map of 2021–2025 totals in `site/data/commerce_counties.json` (South Carolina read county by county from the dashboard's County filter, North Carolina from the county tables in Commerce's legislative reports, Kentucky from its search database; Alabama from `announcements.json`). Georgia, Tennessee and Mississippi publish no county totals.
 - Rounded figures from releases are flagged `"approx": true` and shown with a ~.
 - Each year, add the new year's row per state when the agencies publish (Georgia in August/September, Tennessee in spring, the others in December/January) and move `years` forward.
 

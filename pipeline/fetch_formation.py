@@ -25,7 +25,7 @@ OUT = ROOT.parent / 'site' / 'data' / 'formation.json'
 BFS = 'https://www.census.gov/econ/bfs/csv/bfs_monthly.csv'
 BDS = 'https://www2.census.gov/programs-surveys/bds/tables/time-series/{v}/bds{v}_{t}.csv'
 BDS_VINTAGE = 2023
-STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28'}
+STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28', 'NC': '37', 'KY': '21'}
 SECTORS = {'11': 'Farming, forestry & fishing', '21': 'Mining, oil & gas', '22': 'Utilities',
            '23': 'Construction', '31-33': 'Manufacturing', '42': 'Wholesale trade', '44-45': 'Retail',
            '48-49': 'Transportation & warehousing', '51': 'Information', '52': 'Finance & insurance',

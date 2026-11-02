@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT.parent / 'site' / 'data' / 'contracts.json'
 URL = 'https://api.usaspending.gov/api/v2/search/spending_by_geography/'
 FIRST_FY = 2008
-STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28'}
+STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28', 'NC': '37', 'KY': '21'}
 
 
 def query(fy, geo_layer, extra):

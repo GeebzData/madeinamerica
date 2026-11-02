@@ -31,7 +31,7 @@ OUT = ROOT.parent / 'site' / 'data' / 'sba.json'
 BASE = 'https://data.sba.gov/sites/default/files/uploaded_resources/'
 PAGE = 'https://data.sba.gov/dataset/7a-504-foia'
 WANT = ['FOIA_7a_FY2010_FY2019', 'FOIA_7a_FY2020_Present', 'FOIA_504_FY2010_Present']
-STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28'}
+STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28', 'NC': '37', 'KY': '21'}
 COLS = ['ProjectState', 'ApprovalFY', 'NaicsCode', 'NaicsDescription', 'GrossApproval', 'JobsSupported',
         'BusinessAge', 'LoanStatus']
 SECTORS = {'11': 'Farming, forestry & fishing', '21': 'Mining, oil & gas', '22': 'Utilities',

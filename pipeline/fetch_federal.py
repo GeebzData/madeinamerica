@@ -22,7 +22,7 @@ OUT = ROOT.parent / 'site' / 'data' / 'federal.json'
 GEO = 'https://api.usaspending.gov/api/v2/search/spending_by_geography/'
 CFDA = 'https://api.usaspending.gov/api/v2/search/spending_by_category/cfda/'
 FIRST_FY = 2015
-STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28'}
+STATES = {'AL': '01', 'GA': '13', 'TN': '47', 'SC': '45', 'MS': '28', 'NC': '37', 'KY': '21'}
 GROUPS = {
     'mfg': ('Manufacturing & supply chain', {
         '81.253': 'DOE manufacturing and energy supply chain (battery and materials plants)',

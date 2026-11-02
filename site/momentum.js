@@ -1,15 +1,15 @@
 // Four sections shared by the Alabama and Southeast pages: which industries are best positioned,
 // why they're expanding, public vs private money, and small business. Loads its own data files.
 // renderMomentum(el, { focus: '01', picker: false })
-const MO_STATES = { '01': 'Alabama', '13': 'Georgia', '47': 'Tennessee', '45': 'South Carolina', '28': 'Mississippi' };
-const MO_ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '28': 'MS' };
+const MO_STATES = { '01': 'Alabama', '13': 'Georgia', '47': 'Tennessee', '45': 'South Carolina', '28': 'Mississippi', '37': 'North Carolina', '21': 'Kentucky' };
+const MO_ABBR = { '01': 'AL', '13': 'GA', '47': 'TN', '45': 'SC', '28': 'MS', '37': 'NC', '21': 'KY' };
 // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
-const MO_ORDER = ['01', '13', '47', '45', '28'];
+const MO_ORDER = ['01', '13', '47', '45', '28', '37', '21'];
 // Alabama's best-known clusters, for the "why" section. Other states get data-driven lines only.
 const MO_CLUSTERS = {
   '01': [
     ['Vehicles', 'Mercedes-Benz chose Vance in 1993, then came Honda (Lincoln, 2001), Hyundai (Montgomery, 2005) and Mazda Toyota (Huntsville, 2021). Each assembly plant draws parts suppliers within a day\'s drive.'],
-    ['Aerospace & defense', 'Huntsville grew around NASA\'s Marshall Space Flight Center and the Army\'s Redstone Arsenal; rocket engines (Blue Origin, ULA) followed. Airbus assembles jets in Mobile.'],
+    ['Aerospace & defense', 'Huntsville grew around NASA\'s Marshall Space Flight Center and the Army\'s Redstone Arsenal; Blue Origin builds rocket engines there and ULA assembles rockets in nearby Decatur. Airbus assembles jets in Mobile.'],
     ['Steel & metals', 'Birmingham\'s iron and steel roots continue at AM/NS Calvert near Mobile and Nucor in Decatur and Tuscaloosa; Novelis is building an aluminum plant at Bay Minette.'],
     ['Ports & power', 'The Port of Mobile handles imported parts and exported vehicles, and industrial power is cheaper than the U.S. average (see the scorecard).']
   ]
@@ -249,7 +249,7 @@ function renderMomentum(el, opts) {
     wrap.hidden = false;
     if (state.focus !== '01') {
       $('mo-ann-h').textContent = 'Announced projects by industry';
-      $('mo-ann-lede').textContent = `Alabama is the only state of the five that publishes every recruited project with its jobs and investment, so this breakdown is available for Alabama only. The incentive deals below cover ${name()}'s largest projects.`;
+      $('mo-ann-lede').textContent = `This industry breakdown uses Alabama's Commerce reports, so it is shown for Alabama only. The incentive deals below cover ${name()}'s largest projects, and the Commerce Dept tab compares every state's recruiting totals.`;
       $('mo-ann').innerHTML = '';
       return;
     }

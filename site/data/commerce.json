@@ -85,19 +85,19 @@
       ]
     },
     "21": {
-      "name": "Kentucky", "abbr": "KY", "agency": "Kentucky Cabinet for Economic Development", "report": "Governor's year-end release",
+      "name": "Kentucky", "abbr": "KY", "agency": "Kentucky Cabinet for Economic Development", "report": "Location and Expansion Search database",
       "period": "Calendar year",
       "scope": "All announced private-sector new locations and expansions, excluding retail, restaurants, hospitality, nonprofits, schools, farms and government.",
       "rows": {
-        "2021": {"p": 264, "j": 18100, "inv": 11200, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20220103_2021_YearEnd_Recap", "approx": true},
-        "2022": {"p": 248, "j": 16000, "inv": 10500, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20221228_EOYRecap", "approx": true},
-        "2023": {"p": 180, "j": 8500, "inv": 4600, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20231222_Kentucky_C", "approx": true},
-        "2024": {"p": 170, "j": 9425, "inv": 6900, "src": "https://www.marshallcountydaily.com/?p=138960", "approx": true},
-        "2025": {"p": 185, "j": 9600, "inv": 10500, "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20251218_Gov._Beshe", "approx": true}
+        "2021": {"p": 260, "j": 17985, "inv": 11175, "src": "https://locationexpansionsearch.ced.ky.gov/"},
+        "2022": {"p": 247, "j": 15553, "inv": 10228, "src": "https://locationexpansionsearch.ced.ky.gov/"},
+        "2023": {"p": 177, "j": 8264, "inv": 4258, "src": "https://locationexpansionsearch.ced.ky.gov/"},
+        "2024": {"p": 170, "j": 9392, "inv": 6889, "src": "https://locationexpansionsearch.ced.ky.gov/"},
+        "2025": {"p": 185, "j": 9515, "inv": 10365, "src": "https://locationexpansionsearch.ced.ky.gov/"}
       },
       "facts": [
         {"text": "Manufacturing made up nearly $9.5 billion and 7,600 jobs of 2025's totals.", "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20251218_Gov._Beshe"},
-        {"text": "Year-end releases come out in late December, so the totals are as of that date (2023's was December 22).", "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20231222_Kentucky_C"}
+        {"text": "Figures are from the Cabinet's searchable project database (run November 2026), which is revised as projects change. Its year-end releases gave rounded totals, such as 264 projects, $11.2 billion and 18,100 jobs for 2021.", "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20220103_2021_YearEnd_Recap"}
       ]
     },
     "37": {

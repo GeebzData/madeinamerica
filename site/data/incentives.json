@@ -37,6 +37,18 @@
      "src": "https://mississippitoday.org/2022/11/03/steel-dynamics-tax-incentives/"},
     {"st": "28", "year": 2024, "company": "Amplify Cell Technologies", "place": "Marshall County", "kind": "Batteries", "invest": 1900, "jobs": 2000, "inc": 482,
      "note": "Up to $482M in state incentives for a battery venture of Cummins (Accelera), Daimler Truck and PACCAR. In September 2026 the company cut staff and delayed production.",
-     "src": "https://mississippitoday.org/2026/09/17/battery-plant-mississippi-amplify-delayed/"}
+     "src": "https://mississippitoday.org/2026/09/17/battery-plant-mississippi-amplify-delayed/"},
+    {"st": "21", "year": 2021, "company": "BlueOval SK (Ford and SK On)", "place": "Glendale", "kind": "Batteries", "invest": 5800, "jobs": 5000, "inc": 250,
+     "note": "An interest-free $250M state loan, forgiven as job and wage targets are met. Ford and SK On dissolved the venture in late 2025; Ford took over the plants and the loan with a 2,000-job target by 2028.",
+     "src": "https://www.wdrb.com/news/business/contract-details-reveal-when-kentucky-could-seek-repayment-from-blueoval-sk/article_08b61010-b9a6-4b95-aa0a-d26b4948e52d.html"},
+    {"st": "21", "year": 2022, "company": "Envision AESC", "place": "Bowling Green", "kind": "Batteries", "invest": 2000, "jobs": 2000, "inc": 122,
+     "note": "Up to $116.8M in state incentives plus $5M for training; local incentives took the package above $140M. The state called it its second-largest project.",
+     "src": "https://newkentuckyhome.ky.gov/Newsroom/NewsPage/20220413_EnvisionAESC"},
+    {"st": "37", "year": 2022, "company": "VinFast", "place": "Chatham County", "kind": "Vehicles", "invest": 4000, "jobs": 7500, "inc": 1250,
+     "note": "Up to $1.25B from the state and Chatham County, including a $316M job grant that pays only if at least 6,000 jobs are created. VinFast later pushed the plant's start to 2028.",
+     "src": "https://researchtriangle.org/news/automaker-vinfast-to-invest-4b-in-chatham-county-assembly-plant-lands-1-25b-incentive-package/"},
+    {"st": "37", "year": 2022, "company": "Wolfspeed silicon carbide plant", "place": "Siler City", "kind": "Semiconductors", "invest": 5000, "jobs": 1802, "inc": 775,
+     "note": "Up to $775M in state and local support, mostly local tax reductions over 30 years. Wolfspeed went through Chapter 11 bankruptcy in 2025.",
+     "src": "https://spectrumlocalnews.com/nc/triad/news/2022/09/09/n-c--wins-wolfspeed-semiconductor-materials-plant"}
   ]
 }

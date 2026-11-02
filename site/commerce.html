@@ -40,15 +40,37 @@
   .rc-facts ul { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.6rem; font-size: 1.4rem; color: var(--soft); }
   .rc-facts a { color: var(--muted); font-size: 1.2rem; }
 
+  .rc-map-grid { display: grid; grid-template-columns: minmax(0, 1fr) 34rem; gap: 2.4rem; align-items: start; }
+  .rc-map { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  .rc-map .st { stroke: #fff; stroke-width: 1.2; vector-effect: non-scaling-stroke; cursor: pointer; }
+  .rc-map .st.out { fill: #ECECE8; cursor: default; }
+  .rc-map .cty { fill: #F4F4F1; stroke: #DCDCD6; stroke-width: 0.4; vector-effect: non-scaling-stroke; }
+  .rc-map .cty.none { fill: url(#rc-hatch); }
+  .rc-map .border { fill: none; stroke: #8A8A84; stroke-width: 1; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .rc-map .focus-line { fill: none; stroke-width: 2.6; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .rc-map text { font-family: var(--sans); font-weight: 600; pointer-events: none; }
+  .rc-map .bub { fill-opacity: 0.62; stroke: #fff; stroke-width: 0.8; vector-effect: non-scaling-stroke; cursor: pointer; }
+  .rc-map .bub:hover { fill-opacity: 0.95; }
+  .rc-rank { list-style: none; margin: 1.2rem 0; padding: 0; }
+  .rc-rank li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line-soft); font-size: 1.4rem; }
+  .rc-rank li:last-child { border-bottom: none; }
+  .rc-rank b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .rc-tops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2.4rem; }
+  .rc-tops ol { margin: 0.6rem 0 0; padding-left: 2rem; font-size: 1.35rem; display: grid; gap: 0.4rem; }
+  .rc-tops li span { color: var(--muted); }
+
   .rc-fair { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.6rem; font-size: 1.4rem; color: var(--soft); max-width: 92rem; }
 
   @media (max-width: 900px) {
     .rc-facts { grid-template-columns: minmax(0, 1fr); }
+    .rc-map-grid { grid-template-columns: minmax(0, 1fr); }
+    .rc-tops { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   @media (max-width: 600px) {
     .block .card { padding: 1.4rem; }
     .intro h1 { font-size: 3.4rem; }
+    .rc-tops { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 </head>
@@ -106,6 +128,62 @@
     </div>
   </section>
 
+  <section class="wrap block" aria-labelledby="rc-map-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="rc-map-h">On the map</h2>
+        <div class="mo-tools">
+          <div class="segmented small" id="rc-map-metric" role="group" aria-label="Map measure">
+            <button type="button" data-v="jpc" aria-pressed="true">Jobs per resident</button>
+            <button type="button" data-v="ipc" aria-pressed="false">Investment per resident</button>
+          </div>
+          <label class="mo-sort">Period <select class="select" id="rc-map-year"></select></label>
+        </div>
+      </div>
+      <p class="lede" id="rc-map-lede"></p>
+      <div class="rc-map-grid">
+        <div class="map-wrap" id="rc-map-wrap">
+          <svg id="rc-map" class="rc-map" role="img" aria-label="Map of the seven states shaded by recruiting results"></svg>
+          <div class="tooltip" id="rc-tip" hidden></div>
+        </div>
+        <div class="rc-map-side">
+          <div class="legend" id="rc-map-legend"></div>
+          <ol class="rc-rank" id="rc-map-rank"></ol>
+          <p class="panel-note">Hover or tap a state for its figures. Darker green is higher. Gray states are outside the comparison.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="rc-cty-h">
+    <div class="card">
+      <div class="block-head">
+        <h2 id="rc-cty-h">Where the projects land</h2>
+        <div class="segmented small" id="rc-cty-metric" role="group" aria-label="Bubble size">
+          <button type="button" data-v="j" aria-pressed="true">Jobs</button>
+          <button type="button" data-v="inv" aria-pressed="false">Investment</button>
+        </div>
+      </div>
+      <p class="lede">Committed jobs or promised investment by county, 2021 to 2025, for the four agencies that publish county detail. Each bubble is one county, in its state's color. Georgia, Tennessee and Mississippi don't publish county totals, so they are hatched.</p>
+      <div class="rc-map-grid">
+        <div class="map-wrap" id="rc-cty-wrap">
+          <svg id="rc-cty" class="rc-map" role="img" aria-label="Map of committed jobs by county"></svg>
+          <div class="tooltip" id="rc-cty-tip" hidden></div>
+        </div>
+        <div class="rc-map-side">
+          <div class="legend" id="rc-cty-legend"></div>
+          <h3 class="mo-h3">How concentrated</h3>
+          <p class="mo-sub" style="font-size:1.3rem">Share of each state's committed jobs that went to its three biggest counties, and how many of its counties landed at least one project.</p>
+          <div class="table-scroll"><table class="data-table" id="rc-conc"></table></div>
+          <p class="mo-sub" id="rc-conc-lede" style="font-size:1.3rem;margin-top:1rem"></p>
+        </div>
+      </div>
+      <h3 class="mo-h3">Top counties</h3>
+      <div class="rc-tops" id="rc-tops"></div>
+      <p class="panel-note" id="rc-cty-note" style="margin-top:1.6rem"></p>
+    </div>
+  </section>
+
   <section class="wrap block" aria-labelledby="rc-year-h">
     <div class="card">
       <div class="block-head">
@@ -159,6 +237,7 @@
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script>
   // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
   const ORDER = ['01', '13', '47', '45', '28', '21', '37'];
@@ -341,8 +420,191 @@
     $('rc-sources').innerHTML = S.map(s => {
       const links = s.list.map(r => `<a href="${r.src}">${r.y}</a>`).join(', ');
       return `<li>${esc(s.st.agency)}, ${esc(s.st.report)}: ${links}.</li>`;
-    }).join('') + '<li><a href="https://www.census.gov/programs-surveys/popest.html">Census Bureau population estimates</a> (vintage 2025): used only to scale figures per resident.</li>';
+    }).join('') +
+      '<li>County detail, 2021–2025: <a href="https://www.sccommerce.com/state-economy/project-recruitment-data">S.C. Commerce dashboard</a> (County filter); North Carolina county tables in Commerce\'s reports to the General Assembly for ' +
+      [[2021, 28411], [2022, 75889], [2023, 84725], [2024, 94639], [2025, 105354]].map(([y, id]) => `<a href="https://webservices.ncleg.gov/ViewDocSiteFile/${id}">${y}</a>`).join(', ') +
+      '; <a href="https://locationexpansionsearch.ced.ky.gov/">Kentucky Location and Expansion Search</a>; Alabama from the New &amp; Expanding Industry reports.</li>' +
+      '<li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state and county outlines from the Census Bureau.</li>' +
+      '<li><a href="https://www.census.gov/programs-surveys/popest.html">Census Bureau population estimates</a> (vintage 2025): used only to scale figures per resident.</li>';
     $('notes').textContent = `${C.note} Compiled ${C.updated}.`;
+  }
+
+  // ---------- Maps ----------
+  const ATLAS = 'https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/counties-albers-10m.json';
+  const NO_COUNTY = ['13', '47', '28'];
+  let topo, CC, ANN, mapMetric = 'jpc', mapYear = 'all', ctyMetric = 'j';
+  const path = d3.geoPath();
+
+  // The seven states' outline box, padded, as a viewBox for both maps.
+  function regionBox(features) {
+    const b = features.map(f => path.bounds(f));
+    const x0 = d3.min(b, d => d[0][0]), y0 = d3.min(b, d => d[0][1]), x1 = d3.max(b, d => d[1][0]), y1 = d3.max(b, d => d[1][1]);
+    const pad = (x1 - x0) * 0.03;
+    return [x0 - pad, y0 - pad, x1 - x0 + pad * 2, y1 - y0 + pad * 2];
+  }
+
+  function showTip(tip, wrap, event, html) {
+    tip.innerHTML = html;
+    tip.hidden = false;
+    const r = wrap.getBoundingClientRect();
+    const x = event.clientX - r.left, y = event.clientY - r.top;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = `${Math.max(0, Math.min(r.width - w, x + 16 > r.width - w ? x - w - 16 : x + 16))}px`;
+    tip.style.top = `${Math.max(0, Math.min(r.height - h, y - h / 2))}px`;
+  }
+
+  function mapValue(s) {
+    if (mapYear === 'all') return s[mapMetric];
+    return s.list.find(r => r.y === +mapYear)[mapMetric];
+  }
+
+  function drawStateMap() {
+    const states = topojson.feature(topo, topo.objects.states).features;
+    const ours = states.filter(f => ORDER.includes(f.id));
+    const box = regionBox(ours);
+    const svg = d3.select('#rc-map').attr('viewBox', box.join(' '));
+    svg.selectAll('*').remove();
+    const vals = S.map(mapValue);
+    const scale = d3.scaleLinear().domain(d3.extent(vals)).range(['#DCE9DD', '#2E5234']).interpolate(d3.interpolateRgb);
+    const mid = d3.mean(d3.extent(vals));
+    const byId = Object.fromEntries(S.map(s => [s.f, s]));
+    const f2 = v => (mapMetric === 'jpc' ? v.toFixed(mapYear === 'all' ? 0 : 1) : `$${fmt(Math.round(v / 10) * 10)}`);
+    const tip = $('rc-tip'), wrap = $('rc-map-wrap');
+    const ranked = S.slice().sort((a, b) => mapValue(b) - mapValue(a));
+    svg.append('g').selectAll('path').data(states).join('path')
+      .attr('class', d => (byId[d.id] ? 'st' : 'st out')).attr('d', path)
+      .style('fill', d => (byId[d.id] ? scale(mapValue(byId[d.id])) : null))
+      .on('mousemove click', (event, d) => {
+        const st = byId[d.id];
+        if (!st) { tip.hidden = true; return; }
+        const r = mapYear === 'all' ? null : st.list.find(x => x.y === +mapYear);
+        const j = r ? r.j : st.j, inv = r ? r.inv : st.inv, pr = r ? r.p : st.p;
+        showTip(tip, wrap, event, `${chip(st)}<p class="sub" style="margin:0.6rem 0 0">${mapYear === 'all' ? (/fiscal/i.test(st.st.period) ? 'FY2021–FY2025' : '2021–2025') : (/fiscal/i.test(st.st.period) ? 'FY' : '') + mapYear}</p>
+          <p class="big">${f2(mapValue(st))}</p><p class="range">${mapMetric === 'jpc' ? 'committed jobs per 10,000 residents' : 'promised investment per resident'}, ${ordinal(ranked.indexOf(st) + 1)} of ${S.length}</p>
+          <div class="row"><span>Committed jobs</span><b>${(r && r.approx) ? '~' : ''}${fmt(Math.round(j))}</b></div>
+          <div class="row"><span>Promised investment</span><b>${money(inv)}</b></div>
+          <div class="row"><span>Projects</span><b>${pr == null ? 'not published' : fmt(pr)}</b></div>
+          <div class="row"><span>${esc(st.st.agency)}</span><span></span></div>`);
+      })
+      .on('mouseleave', () => { tip.hidden = true; });
+    svg.append('path').attr('class', 'focus-line').attr('d', path(states.find(f => f.id === FOCUS))).style('stroke', COLOR[FOCUS][0]);
+    // Keep labels at least 11px on screen, however small the map is drawn.
+    const px = box[2] / (svg.node().getBoundingClientRect().width || 900);
+    const fs = Math.max(box[2] / 55, 11 * px);
+    const nudge = { '37': [box[2] * 0.03, 0], '21': [box[2] * 0.02, 0], '45': [box[2] * 0.01, box[3] * 0.01] };
+    const lab = svg.append('g');
+    for (const f of ours) {
+      const st = byId[f.id];
+      const [cx, cy] = path.centroid(f);
+      const [dx, dy] = nudge[f.id] || [0, 0];
+      const color = mapValue(st) > mid ? '#fff' : '#141414';
+      const t = lab.append('text').attr('x', cx + dx).attr('y', cy + dy).attr('text-anchor', 'middle').style('fill', color);
+      t.append('tspan').attr('x', cx + dx).attr('font-size', fs).text(st.st.abbr);
+      t.append('tspan').attr('x', cx + dx).attr('dy', fs * 1.15).attr('font-size', fs * 0.9).attr('font-weight', 500).text(f2(mapValue(st)));
+    }
+    const [lo, hi] = d3.extent(vals);
+    $('rc-map-legend').innerHTML = `<div class="legend-scale">${d3.range(5).map(i => {
+      const v = lo + (hi - lo) * i / 4;
+      return `<div><span style="background:${scale(v)}"></span><small>${i === 0 || i === 4 ? f2(v) : ''}</small></div>`;
+    }).join('')}</div>`;
+    $('rc-map-rank').innerHTML = ranked.map((st, i) => `<li><span>${i + 1}. ${chip(st)}</span><b>${f2(mapValue(st))}</b></li>`).join('');
+    const label = mapYear === 'all' ? '2021 to 2025 combined' : `in ${mapYear} (Georgia and Mississippi: fiscal ${mapYear})`;
+    $('rc-map-lede').textContent = `${mapMetric === 'jpc' ? 'Committed jobs per 10,000 residents' : 'Promised investment per resident'}, ${label}. ${ranked[0].name} leads; Alabama is ${ordinal(ranked.indexOf(byId[FOCUS]) + 1)} of ${S.length}.`;
+  }
+
+  // County totals for 2021-2025: Alabama from announcements.json, the other three from commerce_counties.json.
+  function countyRows(ann) {
+    const rows = {};
+    const [y0, y1] = CC.period;
+    for (const [f, byYear] of Object.entries(ann.counties)) {
+      const t = [0, 0, 0];
+      for (let y = y0; y <= y1; y++) {
+        const v = byYear[String(y)];
+        if (v) { t[0] += v[0]; t[1] += v[1]; t[2] += v[2] / 1e6; }
+      }
+      if (t[0]) rows[f] = t;
+    }
+    for (const st of Object.values(CC.states)) Object.assign(rows, st.counties);
+    return rows;
+  }
+
+  function drawCountyMap(ann) {
+    const states = topojson.feature(topo, topo.objects.states).features;
+    const counties = topojson.feature(topo, topo.objects.counties).features;
+    const ours = states.filter(f => ORDER.includes(f.id));
+    const box = regionBox(ours);
+    const svg = d3.select('#rc-cty').attr('viewBox', box.join(' '));
+    svg.selectAll('*').remove();
+    const defs = svg.append('defs');
+    const hatch = defs.append('pattern').attr('id', 'rc-hatch').attr('width', 5).attr('height', 5)
+      .attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
+    hatch.append('rect').attr('width', 5).attr('height', 5).attr('fill', '#EFEFEB');
+    hatch.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 5).attr('stroke', '#C9C9C3').attr('stroke-width', 1.4);
+    const rows = countyRows(ann);
+    const withData = ['01', ...Object.keys(CC.states)];
+    svg.append('g').selectAll('path').data(states.filter(f => !ORDER.includes(f.id))).join('path').attr('class', 'st out').attr('d', path);
+    svg.append('g').selectAll('path').data(states.filter(f => NO_COUNTY.includes(f.id))).join('path').attr('class', 'cty none').attr('d', path);
+    const shown = counties.filter(f => withData.includes(f.id.slice(0, 2)));
+    svg.append('g').selectAll('path').data(shown).join('path').attr('class', 'cty').attr('d', path);
+    svg.append('path').attr('class', 'border').attr('d', path(topojson.mesh(topo, topo.objects.states, (a, b) => a !== b)));
+    const i = ctyMetric === 'j' ? 1 : 2;
+    const pts = shown.filter(f => rows[f.id] && rows[f.id][i] > 0)
+      .map(f => ({ f, v: rows[f.id], c: path.centroid(f), st: f.id.slice(0, 2) }))
+      .sort((a, b) => b.v[i] - a.v[i]);
+    const r = d3.scaleSqrt().domain([0, d3.max(pts, d => d.v[i])]).range([0, box[2] / 26]);
+    const tip = $('rc-cty-tip'), wrap = $('rc-cty-wrap');
+    const byId = Object.fromEntries(S.map(s => [s.f, s]));
+    svg.append('g').selectAll('circle').data(pts).join('circle').attr('class', 'bub')
+      .attr('cx', d => d.c[0]).attr('cy', d => d.c[1]).attr('r', d => r(d.v[i])).style('fill', d => COLOR[d.st][0])
+      .on('mousemove click', (event, d) => {
+        showTip(tip, wrap, event, `${chip(byId[d.st])}<h3 style="margin-top:0.6rem">${esc(d.f.properties.name)} County</h3><p class="sub">2021–2025, as the state agency reports it</p>
+          <div class="row"><span>Projects</span><b>${fmt(d.v[0])}</b></div>
+          <div class="row"><span>Committed jobs</span><b>${fmt(Math.round(d.v[1]))}</b></div>
+          <div class="row"><span>Promised investment</span><b>${money(d.v[2])}</b></div>
+          <div class="row"><span>Share of the state's jobs</span><b>${Math.round(d.v[1] / d3.sum(pts.filter(p => p.st === d.st), p => p.v[1]) * 100)}%</b></div>`);
+      })
+      .on('mouseleave', () => { tip.hidden = true; });
+    const fs = Math.max(box[2] / 60, 10 * box[2] / (svg.node().getBoundingClientRect().width || 900));
+    for (const f of states.filter(f => NO_COUNTY.includes(f.id))) {
+      const [cx, cy] = path.centroid(f);
+      const t = svg.append('text').attr('x', cx).attr('y', cy).attr('text-anchor', 'middle').style('fill', '#5C5C57');
+      t.append('tspan').attr('x', cx).attr('font-size', fs).text(byId[f.id].name);
+      t.append('tspan').attr('x', cx).attr('dy', fs * 1.2).attr('font-size', fs * 0.75).attr('font-weight', 400).text('no county totals');
+    }
+    const big = d3.max(pts, d => d.v[i]);
+    const unit = v => (ctyMetric === 'j' ? `${fmt(Math.round(v))} jobs` : money(v));
+    const ref = [big, big / 4, big / 16].map(v => (ctyMetric === 'j' ? Math.round(v / 100) * 100 : Math.round(v / 100) * 100));
+    const k = svg.node().getBoundingClientRect().width / box[2] || 1;
+    const R = r(ref[0]) * k;
+    // Labels sit at each circle's top, pushed apart so they never overlap.
+    const ty = [];
+    ref.forEach((v, j) => { ty.push(Math.max(R * 2 + 14 - r(v) * k * 2, j ? ty[j - 1] + 13 : 0)); });
+    const LH = Math.ceil(Math.max(R * 2 + 10, ty[ty.length - 1] + 4));
+    $('rc-cty-legend').innerHTML = `<svg width="200" height="${LH}" aria-hidden="true">${ref.map((v, j) => {
+      const rr = r(v) * k;
+      return `<circle cx="${R + 2}" cy="${R * 2 + 7 - rr}" r="${rr}" fill="none" stroke="#8A8A84"></circle><text x="${R * 2 + 12}" y="${ty[j]}" font-size="11" fill="#4A4A46">${unit(v)}</text>`;
+    }).join('')}</svg>`;
+
+    // Concentration: top-three share of jobs and counties with any project, per state with county data.
+    const countyCount = st => counties.filter(f => f.id.startsWith(st)).length;
+    const conc = withData.map(st => {
+      const list = Object.entries(rows).filter(([f]) => f.startsWith(st)).map(([f, v]) => ({ f, v, name: (counties.find(c => c.id === f) || { properties: { name: f } }).properties.name }));
+      const tot = d3.sum(list, d => d.v[1]);
+      const top = list.slice().sort((a, b) => b.v[1] - a.v[1]);
+      return { st, s: byId[st], share: d3.sum(top.slice(0, 3), d => d.v[1]) / tot * 100, n: list.filter(d => d.v[0] > 0).length, of: countyCount(st), list };
+    }).sort((a, b) => a.share - b.share);
+    $('rc-conc').innerHTML = '<thead><tr><th>State</th><th>Top 3<br>counties</th><th>Counties with<br>a project</th></tr></thead><tbody>' +
+      conc.map(c => `<tr class="${c.st === FOCUS ? 'is-focus' : ''}"><td>${chip(c.s)}</td><td>${Math.round(c.share)}%</td><td>${c.n} of ${c.of}</td></tr>`).join('') + '</tbody>';
+    $('rc-tops').innerHTML = ORDER.filter(st => withData.includes(st)).map(st => {
+      const c = conc.find(x => x.st === st);
+      const top = c.list.slice().sort((a, b) => b.v[i] - a.v[i]).slice(0, 5);
+      return `<div>${chip(c.s)}<ol>${top.map(d => `<li>${esc(d.name)} <span>${unit(d.v[i])}</span></li>`).join('')}</ol></div>`;
+    }).join('');
+    const spread = conc[0], top = Math.round(conc[conc.length - 1].share);
+    const tight = conc.filter(c => Math.round(c.share) === top).map(c => c.s.name);
+    $('rc-conc-lede').textContent = `${spread.s.name}'s three biggest counties drew ${Math.round(spread.share)}% of its committed jobs, the most evenly spread of the four. ` +
+      `${tight.join(' and ')}${tight.length > 1 ? ' were the most concentrated, at' : ' was the most concentrated, at'} ${top}%.`;
+    $('rc-cty-note').textContent = CC.note;
   }
 
   function downloadCsv() {
@@ -363,14 +625,31 @@
   Promise.all([
     d3.json('data/commerce.json'),
     d3.json('data/announcements.json'),
-    d3.json('data/conditions.json')
-  ]).then(([c, ann, cond]) => {
+    d3.json('data/conditions.json'),
+    d3.json(ATLAS),
+    d3.json('data/commerce_counties.json')
+  ]).then(([c, ann, cond, t, cc]) => {
     C = c;
+    ANN = ann;
+    topo = t;
+    CC = cc;
     build(ann, cond);
     drawKpis();
     drawScore();
+    $('rc-map-year').innerHTML = '<option value="all">2021–2025</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+    drawStateMap();
+    drawCountyMap(ann);
     drawYears();
     drawText();
+    $('rc-map-year').addEventListener('change', e => { mapYear = e.target.value; drawStateMap(); });
+    for (const [id, fn] of [['rc-map-metric', v => { mapMetric = v; drawStateMap(); }], ['rc-cty-metric', v => { ctyMetric = v; drawCountyMap(ann); }]]) {
+      $(id).addEventListener('click', e => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        $(id).querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+        fn(b.dataset.v);
+      });
+    }
     $('rc-sort').addEventListener('change', e => { sortKey = e.target.value; drawScore(); });
     $('rc-dl').addEventListener('click', downloadCsv);
     let width = innerWidth;
@@ -378,6 +657,8 @@
       if (innerWidth === width) return;
       width = innerWidth;
       drawYears();
+      drawStateMap();
+      drawCountyMap(ANN);
     });
     $('rc-metric').addEventListener('click', e => {
       const b = e.target.closest('button');

@@ -3,3 +3,4 @@ pandas
 pyarrow
 openpyxl
 pdfplumber
+websocket-client  # pipeline/commerce browser scripts only

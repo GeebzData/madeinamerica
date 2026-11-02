@@ -1,4 +1,4 @@
-"""Download BLS QCEW industry detail for the nation and the five Southeast states.
+"""Download BLS QCEW industry detail for the nation and seven Southeast states.
 
 One open-data API file per area and year (no key). Keeps private-sector rows for every
 two-digit sector, and for manufacturing every three-, four- and six-digit industry. Pay is
@@ -25,7 +25,7 @@ OUT = ROOT.parent / 'site' / 'data' / 'industries.json'
 HEADERS = {'User-Agent': 'ManufacturingMap research (https://madeinamerica.gerardbarile.com)'}
 API = 'https://data.bls.gov/cew/data/api/{year}/a/area/{area}.csv'
 TITLES = 'https://data.bls.gov/cew/doc/titles/industry/industry_titles.csv'
-AREAS = {'US000': 'US', '01000': '01', '13000': '13', '47000': '47', '45000': '45', '28000': '28'}
+AREAS = {'US000': 'US', '01000': '01', '13000': '13', '47000': '47', '45000': '45', '28000': '28', '37000': '37', '21000': '21'}
 FIRST_YEAR = 2015
 LAST_YEAR = 2025
 # National 14/15/16/18 and state 54/55/56/58 = sector / 3-digit / 4-digit / 6-digit
