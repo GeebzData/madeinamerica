@@ -21,7 +21,7 @@
   .rc-findings { margin: 0; padding-left: 1.8rem; display: grid; gap: 0.8rem; font-size: 1.5rem; max-width: 92rem; }
   .rc-findings b { font-weight: 600; }
   .rank { color: var(--muted); font-size: 1.2rem; font-weight: 400; margin-left: 0.4rem; }
-  .data-table tr.is-focus .rank { font-weight: 600; color: var(--gain); }
+  .data-table tr.is-focus .rank { font-weight: 600; color: #9E1B32; }
   .approx { color: var(--muted); }
 
   #rc-chart { width: 100%; height: auto; display: block; touch-action: pan-y; }
@@ -163,6 +163,13 @@
   // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
   const ORDER = ['01', '13', '47', '45', '28', '21', '37'];
   const FOCUS = '01';
+  // School colors, matching the Southeast page: Alabama crimson, Georgia red, Tennessee orange,
+  // Clemson Regalia purple, Ole Miss navy, Kentucky blue, Carolina blue.
+  const COLOR = {
+    '01': ['#9E1B32', '#fff'], '13': ['#BA0C2F', '#fff'], '47': ['#FF8200', '#141414'], '45': ['#522D80', '#fff'],
+    '28': ['#14213D', '#fff'], '21': ['#0033A0', '#fff'], '37': ['#4B9CD3', '#141414']
+  };
+  const chip = s => `<span class="st-chip" style="background:${COLOR[s.f][0]};color:${COLOR[s.f][1]}">${s.name}</span>`;
   const fmt = d3.format(',');
   const $ = id => document.getElementById(id);
   const money = m => (m == null ? 'n/a' : m >= 1000 ? `$${(m / 1000).toFixed(1)}B` : `$${Math.round(m)}M`);
@@ -263,7 +270,7 @@
   function drawScore() {
     const rows = S.slice().sort((a, b) => b[sortKey] - a[sortKey]);
     $('rc-score').innerHTML = `<thead><tr><th>State<small>period</small></th>${COLS.map(c => `<th>${c.h}</th>`).join('')}</tr></thead><tbody>` +
-      rows.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}${s.approx ? ' <span class="approx">~</span>' : ''}<small>${/fiscal/i.test(s.st.period) ? 'FY2021–FY2025' : '2021–2025'}</small></td>` +
+      rows.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${chip(s)}${s.approx ? ' <span class="approx">~</span>' : ''}<small>${/fiscal/i.test(s.st.period) ? 'FY2021–FY2025' : '2021–2025'}</small></td>` +
         COLS.map(c => `<td>${c.v(s)}${c.rank === false || c.k === 'j' || c.k === 'inv' ? '' : `<span class="rank">${ordinal(s['r_' + c.k])}</span>`}</td>`).join('') + '</tr>').join('') + '</tbody>';
     $('rc-score-note').textContent = '~ includes at least one year the agency published as a rounded figure. Fiscal-year states (FY) end June 30. The last two columns compare 2025 with the average of 2021 to 2024; a single large project can swing them.';
   }
@@ -296,24 +303,25 @@
     if (over > 0) labeled.forEach(o => { o.y -= over; });
     for (const l of lines.slice().sort((a, b) => (a.s.f === FOCUS) - (b.s.f === FOCUS))) {
       const focus = l.s.f === FOCUS;
-      const color = focus ? '#355E3B' : '#9C9C96';
-      svg.append('path').attr('d', line(l.v)).attr('fill', 'none').attr('stroke', color).attr('stroke-width', focus ? 2.6 : 1.2);
+      const color = COLOR[l.s.f][0];
+      svg.append('path').attr('d', line(l.v)).attr('fill', 'none').attr('stroke', color).attr('stroke-width', focus ? 3.2 : 1.6)
+        .attr('stroke-opacity', focus ? 1 : 0.8);
       svg.append('g').selectAll('circle').data(l.v.map((v, i) => [v, i]).filter(d => d[0] != null)).join('circle')
-        .attr('cx', d => x(years[d[1]])).attr('cy', d => y(d[0])).attr('r', focus ? 3.2 : 2).style('fill', color);
+        .attr('cx', d => x(years[d[1]])).attr('cy', d => y(d[0])).attr('r', focus ? 3.6 : 2.4).style('fill', color);
       const lab = labeled.find(o => o.l === l);
       if (lab) {
-        svg.append('text').attr('class', focus ? 'end-label' : null).attr('x', W - m.r + 8).attr('y', lab.y)
-          .style('fill', focus ? color : '#4A4A46').text(`${W < 500 ? l.s.st.abbr : l.s.name} ${M.f(l.v[l.v.length - 1])}`);
+        svg.append('text').attr('class', 'end-label').attr('x', W - m.r + 8).attr('y', lab.y)
+          .style('fill', color).style('font-weight', focus ? 700 : 600).text(`${W < 500 ? l.s.st.abbr : l.s.name} ${M.f(l.v[l.v.length - 1])}`);
       }
     }
-    $('rc-key').innerHTML = `<span><i style="border-color:#355E3B"></i>Alabama</span><span><i style="border-color:#9C9C96"></i>Peer states</span><span>${M.label}</span>`;
+    $('rc-key').innerHTML = S.map(s => `<span><i style="border-color:${COLOR[s.f][0]};${s.f === FOCUS ? 'border-top-width:3px' : ''}"></i>${s.name}</span>`).join('') + `<span>${M.label}</span>`;
     $('rc-year-lede').textContent = metric === 'p'
       ? 'Project counts depend most on each state\'s rules: Alabama lists every project it records, while most peers count only projects their agency worked. Mississippi does not publish a count.'
       : metric === 'jpc'
         ? 'Committed jobs scaled by population. Single megaprojects show up as spikes: Georgia\'s Rivian and Hyundai plants in FY2022 and North Carolina\'s JetZero in 2025.'
         : 'Promised investment scaled by population. Data centers lift Mississippi in FY2024 and FY2025, and Alabama\'s 2025 is its largest year in the series.';
     $('rc-years').innerHTML = `<thead><tr><th>${M.label}</th>${years.map(y => `<th>${y}</th>`).join('')}</tr></thead><tbody>` +
-      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}</td>${s.list.map(r => {
+      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${chip(s)}</td>${s.list.map(r => {
         const v = M.v(r);
         return `<td>${v == null ? 'n/a' : (r.approx ? '~' : '') + M.f(v)}</td>`;
       }).join('')}</tr>`).join('') + '</tbody>';
@@ -326,10 +334,10 @@
         const e = s.list.map(r => Math.round(r.expShare));
         facts.unshift({ text: `Expansions of companies already in Alabama were ${d3.min(e)}% to ${d3.max(e)}% of the projects recorded each year from 2021 to 2025.`, src: C.states['01'].src.replace('{year}', 2025) });
       }
-      return `<div><h3>${s.name}</h3><ul>${facts.map(t => `<li>${esc(t.text)} <a href="${t.src}">Source</a></li>`).join('')}</ul></div>`;
+      return `<div><h3>${chip(s)}</h3><ul>${facts.map(t => `<li>${esc(t.text)} <a href="${t.src}">Source</a></li>`).join('')}</ul></div>`;
     }).join('');
     $('rc-scope').innerHTML = '<thead><tr><th>State</th><th>Agency and report</th><th>Period</th><th>What is counted</th></tr></thead><tbody>' +
-      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${s.name}</td><td>${esc(s.st.agency)}<small>${esc(s.st.report)}</small></td><td>${esc(s.st.period)}</td><td>${esc(s.st.scope)}</td></tr>`).join('') + '</tbody>';
+      S.map(s => `<tr class="${s.f === FOCUS ? 'is-focus' : ''}"><td>${chip(s)}</td><td>${esc(s.st.agency)}<small>${esc(s.st.report)}</small></td><td>${esc(s.st.period)}</td><td>${esc(s.st.scope)}</td></tr>`).join('') + '</tbody>';
     $('rc-sources').innerHTML = S.map(s => {
       const links = s.list.map(r => `<a href="${r.src}">${r.y}</a>`).join(', ');
       return `<li>${esc(s.st.agency)}, ${esc(s.st.report)}: ${links}.</li>`;
