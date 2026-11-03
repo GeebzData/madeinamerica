@@ -7,12 +7,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reindustrialization · Made in America</title>
 <link rel="canonical" href="https://madeinamerica.gerardbarile.com/">
-<meta name="description" content="American factories are producing a record amount with fewer workers. Where they are growing, how productive they are, what robots and federal incentives are doing next.">
+<meta name="description" content="American factories are producing a record amount with fewer workers. Where they are growing, how productive they are, and how incentives, entrepreneurs and robots are pushing the same way.">
 <link rel="stylesheet" href="vendor/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css">
 <style>
   .ranks { display: flex; flex-direction: column; gap: 1.8rem; }
+
+  .kpis { padding-top: 2.4rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; }
+  .kpi { border-top: 2px solid var(--ink); padding-top: 1rem; }
+  .kpi span { display: block; font-size: 1.2rem; color: var(--muted); }
+  .kpi strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 3.6rem; line-height: 1.15; }
+  .kpi small { display: block; font-size: 1.3rem; color: var(--soft); }
 
   .block { padding-top: 2rem; }
   .block .card { padding: 2rem; }
@@ -39,6 +45,7 @@
   .key span { display: inline-flex; align-items: center; gap: 0.6rem; }
   .key i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid; }
   .key i.dash { border-top-style: dashed; }
+  .key i.bar { height: 1rem; width: 1.2rem; border: none; }
 
   .theme { padding-top: 3.2rem; }
   .theme p { margin: 0; font-size: 1.8rem; line-height: 1.5; max-width: 92rem; }
@@ -63,6 +70,7 @@
   .story .readout { font-size: 1.4rem; min-height: 2.1rem; margin: 0.4rem 0; }
 
   @media (max-width: 900px) {
+    .kpis { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
     .story-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
     .bar-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
     .bar-value { text-align: left; }
@@ -72,6 +80,7 @@
     .block .card { padding: 1.4rem; }
     .story h2 { font-size: 2.4rem; }
     .theme p { font-size: 1.6rem; }
+    .kpi strong { font-size: 3rem; }
   }
 </style>
 </head>
@@ -96,17 +105,10 @@
     <p id="hero-lede">Real factory output is at a record, and each worker produces far more than a generation ago. The map shows where manufacturing is growing since the year you pick.</p>
   </section>
 
-  <section class="wrap controls" aria-label="Since year">
-    <div class="control">
-      <span class="control-label">Since</span>
-      <div class="segmented" id="since" role="group" aria-label="Since year"></div>
-    </div>
-    <div class="control since-range">
-      <label for="since-range" class="control-label">Any year</label>
-      <input type="range" id="since-range" step="1">
-      <strong id="since-year"></strong>
-    </div>
-    <p class="since-note" id="since-note" hidden></p>
+  <section class="wrap kpis" aria-label="Headline numbers">
+    <div class="kpi"><span id="k1-label"></span><strong id="k1"></strong><small id="k1-note"></small></div>
+    <div class="kpi"><span id="k2-label"></span><strong id="k2"></strong><small id="k2-note"></small></div>
+    <div class="kpi"><span id="k3-label"></span><strong id="k3"></strong><small id="k3-note"></small></div>
   </section>
 
   <section class="wrap controls" aria-label="Map filters">
@@ -130,6 +132,19 @@
           data-source="BLS Quarterly Census of Employment and Wages (employer unemployment-insurance filings)">Factory jobs</button>
       </div>
     </div>
+  </section>
+
+  <section class="wrap controls" aria-label="Since year">
+    <div class="control">
+      <span class="control-label">Since</span>
+      <div class="segmented" id="since" role="group" aria-label="Since year"></div>
+    </div>
+    <div class="control since-range">
+      <label for="since-range" class="control-label">Any year</label>
+      <input type="range" id="since-range" step="1">
+      <strong id="since-year"></strong>
+    </div>
+    <p class="since-note" id="since-note" hidden></p>
   </section>
 
   <section class="wrap explore">
@@ -167,7 +182,7 @@
 
   <section class="wrap theme" aria-label="What this page shows">
     <p class="eyebrow">Four stories, one thread</p>
-    <p>American factories are producing a record amount with fewer people, and their workers are the most productive of any large manufacturing country. Productivity gains have stalled since 2011, and robots and federal incentives are the two forces positioned to restart them. Each chart below makes one of those points, with its source.</p>
+    <p id="theme-text">American factories make a record amount with fewer people, and each worker produces more than in any other large manufacturing country. Two forces are now pushing the same way: federal incentives are paying for new plants, and entrepreneurs are starting manufacturing businesses faster than at any time before 2020. The next leg up is automation. Output per hour has been flat since 2011, and robots are how it climbs again.</p>
   </section>
 
   <section class="wrap block story" id="record" aria-labelledby="record-h">
@@ -175,6 +190,7 @@
       <p class="story-num">Story 1 of 4</p>
       <h2 id="record-h">American factories are producing more than ever</h2>
       <p class="lede" id="record-lede"></p>
+      <p class="readout" id="record-readout"></p>
       <div class="chart"><svg id="record-chart" role="img" aria-label="Real manufacturing GDP by year since 1997"></svg></div>
       <p class="panel-note" id="record-note"></p>
     </div>
@@ -189,6 +205,7 @@
         <span><i style="border-color:var(--gain)"></i>Output per worker</span>
         <span><i class="dash" style="border-color:#8A8A84"></i>Factory jobs</span>
       </div>
+      <p class="readout" id="worker-readout"></p>
       <div class="chart"><svg id="worker-chart" role="img" aria-label="Real output per factory worker and factory jobs, indexed to 1997"></svg></div>
       <p class="panel-note" id="worker-note"></p>
       <h3 class="sub-h" id="world-h">Ahead of every other large manufacturing country</h3>
@@ -198,17 +215,51 @@
     </div>
   </section>
 
-  <section class="wrap block story" id="robots" aria-labelledby="robots-h">
+  <section class="wrap block story" id="investment" aria-labelledby="money-h">
     <div class="card">
       <p class="story-num">Story 3 of 4</p>
+      <h2 id="money-h">Incentives and entrepreneurs are building at the same time</h2>
+      <p class="lede" id="money-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Factory construction, adjusted for building costs (left scale)</span>
+        <span><i class="bar" style="background:#DCDCD6"></i>Net new manufacturing establishments that year (right scale)</span>
+      </div>
+      <p class="readout" id="money-readout"></p>
+      <div class="chart"><svg id="money" role="img" aria-label="Monthly factory construction spending since 2008, with net new manufacturing establishments each year"></svg></div>
+      <p class="panel-note" id="money-note"></p>
+      <h3 class="sub-h" id="formation-h">Entrepreneurs are starting manufacturing businesses</h3>
+      <p class="sub-lede" id="formation-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Applications to start a manufacturing business</span>
+        <span><i class="dash" style="border-color:#8A8A84"></i>Of those, likely to hire</span>
+      </div>
+      <p class="readout" id="formation-readout"></p>
+      <div class="chart"><svg id="formation-chart" role="img" aria-label="Applications to start a manufacturing business, by year since 2005"></svg></div>
+      <p class="panel-note" id="formation-note"></p>
+      <h3 class="sub-h" id="types-h">Which industries are building</h3>
+      <p class="sub-lede" id="types-lede"></p>
+      <div class="bar-legend">
+        <span><i style="background:#C9C9C3"></i>2019–2021 average</span>
+        <span><i style="background:var(--gain)"></i>Last 12 months</span>
+      </div>
+      <div id="bars"></div>
+      <p class="panel-note" id="types-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block story" id="robots" aria-labelledby="robots-h">
+    <div class="card">
+      <p class="story-num">Story 4 of 4</p>
       <h2 id="robots-h">Productivity stalled after 2011. Robots are how it climbs again.</h2>
       <p class="lede" id="robots-lede"></p>
+      <p class="readout" id="hour-readout"></p>
       <div class="chart"><svg id="hour-chart" role="img" aria-label="Manufacturing output per hour since 1987"></svg></div>
       <p class="panel-note" id="hour-note"></p>
       <div class="story-grid">
         <div class="panel-mini">
           <h3 class="sub-h" id="imports-h">Robot imports are climbing</h3>
           <p class="sub-lede" id="imports-lede"></p>
+          <p class="readout" id="imports-readout"></p>
           <div class="chart"><svg id="imports-chart" role="img" aria-label="U.S. imports of industrial robots by year"></svg></div>
         </div>
         <div class="panel-mini">
@@ -225,28 +276,6 @@
       <h3 class="sub-h">Humanoid robots are being tested in Southeast plants</h3>
       <ul class="deployments" id="deployments"></ul>
       <p class="panel-note" id="robots-note"></p>
-    </div>
-  </section>
-
-  <section class="wrap block story" id="investment" aria-labelledby="money-h">
-    <div class="card">
-      <p class="story-num">Story 4 of 4</p>
-      <h2 id="money-h">Incentives are putting money into new plants</h2>
-      <p class="lede" id="money-lede"></p>
-      <div class="key">
-        <span><i style="border-color:var(--gain)"></i>Adjusted for building costs</span>
-        <span><i class="dash" style="border-color:#8A8A84"></i>As reported (not adjusted)</span>
-      </div>
-      <p class="readout" id="money-readout"></p>
-      <div class="chart"><svg id="money" role="img" aria-label="Monthly factory construction spending since 2008"></svg></div>
-      <h3 class="sub-h" id="types-h">Which industries are building</h3>
-      <p class="sub-lede" id="types-lede"></p>
-      <div class="bar-legend">
-        <span><i style="background:#C9C9C3"></i>2019–2021 average</span>
-        <span><i style="background:var(--gain)"></i>Last 12 months</span>
-      </div>
-      <div id="bars"></div>
-      <p class="panel-note" id="types-note"></p>
     </div>
   </section>
 
@@ -270,8 +299,10 @@
         <li><a href="https://comtradeplus.un.org/">UN Comtrade</a>: U.S. imports of industrial robots, HS code 847950.</li>
         <li><a href="https://newsroom.bmwgroup.com/americas/successful-test-of-humanoid-robots-at-bmw-group-plant-spartanburg">BMW Group</a> and <a href="https://www.therobotreport.com/boston-dynamics-opens-metaplant-application-center-train-atlas-humanoid-robots/">The Robot Report</a>: the humanoid robot trials in South Carolina and Georgia.</li>
         <li><a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau Construction Spending</a>: private factory construction by industry, monthly, seasonally adjusted annual rate. Published nationally only.</li>
-        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a> (FRED <code>PCU236211236211</code>): used to adjust construction spending for building costs. The dashed line on that chart is the unadjusted Census series.</li>
-        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: establishments (plants and shops) and jobs by state and industry for the map, private sector, annual averages.</li>
+        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a> (FRED <code>PCU236211236211</code>): used to adjust construction spending for building costs.</li>
+        <li><a href="https://www.census.gov/econ/bfs/index.html">Census Bureau Business Formation Statistics</a>: applications to start a manufacturing business, by year.</li>
+        <li><a href="https://fred.stlouisfed.org/series/CLF16OV">BLS civilian labor force</a> (FRED <code>CLF16OV</code>): the U.S. labor force, annual averages, for factory jobs as a share of it.</li>
+        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: establishments (plants and shops) and jobs by state and industry for the map, the headline numbers and the bars in story 3, private sector, annual averages.</li>
         <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state outlines from the Census Bureau.</li>
       </ul>
       <p id="notes"></p>
@@ -307,7 +338,7 @@
   const CALLOUTS = ['50', '33', '25', '44', '09', '34', '10', '24', '11'];
 
   const state = { since: 2019, measure: 'n', story: 'all', group: 'all', hover: null };
-  let meta, national, states, reind, years, endIdx;
+  let meta, national, states, reind, years, endIdx, prod;
   const features = {};
   const names = {};
 
@@ -518,11 +549,34 @@
       .filter(r => r.v != null)
       .sort((a, b) => b.v - a.v);
     const row = r => `<li><span>${r.name}</span><span class="${toneClass(r.v)}">${fmtShort(r.v)}</span></li>`;
-    const gains = rows.filter(r => r.v > 0).slice(0, 6);
-    const losses = rows.filter(r => r.v < 0).reverse().slice(0, 6);
+    const gains = rows.filter(r => r.v > 0).slice(0, 5);
+    const losses = rows.filter(r => r.v < 0).reverse().slice(0, 5);
     document.getElementById('rank-gains').innerHTML = gains.length ? gains.map(row).join('') : '<li class="empty">None</li>';
     document.getElementById('rank-losses').innerHTML = losses.length ? losses.map(row).join('') : '<li class="empty">None</li>';
     document.getElementById('rank-title').textContent = `${MEASURES[state.measure]}, ${selLabel().toLowerCase()}, since ${state.since}`;
+  }
+
+  function drawKpis() {
+    const end = years[endIdx];
+    const all = national.sel['all|all'];
+    const n = change(all.n);
+    const jobs = change(all.e);
+    const t = reind.total;
+    const lf = prod.laborForce;
+    const force = lf.millions[lf.years.indexOf(end)];
+    const asOf = d3.timeFormat('%b %Y')(d3.timeParse('%Y-%m')(reind.latest));
+    document.getElementById('k1-label').textContent = `Factory construction, 12 months to ${asOf}`;
+    document.getElementById('k1').textContent = money(t.recent) + ' a year';
+    document.getElementById('k1-note').textContent = `${(t.recent / t.before).toFixed(1)}× the 2019–21 average`;
+    document.getElementById('k2-label').textContent = `Net new manufacturing establishments since ${state.since}`;
+    document.getElementById('k2').textContent = fmtShort(n);
+    document.getElementById('k2').className = toneClass(n);
+    document.getElementById('k2-note').textContent = `${d3.format(',')(all.n[endIdx])} in ${end}`;
+    document.getElementById('k3-label').textContent = `Factory jobs since ${state.since}`;
+    document.getElementById('k3').textContent = fmtShort(jobs);
+    document.getElementById('k3').className = toneClass(jobs);
+    document.getElementById('k3-note').textContent = `${(all.e[endIdx] / 1e6).toFixed(1)} million in ${end}` +
+      (force ? `, ${(all.e[endIdx] / 1e6 / force * 100).toFixed(1)}% of the U.S. labor force` : '');
   }
 
   function drawHeadings() {
@@ -577,6 +631,25 @@
     svg.append('text').attr('class', 'callout').attr('x', x).attr('y', y + dy).attr('text-anchor', anchor).text(text);
   }
 
+  // A vertical line follows the pointer on charts with years along the bottom, and the readout above shows that point.
+  function hover(svg, M, W, H, n, xAt, readout, text, dots = []) {
+    const g = svg.append('g').attr('display', 'none').attr('pointer-events', 'none');
+    const line = g.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('stroke-width', 1);
+    const marks = dots.map(d => g.append('circle').attr('r', 4.5).attr('fill', d.color).attr('stroke', '#fff').attr('stroke-width', 1.5));
+    const xs = d3.range(n).map(xAt);
+    const rest = () => { g.attr('display', 'none'); readout.textContent = text(n - 1, true); };
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const i = Math.max(0, Math.min(n - 1, d3.bisectCenter(xs, d3.pointer(event)[0])));
+        line.attr('x1', xs[i]).attr('x2', xs[i]);
+        marks.forEach((m, j) => m.attr('cx', xs[i]).attr('cy', dots[j].y(i)));
+        g.attr('display', null);
+        readout.textContent = text(i);
+      })
+      .on('pointerleave', rest);
+    rest();
+  }
+
   function drawRecord(prod) {
     const pw = prod.perWorker;
     const yrs = pw.years;
@@ -593,6 +666,9 @@
     const i07 = yrs.indexOf(2007);
     dotLabel(svg, x(yrs[i07]), y(vals[i07]), `${narrow ? '' : '2007 peak: '}$${vals[i07].toFixed(2)}T`, 'middle');
     dotLabel(svg, x(yrs[last]), y(vals[last]), `${yrs[last]}: $${vals[last].toFixed(2)}T`, 'end');
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('record-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${yrs[i]}: $${vals[i].toFixed(2)} trillion of real manufacturing GDP`,
+      [{ color: '#355E3B', y: i => y(vals[i]) }]);
   }
 
   function drawWorker(prod) {
@@ -621,6 +697,9 @@
     dotLabel(svg, x(yrs[last]), y(lines[0].vals[last]), `${ratio.toFixed(1)}× per worker`, 'end');
     svg.append('text').attr('class', 'callout muted').attr('x', x(yrs[last])).attr('y', y(lines[1].vals[last]) - 10)
       .attr('text-anchor', 'end').text(`Jobs ${jobPct.toFixed(0).replace('-', '−')}%`);
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('worker-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${yrs[i]}: $${Math.round(pw.perWorker[i] / 1e3)}k of output per worker, ${pw.jobs[i].toFixed(1)} million factory jobs`,
+      lines.map(l => ({ color: l.color, y: i => y(l.vals[i]) })));
   }
 
   function drawPerHour(prod) {
@@ -639,6 +718,9 @@
     svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(vals)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
     dotLabel(svg, x(yrs[0]), y(vals[0]), `${yrs[0]}: ${vals[0].toFixed(0)}`, 'start');
     dotLabel(svg, x(2011), y(vals[i11]), `2011: ${vals[i11].toFixed(0)}`, 'end', 22);
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('hour-readout'),
+      (i, rest) => rest ? `Latest, ${ph.latest.quarter}: ${ph.latest.value.toFixed(1)} (2017 = 100)` : `${yrs[i]}: ${vals[i].toFixed(1)} (2017 = 100)`,
+      [{ color: '#355E3B', y: i => y(vals[i]) }]);
   }
 
   function drawImports(prod) {
@@ -654,6 +736,8 @@
       svg.append('text').attr('class', 'callout').attr('x', x(r.year) + x.bandwidth() / 2).attr('y', y(r.millions) - 6).attr('text-anchor', 'middle').text(`$${r.millions}M`);
       svg.append('text').attr('x', x(r.year) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').text(r.year);
     }
+    hover(svg, M, W, H, rows.length, i => x(rows[i].year) + x.bandwidth() / 2, document.getElementById('imports-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${rows[i].year}: $${rows[i].millions} million`);
   }
 
   function hbars(el, rows, fmt, max) {
@@ -675,7 +759,7 @@
 
     document.getElementById('hero-lede').textContent =
       `Real factory output hit $${T(real[last])} trillion in ${yN}${record ? ', a record' : ''}, and each worker now produces ${(pw.perWorker[last] / pw.perWorker[0]).toFixed(1)} times as much as in ${y0}. ` +
-      'The map shows where manufacturing is growing since the year you pick. The four stories below explain why.';
+      'Federal incentives and private businesses are both putting money into new plants. The map shows where manufacturing is growing since the year you pick.';
 
     document.getElementById('record-h').textContent = record ? 'American factories are producing more than ever' : 'American factories are producing near their record';
     document.getElementById('record-lede').textContent =
@@ -751,42 +835,93 @@
     const dates = m.dates.map(d => d3.timeParse('%Y-%m')(d));
     const peak = d3.maxIndex(m.real);
     const lastM = m.real.length - 1;
+    const n = national.sel['all|all'].n;
+    const i19 = years.indexOf(2019);
     document.getElementById('money-lede').textContent =
-      'The CHIPS Act and the Inflation Reduction Act, both signed in August 2022, offer grants and tax credits for building chip, battery and clean-energy plants in the U.S. ' +
-      `Spending on new factories, adjusted for building costs, peaked at ${money(m.real[peak])} a year in ${fmtDate(dates[peak])} and was ${money(m.real[lastM])} in ${fmtDate(dates[lastM])}. ` +
-      `The last 12 months averaged ${(reind.total.recent / reind.total.before).toFixed(1)} times the 2019–21 level. New plants take years to build and staff, so jobs follow the spending.`;
+      'The CHIPS Act and the Inflation Reduction Act, both signed in August 2022, offer grants and tax credits for building chip, battery and clean-energy plants. ' +
+      `Spending on new factories, adjusted for building costs, peaked at ${money(m.real[peak])} a year in ${fmtDate(dates[peak])} and was ${money(m.real[lastM])} in ${fmtDate(dates[lastM])}, still ${(reind.total.recent / reind.total.before).toFixed(1)} times the 2019–21 average over the last 12 months. ` +
+      `The bars show the rest of the market: the U.S. has ${d3.format(',')(n[endIdx] - n[i19])} more manufacturing establishments than in 2019. Most establishments are small shops, not the large plants the incentives are aimed at.`;
+    document.getElementById('money-note').innerHTML =
+      `Line: <a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau construction spending</a>, private manufacturing, at an annual rate, adjusted to ${reind.dollarsOf} dollars with the BLS price index for new industrial buildings. ` +
+      'It counts all private factory construction, with or without federal money. ' +
+      `Bars: <a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>, change in the number of private manufacturing establishments each year (annual averages, through ${years[endIdx]}). A small shop and a large plant each count as one.`;
+
+    const f = prod.formation;
+    const fy = f.years;
+    const f19 = f.apps[fy.indexOf(2019)];
+    const top = d3.maxIndex(f.apps);
+    const fLast = f.apps.length - 1;
+    const ytd = f.ytd;
+    const ytdPct = (ytd.apps[0] / ytd.apps[1] - 1) * 100;
+    const monthName = d3.timeFormat('%B')(new Date(2000, ytd.months - 1, 1));
+    document.getElementById('formation-lede').textContent =
+      `Applications filed to start a manufacturing business each year. There were ${d3.format(',')(f19)} in 2019 and ${d3.format(',')(f.apps[top])} in ${fy[top]}, the most in Census records back to ${fy[0]}. ` +
+      `Every year since 2020 has beaten every year before it. ${fy[fLast]} came in at ${d3.format(',')(f.apps[fLast])}, and January to ${monthName} ${ytd.year} is ${ytdPct >= 0 ? 'up' : 'down'} ${Math.abs(ytdPct).toFixed(0)}% on the same months of ${ytd.year - 1}.`;
+    document.getElementById('formation-note').innerHTML =
+      `<a href="${f.url}">Census Bureau Business Formation Statistics</a>, applications for an employer ID number in manufacturing, U.S., not seasonally adjusted. ` +
+      '"Likely to hire" is Census\'s flag for applications with signs of a real employer, such as a planned payroll. An application is not yet a business; many never open.';
+  }
+
+  // Net new manufacturing establishments each year (BLS QCEW), drawn as bars behind the construction line.
+  function netNew() {
+    const n = national.sel['all|all'].n;
+    return years.slice(1).map((yr, i) => ({ year: yr, v: n[i + 1] - n[i] }));
   }
 
   function moneyChart() {
     const m = reind.monthly;
-    const H = 280;
-    const M = { t: 18, r: 16, b: 28, l: 48 };
+    const H = 300;
+    const M = { t: 18, r: 52, b: 28, l: 48 };
     const { svg: el, W, narrow } = frame('money', H);
-    const dates = m.dates.map(d => d3.timeParse('%Y-%m')(d));
+    const parse = d3.timeParse('%Y-%m');
+    const dates = m.dates.map(parse);
     const x = d3.scaleTime().domain(d3.extent(dates)).range([M.l, W - M.r]);
-    const y = d3.scaleLinear().domain([0, d3.max(m.real.concat(m.nominal)) * 1.08]).nice().range([H - M.b, M.t]);
+    const y = d3.scaleLinear().domain([0, d3.max(m.real) * 1.08]).nice().range([H - M.b, M.t]);
+    const bars = netNew().filter(d => new Date(d.year, 0, 1) >= dates[0]);
+    const yb = d3.scaleLinear().domain([Math.min(0, d3.min(bars, d => d.v)), d3.max(bars, d => d.v) * 1.15]).nice().range([H - M.b, M.t]);
     el.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(narrow ? 4 : 8).tickSize(0).tickPadding(8)).call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
     el.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(v => '$' + v + 'B'))
       .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
-    const marker = d3.timeParse('%Y-%m')('2022-08');
+    el.append('g').attr('transform', `translate(${W - M.r},0)`).call(d3.axisRight(yb).ticks(5).tickSize(0).tickPadding(6).tickFormat(v => (v > 0 ? '+' : v < 0 ? '−' : '') + compact(Math.abs(v))))
+      .call(g => g.select('.domain').remove());
+    el.append('g').selectAll('rect').data(bars).join('rect')
+      .attr('x', d => x(new Date(d.year, 0, 1)) + 1).attr('width', d => Math.max(1, x(new Date(d.year + 1, 0, 1)) - x(new Date(d.year, 0, 1)) - 2))
+      .attr('y', d => yb(Math.max(0, d.v))).attr('height', d => Math.abs(yb(d.v) - yb(0)))
+      .attr('fill', d => d.v < 0 ? '#EDC29F' : '#DCDCD6');
+    el.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', yb(0)).attr('y2', yb(0)).attr('stroke', '#C9C9C3');
+    const marker = parse('2022-08');
     el.append('line').attr('x1', x(marker)).attr('x2', x(marker)).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('stroke-dasharray', '3 3');
     el.append('text').attr('x', x(marker) - 6).attr('y', M.t + 10).attr('text-anchor', 'end').text(narrow ? 'CHIPS & IRA' : 'Aug 2022: CHIPS Act & IRA signed');
-    const line = vals => d3.line().x((d, i) => x(dates[i])).y(d => y(d))(vals);
-    el.append('path').attr('d', line(m.nominal)).attr('fill', 'none').attr('stroke', '#8A8A84').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4');
-    el.append('path').attr('d', line(m.real)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
-    const last = m.real.length - 1;
+    el.append('path').attr('d', d3.line().x((d, i) => x(dates[i])).y(d => y(d))(m.real)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
     const fmtDate = d3.timeFormat('%b %Y');
-    const readout = document.getElementById('money-readout');
-    const dot = el.append('circle').attr('r', 4).attr('fill', '#355E3B').attr('display', 'none');
-    const rest = () => { readout.textContent = `Latest, ${fmtDate(dates[last])}: ${money(m.real[last])} adjusted, ${money(m.nominal[last])} as reported`; dot.attr('display', 'none'); };
-    el.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
-      .on('pointermove', event => {
-        const i = Math.max(0, Math.min(last, d3.bisectCenter(dates, x.invert(d3.pointer(event)[0]))));
-        dot.attr('display', null).attr('cx', x(dates[i])).attr('cy', y(m.real[i]));
-        readout.textContent = `${fmtDate(dates[i])}: ${money(m.real[i])} adjusted, ${money(m.nominal[i])} as reported`;
-      })
-      .on('pointerleave', rest);
-    rest();
+    const byYear = new Map(bars.map(d => [d.year, d.v]));
+    hover(el, M, W, H, dates.length, i => x(dates[i]), document.getElementById('money-readout'), (i, rest) => {
+      const yr = dates[i].getFullYear();
+      const nn = byYear.get(yr);
+      return `${rest ? 'Latest, ' : ''}${fmtDate(dates[i])}: ${money(m.real[i])} a year on factory construction` +
+        (nn == null ? '' : ` · ${yr}: ${fmtShort(nn)} net new establishments`);
+    }, [{ color: '#355E3B', y: i => y(m.real[i]) }]);
+  }
+
+  function drawFormation(prod) {
+    const f = prod.formation;
+    const yrs = f.years;
+    const H = 260;
+    const M = { t: 24, r: 20, b: 28, l: 48 };
+    const { svg, W, narrow } = frame('formation-chart', H);
+    const x = d3.scaleLinear().domain(d3.extent(yrs)).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(f.apps) * 1.12]).nice().range([H - M.b, M.t]);
+    axes(svg, x, y, W, H, M, v => compact(v), narrow ? 4 : 8);
+    svg.append('path').attr('d', d3.area().x((v, i) => x(yrs[i])).y0(H - M.b).y1(v => y(v))(f.apps)).attr('fill', '#355E3B').attr('opacity', 0.08);
+    svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(f.apps)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
+    svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(f.likely)).attr('fill', 'none').attr('stroke', '#8A8A84').attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
+    const i19 = yrs.indexOf(2019);
+    const top = d3.maxIndex(f.apps);
+    dotLabel(svg, x(2019), y(f.apps[i19]), `2019: ${compact(f.apps[i19])}`, 'end');
+    dotLabel(svg, x(yrs[top]), y(f.apps[top]), `${yrs[top]}: ${compact(f.apps[top])}`, 'end');
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('formation-readout'),
+      (i, rest) => `${rest ? 'Latest full year, ' : ''}${yrs[i]}: ${d3.format(',')(f.apps[i])} applications, ${d3.format(',')(f.likely[i])} likely to hire`,
+      [{ color: '#355E3B', y: i => y(f.apps[i]) }, { color: '#8A8A84', y: i => y(f.likely[i]) }]);
   }
 
   function drawCharts(prod) {
@@ -795,6 +930,7 @@
     drawPerHour(prod);
     drawImports(prod);
     moneyChart();
+    drawFormation(prod);
   }
 
   function setPressed(groupId, value) {
@@ -885,6 +1021,7 @@
     tip.attr('hidden', true);
     hoverLine.attr('d', null);
     drawHeadings();
+    drawKpis();
     drawMap();
     drawLegend();
     drawRanks();
@@ -925,8 +1062,9 @@
     d3.json('data/states.json'),
     d3.json('data/reindustrialization.json'),
     d3.json('data/productivity.json')
-  ]).then(([topo, m, nat, sts, r, prod]) => {
+  ]).then(([topo, m, nat, sts, r, p]) => {
     meta = m;
+    prod = p;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
     states = sts;
@@ -971,7 +1109,8 @@
     bindSegmented('measure', 'measure');
 
     document.getElementById('notes').textContent =
-      `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS producer price index for new industrial building construction (FRED PCU236211236211). The dashed line is the unadjusted Census series (FRED TLMFGCONS). The headline card is the average of the 12 months ending ${reind.latest}. ` +
+      `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS producer price index for new industrial building construction (FRED PCU236211236211). The unadjusted Census series is FRED TLMFGCONS. The construction headline number is the average of the 12 months ending ${reind.latest}. ` +
+      `Factory jobs as a share of the labor force divide the BLS private factory job count by the BLS civilian labor force for the same year. ` +
       (meta.plantsNote ? meta.plantsNote + ' ' : '') +
       `Establishments and jobs are private-sector annual averages through ${years[endIdx]}. "Strategic tech & defense" covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices; vehicles are counted in their own category. ` +
       `Where BLS withholds part of a state's industry jobs figure, we split the withheld total by plant count; figures where this is 10% or more are marked ~. ` +

@@ -7,6 +7,10 @@ Sources (all free; downloads cached in pipeline/raw/productivity/, which is giti
 - Other countries: World Bank manufacturing value added in current U.S. dollars (NV.IND.MANF.CD)
   divided by ILO manufacturing employment (ILOSTAT, ISIC Rev. 4 section C, household surveys).
   The World Bank stops publishing the U.S. after 2021, so the U.S. uses BEA's nominal figure.
+- Labor force: BLS civilian labor force (FRED CLF16OV), annual averages, to size factory jobs against it.
+- New manufacturing businesses: Census Business Formation Statistics, applications for an employer ID
+  in manufacturing, U.S., not seasonally adjusted, summed by year; 'likely' are the ones Census flags
+  as likely to hire.
 - Robots: Census Annual Capital Expenditures Survey robotics tables (2020-2022), the 2022 Economic
   Census robotics tables (experimental), and U.S. imports of industrial robots (HS 847950) from
   UN Comtrade, because the Census trade API now needs a key.
@@ -28,6 +32,9 @@ OUT = SITE / 'productivity.json'
 HEADERS = {'User-Agent': 'ManufacturingMap research (https://madeinamerica.gerardbarile.com)'}
 
 FRED = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=OPHMFG'
+CLF = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=CLF16OV'
+BFS = 'https://www.census.gov/econ/bfs/csv/bfs_monthly.csv'
+BFS_PAGE = 'https://www.census.gov/econ/bfs/index.html'
 WB = 'https://api.worldbank.org/v2/country/{codes}/indicator/NV.IND.MANF.CD?format=json&date=2015:2025&per_page=500'
 ILO = ('https://sdmx.ilo.org/rest/data/ILO,DF_EMP_TEMP_SEX_ECO_NB,1.0/{codes}.A..SEX_T.ECO_ISIC4_C'
        '?startPeriod=2015')
@@ -98,6 +105,37 @@ def output_per_worker():
         'perWorker': [round(real[y] / jobs[y]) for y in years],
         'realGdp': [real[y] for y in years],
         'jobs': [jobs[y] for y in years],
+    }
+
+
+def labor_force():
+    rows = list(csv.reader(io.StringIO(get(CLF, 'clf16ov.csv'))))[1:]
+    by_year = {}
+    for date, value in rows:
+        if value not in ('', '.'):
+            by_year.setdefault(int(date[:4]), []).append(float(value))
+    # October 2025 was never collected (federal shutdown), so a year needs 11 of 12 months.
+    years = sorted(y for y, v in by_year.items() if len(v) >= 11 and y < max(by_year))
+    # FRED reports thousands of people; keep millions.
+    return {'years': years, 'millions': [round(sum(by_year[y]) / len(by_year[y]) / 1e3, 2) for y in years], 'series': 'CLF16OV'}
+
+
+def formation():
+    months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    rows = {}
+    for r in csv.DictReader(io.StringIO(get(BFS, 'bfs_monthly.csv'))):
+        if r['geo'] == 'US' and r['sa'] == 'U' and r['naics_sector'] == 'NAICSMNF' and r['series'] in ('BA_BA', 'BA_HBA'):
+            rows[(r['series'], int(r['year']))] = [int(r[m]) if r[m] else None for m in months]
+    years = sorted(y for (s, y), v in rows.items() if s == 'BA_BA' and None not in v)
+    ytd_year = max(y for s, y in rows if s == 'BA_BA')
+    n = sum(v is not None for v in rows[('BA_BA', ytd_year)])
+    return {
+        'years': years,
+        'apps': [sum(rows[('BA_BA', y)]) for y in years],
+        'likely': [sum(rows[('BA_HBA', y)]) for y in years],
+        'ytd': {'year': ytd_year, 'months': n,
+                'apps': [sum(rows[('BA_BA', y)][:n]) for y in (ytd_year, ytd_year - 1)]},
+        'url': BFS_PAGE,
     }
 
 
@@ -176,6 +214,8 @@ def main():
         'perHour': output_per_hour(),
         'perWorker': output_per_worker(),
         'countries': countries(2023),
+        'laborForce': labor_force(),
+        'formation': formation(),
         'robots': {
             'aces': aces(),
             'acesUrl': ACES_PAGE,
@@ -189,6 +229,9 @@ def main():
     pw = out['perWorker']
     print(f"Output per worker {pw['years'][0]}: ${pw['perWorker'][0]:,}; {pw['years'][-1]}: ${pw['perWorker'][-1]:,}")
     print(f"Countries {out['countries']['year']}: " + ', '.join(f"{r['code']} ${r['perWorker'] / 1e3:.0f}k" for r in out['countries']['rows']))
+    f = out['formation']
+    print(f"Manufacturing business applications: {dict(zip(f['years'][-4:], f['apps'][-4:]))}; ytd {f['ytd']}")
+    print(f"Labor force {out['laborForce']['years'][-1]}: {out['laborForce']['millions'][-1]}M")
     print(f"Robot imports: {len(out['robots']['imports'])} years; ACES {[r['manufacturing'] for r in out['robots']['aces']]}")
     print(f'Wrote {OUT}')
 
