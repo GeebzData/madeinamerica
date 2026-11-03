@@ -273,35 +273,12 @@
     </div>
   </section>
 
-  <section class="wrap part" aria-labelledby="part-jobs">
-    <p class="eyebrow">Part 1</p>
-    <h2 id="part-jobs">Where Alabama employs</h2>
-    <p>Which industries hire Alabama's factory workers, how that has changed since 1990, and which counties gained and lost.</p>
-  </section>
-
   <section class="wrap block" aria-labelledby="ind-h">
     <div class="card">
       <h2 id="ind-h">Factory jobs by industry</h2>
       <p class="lede" id="ind-lede"></p>
       <div id="bars"></div>
       <p class="panel-note" id="ind-note"></p>
-    </div>
-  </section>
-
-  <section class="wrap block" aria-labelledby="jobs-h">
-    <div class="card jobs-chart">
-      <div class="block-head">
-        <h2 id="jobs-h">Factory jobs every year since 1990</h2>
-        <button type="button" class="dl-button" id="dl-industries">Download CSV</button>
-      </div>
-      <p class="lede" id="jobs-lede"></p>
-      <div class="key" id="jobs-key"></div>
-      <p class="readout" id="jobs-readout"></p>
-      <svg id="jobs" role="img" aria-label="Alabama factory jobs in each of six categories, every year since 1990"></svg>
-      <h3 class="sub-h">Each industry group</h3>
-      <p class="sub-lede" id="groups-lede"></p>
-      <div class="multiples" id="multiples"></div>
-      <p class="panel-note" id="jobs-note"></p>
     </div>
   </section>
 
@@ -333,7 +310,7 @@
   </section>
 
   <section class="wrap part" aria-labelledby="part-output">
-    <p class="eyebrow">Part 2</p>
+    <p class="eyebrow">Part 1</p>
     <h2 id="part-output">What Alabama produces</h2>
     <p>The value Alabama's factories add, after inflation, and how much each worker produces, from the Bureau of Economic Analysis. BEA's state figures start in 1997.</p>
   </section>
@@ -353,6 +330,80 @@
       <p class="sub-lede" id="out-groups-lede"></p>
       <div class="multiples" id="out-multiples"></div>
       <p class="panel-note" id="out-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap part" aria-labelledby="part-jobs">
+    <p class="eyebrow">Part 2</p>
+    <h2 id="part-jobs">Who Alabama employs</h2>
+    <p>Private factory jobs every year since 1990, by category and industry group.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="jobs-h">
+    <div class="card jobs-chart">
+      <div class="block-head">
+        <h2 id="jobs-h">Factory jobs every year since 1990</h2>
+        <button type="button" class="dl-button" id="jobs-dl">Download CSV</button>
+      </div>
+      <p class="lede" id="jobs-lede"></p>
+      <div class="key" id="jobs-key"></div>
+      <p class="readout" id="jobs-readout"></p>
+      <svg id="jobs-chart" role="img" aria-label="Alabama factory jobs in each of six categories, every year since 1990"></svg>
+      <h3 class="sub-h">Each industry group</h3>
+      <p class="sub-lede" id="jobs-groups-lede"></p>
+      <div class="multiples" id="jobs-multiples"></div>
+      <p class="panel-note" id="jobs-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap part" aria-labelledby="part-est">
+    <p class="eyebrow">Part 3</p>
+    <h2 id="part-est">Where Alabama builds</h2>
+    <p>Manufacturing establishments, the plants and shops with employees, every year since 1990.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="est-h">
+    <div class="card jobs-chart">
+      <div class="block-head">
+        <h2 id="est-h">Establishments every year since 1990</h2>
+        <button type="button" class="dl-button" id="est-dl">Download CSV</button>
+      </div>
+      <p class="lede" id="est-lede"></p>
+      <div class="key" id="est-key"></div>
+      <p class="readout" id="est-readout"></p>
+      <svg id="est-chart" role="img" aria-label="Alabama manufacturing establishments in each of six categories, every year since 1990"></svg>
+      <h3 class="sub-h">Each industry group</h3>
+      <p class="sub-lede" id="est-groups-lede"></p>
+      <div class="multiples" id="est-multiples"></div>
+      <p class="panel-note" id="est-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap part" aria-labelledby="part-pay">
+    <p class="eyebrow">Part 4</p>
+    <h2 id="part-pay">What Alabama pays</h2>
+    <p>Average yearly pay per factory job, adjusted for inflation, every year since 1990.</p>
+  </section>
+
+  <section class="wrap block" aria-labelledby="pay-h">
+    <div class="card jobs-chart">
+      <div class="block-head">
+        <h2 id="pay-h">Average factory pay every year since 1990</h2>
+        <button type="button" class="dl-button" id="pay-dl">Download CSV</button>
+      </div>
+      <p class="lede" id="pay-lede"></p>
+      <div class="key" id="pay-key"></div>
+      <p class="readout" id="pay-readout"></p>
+      <svg id="pay-chart" role="img" aria-label="Average factory pay in each of six categories in Alabama, every year since 1990"></svg>
+      <h3 class="sub-h">Alabama and the U.S.</h3>
+      <p class="sub-lede" id="pay-us-lede"></p>
+      <div class="key" id="pay-us-key"></div>
+      <p class="readout" id="pay-us-readout"></p>
+      <svg id="pay-us-chart" role="img" aria-label="Average factory pay, Alabama and the U.S., since 1990"></svg>
+      <h3 class="sub-h">Each industry group</h3>
+      <p class="sub-lede" id="pay-groups-lede"></p>
+      <div class="multiples" id="pay-multiples"></div>
+      <p class="panel-note" id="pay-note"></p>
     </div>
   </section>
 
@@ -1171,61 +1222,6 @@
   // The 50 states, for rankings (no DC or territories).
   function stateIds() { return Object.keys(states).filter(id => Number(id) <= 56 && id !== '11'); }
 
-  // Factory jobs every year since 1990: six categories on one chart, then each industry group as a small chart.
-  function drawJobs() {
-    const svg = d3.select('#jobs');
-    svg.selectAll('*').remove();
-    const W = Math.max(300, svg.node().parentNode.clientWidth - 1);
-    const narrow = W < 560;
-    const H = narrow ? 300 : 340;
-    const M = { t: 16, r: narrow ? 52 : 196, b: 28, l: 48 };
-    svg.attr('viewBox', `0 0 ${W} ${H}`);
-    const end = years[endIdx];
-    const cats = Object.keys(meta.stories).map(id => ({ name: meta.stories[id].name, color: CAT_COLORS[id], vals: al.sel[`${id}|all`].e }))
-      .sort((a, b) => b.vals[endIdx] - a.vals[endIdx]);
-    const x = d3.scaleLinear().domain([years[0], end]).range([M.l, W - M.r]);
-    const y = d3.scaleLinear().domain([0, d3.max(cats, c => d3.max(c.vals)) * 1.05]).nice().range([H - M.b, M.t]);
-    svg.append('g').attr('transform', `translate(0,${H - M.b})`)
-      .call(d3.axisBottom(x).ticks(narrow ? 4 : 8).tickFormat(d3.format('d')).tickSize(0).tickPadding(8))
-      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
-    svg.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(v => compact(v)))
-      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
-    for (const c of cats) {
-      svg.append('path').attr('d', d3.line().x((v, i) => x(years[i])).y(v => y(v))(c.vals))
-        .attr('fill', 'none').attr('stroke', c.color).attr('stroke-width', 2.5);
-    }
-    const labels = cats.map(c => ({ c, y: y(c.vals[endIdx]) })).sort((a, b) => a.y - b.y);
-    for (let i = 1; i < labels.length; i += 1) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 14);
-    for (const l of labels) {
-      svg.append('text').attr('class', 'end').attr('x', W - M.r + 6).attr('y', l.y).attr('dominant-baseline', 'middle')
-        .attr('fill', l.c.color).style('fill', l.c.color).text(narrow ? compact(l.c.vals[endIdx]) : `${l.c.name} ${compact(l.c.vals[endIdx])}`);
-    }
-    document.getElementById('jobs-key').innerHTML = cats.map(c => `<span><i style="border-color:${c.color}"></i>${c.name}</span>`).join('');
-    const readout = document.getElementById('jobs-readout');
-    const text = i => `${years[i]}: ` + cats.slice().sort((a, b) => b.vals[i] - a.vals[i]).map(c => `${c.name} ${d3.format(',')(c.vals[i])}`).join(' · ');
-    const guide = svg.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('display', 'none').attr('pointer-events', 'none');
-    const dots = cats.map(c => svg.append('circle').attr('r', 4.5).attr('fill', c.color).attr('stroke', '#fff').attr('stroke-width', 1.5).attr('display', 'none').attr('pointer-events', 'none'));
-    const rest = () => { readout.textContent = text(endIdx); guide.attr('display', 'none'); dots.forEach(d => d.attr('display', 'none')); };
-    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
-      .on('pointermove', event => {
-        const i = Math.max(0, Math.min(endIdx, Math.round(x.invert(d3.pointer(event)[0])) - years[0]));
-        guide.attr('display', null).attr('x1', x(years[i])).attr('x2', x(years[i]));
-        cats.forEach((c, k) => dots[k].attr('display', null).attr('cx', x(years[i])).attr('cy', y(c.vals[i])));
-        readout.textContent = text(i);
-      })
-      .on('pointerleave', rest);
-    rest();
-
-    const total = al.sel['all|all'].e;
-    const top = cats[0];
-    const grew = cats.filter(c => c.vals[endIdx] > c.vals[0]);
-    document.getElementById('jobs-lede').textContent =
-      `Private factory jobs in Alabama each year, ${years[0]}–${end}. The state had ${d3.format(',')(total[0])} in ${years[0]} and ${d3.format(',')(total[endIdx])} in ${end}. ` +
-      `${top.name} is now the largest category with ${d3.format(',')(top.vals[endIdx])} jobs. ` +
-      `${grew.map(c => c.name).join(' and ')} ${grew.length === 1 ? 'is the only category' : 'are the categories'} above ${years[0]}. Hover to see any year.`;
-    drawMultiples();
-  }
-
   // Small charts in a grid, one per row of data, each on its own scale. Hovering one moves the same year across all.
   function multiples(hostId, xs, rows, caption) {
     const host = document.getElementById(hostId);
@@ -1239,8 +1235,8 @@
       svg.attr('viewBox', `0 0 ${W} ${H}`);
       const x = d3.scaleLinear().domain([xs[0], xs[last]]).range([M.l, W - M.r]);
       const y = d3.scaleLinear().domain([0, d3.max(r.vals) * 1.08]).range([H - M.b, M.t]);
-      svg.append('path').attr('d', d3.area().x((v, i) => x(xs[i])).y0(H - M.b).y1(v => y(v))(r.vals)).attr('fill', r.color).attr('opacity', 0.12);
-      svg.append('path').attr('d', d3.line().x((v, i) => x(xs[i])).y(v => y(v))(r.vals)).attr('fill', 'none').attr('stroke', r.color).attr('stroke-width', 2);
+      svg.append('path').attr('d', d3.area().defined(v => v != null).x((v, i) => x(xs[i])).y0(H - M.b).y1(v => y(v))(r.vals)).attr('fill', r.color).attr('opacity', 0.12);
+      svg.append('path').attr('d', d3.line().defined(v => v != null).x((v, i) => x(xs[i])).y(v => y(v))(r.vals)).attr('fill', 'none').attr('stroke', r.color).attr('stroke-width', 2);
       svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', H - M.b).attr('y2', H - M.b).attr('stroke', '#C9C9C3');
       svg.append('text').attr('x', M.l).attr('y', H - 3).text(xs[0]);
       svg.append('text').attr('x', W - M.r).attr('y', H - 3).attr('text-anchor', 'end').text(xs[last]);
@@ -1255,10 +1251,10 @@
       for (const m of marks) {
         const on = i != null;
         m.guide.attr('display', on ? null : 'none');
-        m.dot.attr('display', on ? null : 'none');
+        m.dot.attr('display', on && m.r.vals[i] != null ? null : 'none');
         if (on) {
           m.guide.attr('x1', m.x(xs[i])).attr('x2', m.x(xs[i]));
-          m.dot.attr('cx', m.x(xs[i])).attr('cy', m.y(m.r.vals[i]));
+          m.dot.attr('cx', m.x(xs[i])).attr('cy', m.y(m.r.vals[i] || 0));
         }
         document.getElementById(`${hostId}-${m.k}`).innerHTML = caption(m.r, on ? i : last, !on);
       }
@@ -1266,24 +1262,116 @@
     show(null);
   }
 
-  function drawMultiples() {
+  // One measure every year since 1990: the six categories on one chart, then each industry group as a small chart.
+  const SERIES = {
+    e: { key: 'jobs', what: 'factory jobs', fmt: v => d3.format(',')(Math.round(v)), axis: v => compact(v) },
+    n: { key: 'est', what: 'establishments', fmt: v => d3.format(',')(Math.round(v)), axis: v => compact(v) },
+    p: { key: 'pay', what: 'average factory pay', fmt: v => '$' + d3.format(',')(Math.round(v)), axis: v => '$' + compact(v) }
+  };
+
+  function firstValue(vals) { return vals.findIndex(v => v != null); }
+
+  function drawSeries(measure) {
+    const S = SERIES[measure];
+    const svg = d3.select(`#${S.key}-chart`);
+    svg.selectAll('*').remove();
+    const W = Math.max(300, svg.node().parentNode.clientWidth - 1);
+    const narrow = W < 560;
+    const H = narrow ? 300 : 340;
+    const M = { t: 16, r: narrow ? 56 : 210, b: 28, l: 52 };
+    svg.attr('viewBox', `0 0 ${W} ${H}`);
+    const end = years[endIdx];
+    const cats = Object.keys(meta.stories).map(id => ({ name: meta.stories[id].name, color: CAT_COLORS[id], vals: al.sel[`${id}|all`][measure] }))
+      .sort((a, b) => b.vals[endIdx] - a.vals[endIdx]);
+    const x = d3.scaleLinear().domain([years[0], end]).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(cats, c => d3.max(c.vals)) * 1.05]).nice().range([H - M.b, M.t]);
+    svg.append('g').attr('transform', `translate(0,${H - M.b})`)
+      .call(d3.axisBottom(x).ticks(narrow ? 4 : 8).tickFormat(d3.format('d')).tickSize(0).tickPadding(8))
+      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    svg.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(S.axis))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    for (const c of cats) {
+      svg.append('path').attr('d', d3.line().defined(v => v != null).x((v, i) => x(years[i])).y(v => y(v))(c.vals))
+        .attr('fill', 'none').attr('stroke', c.color).attr('stroke-width', 2.5);
+    }
+    const labels = cats.map(c => ({ c, y: y(c.vals[endIdx]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labels.length; i += 1) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 14);
+    for (const l of labels) {
+      svg.append('text').attr('class', 'end').attr('x', W - M.r + 6).attr('y', l.y).attr('dominant-baseline', 'middle')
+        .style('fill', l.c.color).text(narrow ? S.axis(l.c.vals[endIdx]) : `${l.c.name} ${S.axis(l.c.vals[endIdx])}`);
+    }
+    document.getElementById(`${S.key}-key`).innerHTML = cats.map(c => `<span><i style="border-color:${c.color}"></i>${c.name}</span>`).join('');
+    const readout = document.getElementById(`${S.key}-readout`);
+    const text = i => `${years[i]}: ` + cats.slice().sort((a, b) => (b.vals[i] ?? -1) - (a.vals[i] ?? -1))
+      .map(c => `${c.name} ${c.vals[i] == null ? 'withheld' : S.fmt(c.vals[i])}`).join(' · ');
+    const guide = svg.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('display', 'none').attr('pointer-events', 'none');
+    const dots = cats.map(c => svg.append('circle').attr('r', 4.5).attr('fill', c.color).attr('stroke', '#fff').attr('stroke-width', 1.5).attr('display', 'none').attr('pointer-events', 'none'));
+    const rest = () => { readout.textContent = text(endIdx); guide.attr('display', 'none'); dots.forEach(d => d.attr('display', 'none')); };
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const i = Math.max(0, Math.min(endIdx, Math.round(x.invert(d3.pointer(event)[0])) - years[0]));
+        guide.attr('display', null).attr('x1', x(years[i])).attr('x2', x(years[i]));
+        cats.forEach((c, k) => dots[k].attr('display', c.vals[i] == null ? 'none' : null).attr('cx', x(years[i])).attr('cy', y(c.vals[i] || 0)));
+        readout.textContent = text(i);
+      })
+      .on('pointerleave', rest);
+    rest();
+
     const storyOf = {};
     for (const p of Object.values(meta.pieces)) storyOf[p.group] = p.story;
-    const end = years[endIdx];
-    const groups = Object.keys(meta.groups).map(g => ({ name: meta.groups[g], color: CAT_COLORS[storyOf[g]], vals: al.sel[`all|${g}`].e }))
+    const groups = Object.keys(meta.groups).map(g => ({ id: g, name: meta.groups[g], color: CAT_COLORS[storyOf[g]], vals: al.sel[`all|${g}`][measure] }))
       .sort((a, b) => b.vals[endIdx] - a.vals[endIdx]);
-    multiples('multiples', years, groups, (g, i, rest) => rest
-      ? `${d3.format(',')(g.vals[i])} in ${end} · <span class="${toneClass(g.vals[i] - g.vals[0])}">${fmtPct(pct(g.vals[0], g.vals[i]), 0)} since ${years[0]}</span>`
-      : `${d3.format(',')(g.vals[i])} in ${years[i]}`);
-    const vehicles = groups.find(g => g.name === meta.groups.vehicles);
-    const textiles = groups.find(g => g.name === meta.groups.textiles);
-    document.getElementById('groups-lede').textContent =
-      `The 13 industry groups, largest first, each on its own scale so the shape of each one shows. Hover any chart to see that year in all of them. ` +
-      `${vehicles.name} went from ${d3.format(',')(vehicles.vals[0])} to ${d3.format(',')(vehicles.vals[endIdx])} jobs; ${textiles.name.toLowerCase()} fell from ${d3.format(',')(textiles.vals[0])} to ${d3.format(',')(textiles.vals[endIdx])}.`;
-    document.getElementById('jobs-note').innerHTML =
+    multiples(`${S.key}-multiples`, years, groups, (g, i, rest) => {
+      if (g.vals[i] == null) return `Withheld in ${years[i]}`;
+      if (!rest) return `${S.fmt(g.vals[i])} in ${years[i]}`;
+      const f = firstValue(g.vals);
+      return `${S.fmt(g.vals[i])} in ${end} · <span class="${toneClass(g.vals[i] - g.vals[f])}">${fmtPct(pct(g.vals[f], g.vals[i]), 0)} since ${years[f]}</span>`;
+    });
+
+    const total = al.sel['all|all'][measure];
+    const us = national.sel['all|all'][measure];
+    const by = id => groups.find(g => g.id === id);
+    const span = id => { const g = by(id); const f = firstValue(g.vals); return `${S.fmt(g.vals[f])} in ${years[f]}, ${S.fmt(g.vals[endIdx])} in ${end}`; };
+    const ledes = {
+      e: `Private factory jobs in Alabama each year. The state had ${S.fmt(total[0])} in ${years[0]} and ${S.fmt(total[endIdx])} in ${end}. ` +
+        `${cats[0].name} is now the largest category; ${cats.filter(c => c.vals[endIdx] > c.vals[0]).map(c => c.name).join(' and ')} are above ${years[0]}. Hover to see any year.`,
+      n: `Manufacturing locations with employees in Alabama each year, from car plants to five-person shops. There were ${S.fmt(total[0])} in ${years[0]} and ${S.fmt(total[endIdx])} in ${end} ` +
+        `(${fmtPct(pct(total[0], total[endIdx]), 0)}; U.S. ${fmtPct(pct(us[0], us[endIdx]), 0)}). Hover to see any year.`,
+      p: `Average yearly pay per private factory job, in ${meta.payDollarsYear} dollars. Alabama's average was ${S.fmt(total[0])} in ${years[0]} and ${S.fmt(total[endIdx])} in ${end}, ` +
+        `${fmtPct(pct(total[0], total[endIdx]), 0)} after inflation. Part of that rise is mix: low-paid textile and apparel jobs mostly disappeared. Hover to see any year.`
+    };
+    const groupLedes = {
+      e: `Jobs in ${by('vehicles').name.toLowerCase()}: ${span('vehicles')}. In ${by('textiles').name.toLowerCase()}: ${span('textiles')}.`,
+      n: `${by('vehicles').name}: ${span('vehicles')} (BLS withheld the count before ${years[firstValue(by('vehicles').vals)]}). ${by('pharma').name}: ${span('pharma')}.`,
+      p: `${by('pharma').name}: ${span('pharma')}. ${by('vehicles').name}: ${span('vehicles')}.`
+    };
+    document.getElementById(`${S.key}-lede`).textContent = ledes[measure];
+    document.getElementById(`${S.key}-groups-lede`).textContent =
+      `The 13 industry groups, ${measure === 'p' ? 'highest-paid' : 'largest'} first, each on its own scale so the shape of each one shows. Hover any chart to see that year in all of them. ` + groupLedes[measure];
+    document.getElementById(`${S.key}-note`).innerHTML =
       `<a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>, Alabama, private sector, annual averages. ` +
-      'Categories and industry groups are our own grouping of BLS industry codes; together they add up to all of manufacturing (see "What each category includes" below). ' +
-      'Factory jobs leave out temp workers placed by staffing agencies, whom BLS counts in services.';
+      'Categories and industry groups are our own grouping of BLS industry codes and add up to all of manufacturing (see "What each category includes" below). ' +
+      { e: 'Factory jobs leave out temp workers placed by staffing agencies, whom BLS counts in services.',
+        n: 'An establishment is one location with employees; a small shop and a large plant each count as one. BLS withholds some counts to protect individual employers.',
+        p: `Pay is total wages divided by jobs, adjusted to ${meta.payDollarsYear} dollars with the consumer price index.` }[measure];
+
+    if (measure === 'p') {
+      const lines = [{ name: 'Alabama', color: '#9E1B32', vals: total }, { name: 'United States', color: '#8A8A84', vals: us, width: 1.5, dash: '5 4' }];
+      document.getElementById('pay-us-key').innerHTML = lines.map(l => `<span><i${l.dash ? ' class="dash"' : ''} style="border-color:${l.color}"></i>${l.name}</span>`).join('');
+      lineChart('pay-us-chart', years, lines, S.axis, 'pay-us-readout',
+        (i, last) => `${last ? 'Latest, ' : ''}${years[i]}: Alabama ${S.fmt(total[i])}, U.S. ${S.fmt(us[i])}`);
+      document.getElementById('pay-us-lede').textContent =
+        `All manufacturing. Alabama's average factory pay was ${Math.round(total[endIdx] / us[endIdx] * 100)}% of the U.S. average in ${end}, up from ${Math.round(total[0] / us[0] * 100)}% in ${years[0]}.`;
+    }
+  }
+
+  function seriesCsv(measure) {
+    const S = SERIES[measure];
+    const cols = [...Object.keys(meta.stories).map(id => [meta.stories[id].name + ' (category)', al.sel[`${id}|all`][measure]]),
+      ...Object.keys(meta.groups).map(g => [meta.groups[g], al.sel[`all|${g}`][measure]]), ['All manufacturing', al.sel['all|all'][measure]]];
+    const rows = [['Year', ...cols.map(c => c[0])]];
+    years.forEach((yr, i) => rows.push([yr, ...cols.map(c => c[1][i] == null ? null : Math.round(c[1][i]))]));
+    downloadCsv(`alabama-${S.what.replace(/ /g, '-')}-by-industry-${years[0]}-${years[endIdx]}.csv`, rows);
   }
 
   // A line chart sized to its box with a hover line; lines = [{ name, color, vals, width, dash }].
@@ -1409,14 +1497,6 @@
         change(arr, 'chg') == null ? null : Math.round(change(arr, 'chg')), pc == null ? null : pc.toFixed(1), ...sizes.slice(0, 4)]);
     }
     downloadCsv(`alabama-${byMetro ? 'metros' : 'counties'}-${label.replace(' ', '-')}-${state.start}-${end}.csv`, rows);
-  }
-
-  function industriesCsv() {
-    const cols = [...Object.keys(meta.stories).map(id => [meta.stories[id].name + ' (category)', al.sel[`${id}|all`].e]),
-      ...Object.keys(meta.groups).map(g => [meta.groups[g], al.sel[`all|${g}`].e]), ['All manufacturing', al.sel['all|all'].e]];
-    const rows = [['Year', ...cols.map(c => c[0])]];
-    years.forEach((yr, i) => rows.push([yr, ...cols.map(c => c[1][i])]));
-    downloadCsv(`alabama-factory-jobs-by-industry-${years[0]}-${years[endIdx]}.csv`, rows);
   }
 
   function setPressed(groupId, value) {
@@ -1605,12 +1685,13 @@
     buildMap(topo, mets);
     buildControls();
     drawPolicy();
-    drawJobs();
-    drawOutput();
+    const drawParts = () => { drawOutput(); for (const m of ['e', 'n', 'p']) drawSeries(m); };
+    drawParts();
+    for (const m of ['e', 'n', 'p']) document.getElementById(`${SERIES[m].key}-dl`).onclick = () => seriesCsv(m);
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { drawJobs(); drawOutput(); }, 150);
+      resizeTimer = setTimeout(drawParts, 150);
     });
     drawRegionBrief({
       states, national, years, gdp: null, contracts: null, ann: null, ctx,
@@ -1621,7 +1702,6 @@
       ]
     });
     document.getElementById('dl-map').onclick = mapCsv;
-    document.getElementById('dl-industries').onclick = industriesCsv;
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
       `Establishments are locations with employees of any size, from car plants to small shops. ${meta.plantsNote || 'Plant sizes come from Census County Business Patterns.'} Pay is shown in ${meta.payDollarsYear} dollars. ` +
