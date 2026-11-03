@@ -5,9 +5,13 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reindustrialization · Made in America</title>
+<title>America is rebuilding factories, not factory jobs · Made in America</title>
 <link rel="canonical" href="https://madeinamerica.gerardbarile.com/">
-<meta name="description" content="Where American factories are being built since 2021, which industries are driving it, and whether the jobs are following.">
+<meta name="description" content="America is rebuilding factories, not factory jobs. Real manufacturing GDP is at a record and factory construction boomed, but factory employment is still below 2019.">
+<meta property="og:title" content="America is rebuilding factories, not factory jobs">
+<meta property="og:description" content="Real manufacturing GDP is at a record and factory construction boomed. Factory employment is still below 2019, and the jobs that did show up are not where the construction money went.">
+<meta property="og:url" content="https://madeinamerica.gerardbarile.com/">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="vendor/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="styles.css">
@@ -76,8 +80,90 @@
 
 <main>
   <section class="wrap intro">
-    <h1>The factories being built <em>now</em></h1>
-    <p>Where plants are opening, which industries are driving the buildout, and whether jobs are following. Construction peaked in late 2024 on an inflation-adjusted basis and has cooled. Strategic industries added jobs while factory employment overall is still below 2019. Figures: BLS and Census.</p>
+    <p class="kicker">Reindustrialization</p>
+    <h1>America is rebuilding factories, <em>not factory jobs</em>.</h1>
+    <p class="subhead">Real manufacturing GDP is at a record, and the factory-construction boom was real. Factory employment is still below 2019. The jobs that did show up are not in the industries where the construction money went.</p>
+  </section>
+
+  <section class="wrap points" id="points" aria-label="The points">
+    <p class="lede">Loading the figures…</p>
+  </section>
+
+  <section class="wrap block" id="sec-money" aria-labelledby="money-h">
+    <div class="card wide-chart">
+      <p class="frame">The capex is in the Census construction series. Adjusted for building costs, it has already come off its peak.</p>
+      <h2 id="money-h">The money went in</h2>
+      <p class="lede" id="money-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Adjusted for building costs</span>
+        <span><i class="dash" style="border-color:#8A8A84"></i>As reported (not adjusted)</span>
+      </div>
+      <p class="readout" id="money-readout"></p>
+      <svg id="money" role="img" aria-label="Monthly factory construction spending since 2008"></svg>
+      <p class="so-what" id="money-so"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="types-h">
+    <div class="card">
+      <p class="frame">The increase is not spread across factory types.</p>
+      <h2 id="types-h">Which industries are building</h2>
+      <p class="lede" id="types-lede"></p>
+      <div class="bar-legend">
+        <span><i style="background:#C9C9C3"></i>2019–2021 average</span>
+        <span><i style="background:var(--gain)"></i>Last 12 months</span>
+      </div>
+      <div id="bars"></div>
+      <p class="panel-note" id="types-note"></p>
+      <p class="so-what" id="types-so"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" id="output" aria-labelledby="output-h">
+    <div class="card wide-chart">
+      <p class="frame">Real factory GDP is the series that made a record. The production index and the job count did not.</p>
+      <h2 id="output-h">Output is at a record</h2>
+      <p class="lede" id="output-lede"></p>
+      <div class="key">
+        <span><i style="border-color:#355E3B"></i>Real manufacturing GDP</span>
+        <span><i style="border-color:#141414"></i>Industrial production</span>
+        <span><i class="dash" style="border-color:#8A8A84"></i>Factory jobs</span>
+      </div>
+      <p class="readout" id="output-readout"></p>
+      <svg id="output-chart" role="img" aria-label="Manufacturing output and factory jobs, indexed so 2019 is 100"></svg>
+      <p class="panel-note" id="output-note"></p>
+      <p class="so-what" id="output-so"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" id="sec-jobs" aria-labelledby="jobs-h">
+    <div class="card wide-chart">
+      <p class="frame">Put construction and employment on one index, with 2019 as 100. Only the spending line moved.</p>
+      <h2 id="jobs-h">The jobs are not following</h2>
+      <p class="lede" id="jobs-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Factory construction spending (adjusted)</span>
+        <span><i style="border-color:#141414"></i>Jobs in strategic industries</span>
+        <span><i class="dash" style="border-color:#8A8A84"></i>All factory jobs</span>
+      </div>
+      <p class="readout" id="jobs-readout"></p>
+      <svg id="jobs" role="img" aria-label="Construction spending and factory jobs indexed to 2019"></svg>
+      <p class="so-what" id="jobs-so"></p>
+    </div>
+    <!-- TODO: signup buttons use SIGNUP_HREF in the page script. Replace that constant with the confirmed subscribe URL. Do not embed a third-party script. -->
+    <aside class="signup" aria-label="Monthly read">
+      <div>
+        <p class="eyebrow">Get the monthly read</p>
+        <p>One note a month on the same series: construction, output, and whether factory jobs close the gap with 2019.</p>
+      </div>
+      <a class="signup-btn" data-signup-link href="#newsletter">Get the monthly read</a>
+      <p class="signup-note">Placeholder. This link is not connected to a list yet.</p>
+    </aside>
+  </section>
+
+  <section class="wrap narrative-open" id="where" aria-labelledby="where-h">
+    <h2 id="where-h">Where it is working, and where it is not</h2>
+    <p class="frame">The national job total fell. Under it, some states added factory jobs and others kept losing them. Most manufacturing locations are still small shops.</p>
   </section>
 
   <section class="wrap controls" aria-label="Since year">
@@ -91,6 +177,10 @@
       <strong id="since-year"></strong>
     </div>
     <p class="since-note" id="since-note" hidden></p>
+  </section>
+
+  <section class="wrap" style="padding-top:1.6rem">
+    <p class="frame">These four figures follow the start year. The points at the top of the page stay on 2019, before the pandemic and before CHIPS and the IRA.</p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers">
@@ -156,71 +246,27 @@
         <h3 class="is-loss">Biggest losses</h3>
         <ol id="rank-losses"></ol>
       </div>
-      <p class="panel-note" id="plant-note">"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant-size bands are Census County Business Patterns for 2023, the latest release. Census has not scheduled 2024. Most plants are small: about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
+      <p class="panel-note" id="plant-note">Plant-size bands load with the Census file.</p>
     </aside>
   </section>
+  <p class="wrap so-what" id="where-so"></p>
 
-  <section class="wrap block" aria-labelledby="types-h">
+  <section class="wrap block" id="chips" aria-labelledby="chips-h">
     <div class="card">
-      <h2 id="types-h">Which industries are building</h2>
-      <p class="lede" id="types-lede"></p>
-      <div class="bar-legend">
-        <span><i style="background:#C9C9C3"></i>2019–2021 average</span>
-        <span><i style="background:var(--gain)"></i>Last 12 months</span>
-      </div>
-      <div id="bars"></div>
-      <p class="panel-note" id="types-note"></p>
-    </div>
-  </section>
-
-  <section class="wrap block" aria-labelledby="money-h">
-    <div class="card wide-chart">
-      <h2 id="money-h">Money in the ground</h2>
-      <p class="lede" id="money-lede"></p>
-      <div class="key">
-        <span><i style="border-color:var(--gain)"></i>Adjusted for building costs</span>
-        <span><i class="dash" style="border-color:#8A8A84"></i>As reported (not adjusted)</span>
-      </div>
-      <p class="readout" id="money-readout"></p>
-      <svg id="money" role="img" aria-label="Monthly factory construction spending since 2008"></svg>
-    </div>
-  </section>
-
-  <section class="wrap block" aria-labelledby="jobs-h">
-    <div class="card wide-chart">
-      <h2 id="jobs-h">Are the jobs showing up?</h2>
-      <p class="lede" id="jobs-lede"></p>
-      <div class="key">
-        <span><i style="border-color:var(--gain)"></i>Factory construction spending (adjusted)</span>
-        <span><i style="border-color:#141414"></i>Jobs in strategic industries</span>
-        <span><i class="dash" style="border-color:#8A8A84"></i>All factory jobs</span>
-      </div>
-      <p class="readout" id="jobs-readout"></p>
-      <svg id="jobs" role="img" aria-label="Construction spending and factory jobs indexed to 2019"></svg>
-    </div>
-  </section>
-
-  <section class="wrap block" id="output" aria-labelledby="output-h">
-    <div class="card wide-chart">
-      <h2 id="output-h">Factory GDP is at a record. Jobs are not.</h2>
-      <p class="lede" id="output-lede"></p>
-      <div class="key">
-        <span><i style="border-color:#355E3B"></i>Real manufacturing GDP</span>
-        <span><i style="border-color:#141414"></i>Industrial production</span>
-        <span><i class="dash" style="border-color:#8A8A84"></i>Factory jobs</span>
-      </div>
-      <p class="readout" id="output-readout"></p>
-      <svg id="output-chart" role="img" aria-label="Manufacturing output and factory jobs, indexed so 2019 is 100"></svg>
-      <p class="panel-note" id="output-note"></p>
-    </div>
-  </section>
-
-  <section class="wrap block" aria-labelledby="chips-h">
-    <div class="card">
+      <p class="frame">CHIPS and the IRA changed the announcement pipeline. They have not, on their own, changed the national job total.</p>
       <h2 id="chips-h">What happened after CHIPS and the IRA</h2>
       <p class="lede" id="chips-lede"></p>
       <div data-chart="chips"></div>
       <p class="panel-note">Announcement trackers are not payroll jobs. The employment figures elsewhere on this page are BLS. Kentucky and Mississippi are outside the six-state Atlas/SACE set. The Southeast page compares Alabama with its peers on electrical employment, which is the battery-belt gap in the QCEW data.</p>
+      <p class="so-what" id="chips-so"></p>
+    </div>
+  </section>
+
+  <section class="wrap block" id="watch" aria-labelledby="watch-h">
+    <div class="card">
+      <p class="frame">The next reading is a few series, not a new dataset.</p>
+      <h2 id="watch-h">What to watch next</h2>
+      <ul class="watch-list" id="watch-list"></ul>
     </div>
   </section>
 
@@ -248,6 +294,17 @@
       <p id="notes"></p>
     </div>
   </section>
+
+  <section class="wrap block" id="newsletter" aria-label="Monthly read">
+    <aside class="signup">
+      <div>
+        <p class="eyebrow">Get the monthly read</p>
+        <p>The same comparison, updated: construction against its peak, real GDP against jobs, and whether the strategic total is still a mix of losses and gains.</p>
+      </div>
+      <a class="signup-btn" data-signup-link href="#newsletter">Get the monthly read</a>
+      <p class="signup-note">Placeholder. This link is not connected to a list yet.</p>
+    </aside>
+  </section>
 </main>
 <div class="hint" id="hint" role="tooltip" hidden></div>
 
@@ -255,7 +312,13 @@
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
 <script src="supplements.js"></script>
+<script src="points.js"></script>
 <script>
+  // TODO: set SIGNUP_HREF to the confirmed newsletter subscribe URL.
+  // Placeholder only. Do not embed a third-party form or script.
+  const SIGNUP_HREF = '#newsletter';
+  for (const link of document.querySelectorAll('[data-signup-link]')) link.href = SIGNUP_HREF;
+
   const ATLAS = 'vendor/states-albers-10m.json';
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
   const THRESH = { n: [20, 100, 400], e: [1000, 5000, 20000] };
@@ -645,8 +708,7 @@
     const a = lines[2].vals[lastI];
     document.getElementById('jobs-lede').textContent =
       `Each line is set to 100 in 2019. By ${lastYear}, factory construction spending was ${Math.round(c - 100)}% above 2019 after adjusting for costs, ` +
-      `jobs in strategic industries were ${sign(s - 100)}${Math.abs(s - 100).toFixed(1)}%, and all factory jobs were ${sign(a - 100)}${Math.abs(a - 100).toFixed(1)}%. ` +
-      'New plants take years to build and staff, so jobs lag the spending.';
+      `jobs in strategic industries were ${sign(s - 100)}${Math.abs(s - 100).toFixed(1)}%, and all factory jobs were ${sign(a - 100)}${Math.abs(a - 100).toFixed(1)}%.`;
     const readout = document.getElementById('jobs-readout');
     const rest = () => { readout.textContent = `${lastYear}: construction ${Math.round(c)}, strategic jobs ${s.toFixed(1)}, all factory jobs ${a.toFixed(1)}`; };
     el.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
@@ -863,6 +925,119 @@
     el.addEventListener('blur', () => { hint.hidden = true; });
   }
 
+  function comma(v) { return d3.format(',')(Math.round(Math.abs(v))); }
+  function signedComma(v) { return (v > 0 ? '+' : v < 0 ? '−' : '') + comma(v); }
+
+  // Top-of-page claims and the section closers. Every figure is read from the loaded files.
+  function drawArgument(plants, gdp) {
+    const i19 = years.indexOf(2019);
+    const end = years[endIdx];
+    const all = national.sel['all|all'];
+    const jobChg = all.e[endIdx] - all.e[i19];
+    const estChg = all.n[endIdx] - all.n[i19];
+    const perThen = all.e[i19] / all.n[i19];
+    const perNow = all.e[endIdx] / all.n[endIdx];
+    const chipsChg = national.sel['all|chips'].e[endIdx] - national.sel['all|chips'].e[i19];
+    const foodChg = national.sel['all|food'].e[endIdx] - national.sel['all|food'].e[i19];
+    const stratChg = national.sel['strategic|all'].e[endIdx] - national.sel['strategic|all'].e[i19];
+    const elecChg = national.sel['all|electrical'].e[endIdx] - national.sel['all|electrical'].e[i19];
+    const aeroChg = national.sel['all|aero'].e[endIdx] - national.sel['all|aero'].e[i19];
+    const pharmaChg = national.sel['all|pharma'].e[endIdx] - national.sel['all|pharma'].e[i19];
+
+    const monthly = reind.monthly;
+    const peak = d3.maxIndex(monthly.real);
+    const parseMonth = d3.timeParse('%Y-%m');
+    const fmtMonth = d3.timeFormat('%b %Y');
+    const peakWhen = fmtMonth(parseMonth(monthly.dates[peak]));
+    const latestWhen = fmtMonth(parseMonth(monthly.dates[monthly.dates.length - 1]));
+    const offPeak = (1 - monthly.real[monthly.real.length - 1] / monthly.real[peak]) * 100;
+    const runRate = reind.total.recent / reind.total.before;
+    const electronics = reind.byType.find(d => d.id === 'electronics');
+    const spendIncrease = reind.total.recent - reind.total.before;
+    const elecShare = (electronics.recent - electronics.before) / spendIncrease * 100;
+    const elecTimes = electronics.recent / electronics.before;
+
+    const real = gdp.states['00'].mfgReal;
+    const gy = gdp.years;
+    const gdpPct = (real[real.length - 1] / real[gy.indexOf(2019)] - 1) * 100;
+    const gdpHigh = real[real.length - 1] >= d3.max(real) - 1;
+    const out = national.output;
+    const o19 = out.values[out.years.indexOf(2019)];
+    const oLast = out.values[out.values.length - 1];
+    const oPeak = d3.max(out.values);
+    const oPeakYear = out.years[d3.maxIndex(out.values)];
+    const latestJ = national.latest.jobs;
+    const j19 = national.jobs.values[national.jobs.years.indexOf(2019)];
+
+    const bands = [0, 0, 0, 0];
+    for (const row of Object.values(plants.states)) {
+      row.all.slice(0, 4).forEach((v, i) => { bands[i] += v; });
+    }
+    const known = d3.sum(bands);
+    const smallShare = bands[0] / known * 100;
+    const bigShare = (bands[2] + bands[3]) / known * 100;
+
+    const stateRows = Object.keys(features).filter(id => id !== '72' && id !== '78').map(id => {
+      const e = (states[id] && states[id].sel['all|all'].e) || [];
+      const a = e[i19];
+      const b = e[endIdx];
+      return a == null || b == null ? null : { name: names[id], v: b - a };
+    }).filter(Boolean).sort((a, b) => b.v - a.v);
+    const gained = stateRows.filter(r => r.v > 0).slice(0, 2);
+    const lost = stateRows.filter(r => r.v < 0);
+    const worst = lost.slice(-1)[0];
+    const fiveLoss = d3.sum(lost.slice(-5), r => r.v);
+
+    fillPoints([
+      {
+        num: `${elecTimes.toFixed(1)}×`,
+        claim: `Computers, electronics and electrical construction is ${elecTimes.toFixed(1)}× its 2019–21 average, about ${Math.round(elecShare)}% of the spending increase.`,
+        why: `Adjusted for building costs, the series peaked in ${peakWhen} and the latest month, ${latestWhen}, is ${Math.round(offPeak)}% lower. The latest 12 months are still ${runRate.toFixed(1)}× the 2019–21 average.`
+      },
+      {
+        num: `${gdpPct > 0 ? '+' : '−'}${Math.abs(gdpPct).toFixed(1)}%`,
+        claim: `Real manufacturing GDP is ${gdpPct > 0 ? 'up' : 'down'} ${Math.abs(gdpPct).toFixed(1)}% since 2019${gdpHigh ? ', the highest year in the BEA series' : ''}.`,
+        why: `The Fed's manufacturing production index is not at a record: ${oLast.toFixed(1)} for ${out.years[out.years.length - 1]}, against ${o19.toFixed(1)} in 2019 and a peak of ${oPeak.toFixed(1)} in ${oPeakYear}. Factory jobs did not follow GDP.`
+      },
+      {
+        num: signedComma(jobChg),
+        claim: `All factory jobs are ${signedComma(jobChg)} since 2019. Food processing is ${signedComma(foodChg)}. Semiconductors and electronics are ${signedComma(chipsChg)}.`,
+        why: `The strategic total is only ${signedComma(stratChg)}, because electrical (${signedComma(elecChg)}), aerospace (${signedComma(aeroChg)}) and pharma (${signedComma(pharmaChg)}) offset the drop in chips. Food, outside that total, added more jobs than strategic did.`
+      },
+      {
+        num: `${Math.round(perThen)} → ${Math.round(perNow)}`,
+        claim: `Manufacturing establishments rose by ${comma(estChg)} while employment fell, so the average location went from ${perThen.toFixed(0)} jobs to ${perNow.toFixed(0)}.`,
+        why: `In the ${plants.year} Census counts, ${Math.round(smallShare)}% of plants have fewer than 20 workers and ${Math.round(bigShare)}% have 100 or more. The construction boom and the plant census are different objects.`
+      }
+    ]);
+
+    document.getElementById('money-so').textContent =
+      `Use the inflation-adjusted line. It peaked in ${peakWhen} at ${money(monthly.real[peak])} and was ${money(monthly.real[monthly.real.length - 1])} in ${latestWhen}. What remains of the increase is mostly electronics and electrical, not a general factory boom.`;
+    document.getElementById('types-so').textContent =
+      `${electronics.name.replace(/ \(.*\)/, '')} went from ${money(electronics.before)} to ${money(electronics.recent)} a year and accounts for about ${Math.round(elecShare)}% of the increase since 2019–21. A project model that treats "manufacturing construction" as broad is mis-specified.`;
+    document.getElementById('output-so').textContent =
+      `A record in real GDP is not a record in industrial production, and it is not a record in jobs. Monthly factory employment was ${latestJ.value.toFixed(2)} million in ${fmtMonth(parseMonth(latestJ.date))}, against a 2019 average of ${j19.toFixed(2)} million. Underwrite output and payroll as separate bets.`;
+    document.getElementById('jobs-so').textContent =
+      `Do not read the gap between the construction line and the jobs line as hiring that is merely late. Since ${end === 2019 ? 'the start' : '2019'}, strategic employment is a net of ${signedComma(stratChg)}, chips employment is ${signedComma(chipsChg)}, and food processing is ${signedComma(foodChg)}.`;
+    document.getElementById('where-so').textContent =
+      `Since 2019, ${gained.map(r => `${r.name} ${signedComma(r.v)}`).join(' and ')}, while ${worst.name} is ${signedComma(worst.v)}. The five largest state declines add up to ${signedComma(fiveLoss)}. ${Math.round(smallShare)}% of plants have fewer than 20 workers (${plants.year}), so a gain in establishments is not a gain in fabs.`;
+    document.getElementById('chips-so').textContent =
+      'These rows are awards and announcements. They are not the BLS job counts above. A state can lead an announcement table and still lose factory jobs. Check the map before treating a press release as payroll.';
+
+    const watch = [
+      `Construction, adjusted for building costs: ${money(monthly.real[monthly.real.length - 1])} in ${latestWhen}, versus ${money(monthly.real[peak])} in ${peakWhen}. A further drop means the buildout was a wave. A plateau means the higher run-rate stuck.`,
+      `Factory jobs, monthly: ${latestJ.value.toFixed(2)} million in ${fmtMonth(parseMonth(latestJ.date))}, against ${j19.toFixed(2)} million in 2019. The thesis breaks if this series gets back through the 2019 level and stays there.`,
+      `Inside strategic industries, semiconductors and electronics are ${signedComma(chipsChg)} since 2019, while electrical is ${signedComma(elecChg)}, aerospace ${signedComma(aeroChg)} and pharma ${signedComma(pharmaChg)}. Watch the parts, not the net.`,
+      `Announced projects are on the <a href="commerce.html">Commerce</a> and <a href="money.html">Money</a> pages. Realized jobs are on this map and on <a href="southeast.html">Southeast</a>. The gap between the two is the underwriting question.`
+    ];
+    document.getElementById('watch-list').innerHTML = watch.map(t => `<li>${t}</li>`).join('');
+
+    const note = document.getElementById('plant-note');
+    note.textContent =
+      `"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant sizes are a separate Census count${meta.plantsNote ? ` (${meta.plantsNote})` : ''}. ` +
+      `In those ${plants.year} counts, ${Math.round(smallShare)}% of manufacturing establishments have fewer than 20 workers and ${Math.round(bigShare)}% have 100 or more.`;
+  }
+
   Promise.all([
     d3.json(ATLAS),
     d3.json('data/meta.json'),
@@ -871,8 +1046,9 @@
     d3.json('data/reindustrialization.json'),
     d3.json('data/context.json'),
     d3.json('data/gdp.json'),
-    d3.json('data/supplements.json')
-  ]).then(([topo, m, nat, sts, r, ctx, gdp, supplements]) => {
+    d3.json('data/supplements.json'),
+    d3.json('data/plants.json')
+  ]).then(([topo, m, nat, sts, r, ctx, gdp, supplements, plants]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
@@ -931,6 +1107,7 @@
     moneyChart();
     jobsChart();
     drawOutput(gdp);
+    drawArgument(plants, gdp);
     drawChips(document, supplements.chips);
     const ev = ctx.ev.june2025;
     const alEv = ctx.ev.alabamaEoy2025;
@@ -938,8 +1115,7 @@
       `The CHIPS and Science Act and the Inflation Reduction Act were both signed in August 2022. Through June 30, 2025, Atlas and the Southern Alliance for Clean Energy counted $${ev.regionInvestBillion} billion of announced EV-manufacturing investment and ${d3.format(',')(ev.regionJobs)} anticipated jobs in their six Southeast states. ` +
       `In the year before that date, new announcements were $${ev.newInvestBillionPrior12Months} billion, down from $${ev.newInvestBillionYearBefore} billion the prior year, and cancellations removed about $${ev.canceledInvestBillion} billion and ${d3.format(',')(ev.canceledJobs)} jobs. ` +
       `Alabama's end-of-2025 snapshot was still ${d3.format(',')(alEv.jobs)} anticipated EV-manufacturing jobs and $${alEv.investBillion.toFixed(1)} billion, rank ${alEv.rank} of those six states, with no growth during 2025. ${alEv.trainingCenter}`;
-    if (meta.plantsNote) document.getElementById('plant-note').textContent =
-      `"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant sizes come from a separate source: ${meta.plantsNote} In those 2023 counts, about 2 in 3 manufacturing establishments have fewer than 20 workers and fewer than 1 in 10 have 100 or more.`;
+    // Plant-size shares are filled in drawArgument from plants.json.
   }).catch(err => {
     document.getElementById('loading').textContent = 'Could not load the data. Please refresh to try again.';
     console.error(err);
