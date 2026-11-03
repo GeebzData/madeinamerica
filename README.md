@@ -21,10 +21,11 @@ pipeline/
   fetch_federal.py       USAspending economic-development grants for a fixed program list, 7 Southeast states (writes site/data/federal.json)
   fetch_sba.py           SBA 7(a)/504 loans, totals only by state, year, sector and industry (writes site/data/sba.json)
   fetch_formation.py     Census business applications and Business Dynamics startups/survival (writes site/data/formation.json)
+  fetch_productivity.py  Output per worker and per hour, other countries (World Bank + ILO), Census robot use and spending, robot imports (writes site/data/productivity.json; run after fetch_bea.py and export.py)
   commerce/              State commerce-agency county data for the Commerce Dept page (writes site/data/commerce_counties.json)
   export.py       Warehouse tables -> compact JSON in site/data/
 site/
-  index.html                 Explore page
+  index.html                 Reindustrialization page: the map, then four stories (record output, output per worker, robots, incentives)
   story.html                 Story page (chapters, 1979 to now)
   reindustrialization.html   Reindustrialization page
   alabama.html               Alabama counties and metro areas, 5- and 10-year trends, incentives
@@ -64,6 +65,7 @@ python3.12 -m venv .venv
 .venv/bin/python pipeline/fetch_federal.py
 .venv/bin/python pipeline/fetch_sba.py         # first run downloads ~500 MB of SBA loan files; borrower rows never leave pipeline/raw/
 .venv/bin/python pipeline/fetch_formation.py
+.venv/bin/python pipeline/fetch_productivity.py
 ```
 
 No API keys are needed.
