@@ -115,7 +115,11 @@
 <main>
   <section class="wrap intro">
     <h1>Alabama manufacturing, <em>county by county</em></h1>
-    <p>Pick a starting year and a measure. Each of Alabama's 67 counties is shaded by how its manufacturing changed from that year to today. Hover for the numbers; click a county to see what it makes.</p>
+    <p>Alabama added factory jobs while the country lost them, and the gain is vehicles in a handful of counties. The climb stalled in 2025. Pick a starting year and a measure. Hover a county for the numbers; click it to see what it makes.</p>
+  </section>
+
+  <section class="wrap points" id="points" aria-label="The points">
+    <p>Loading the figures…</p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers">
@@ -378,6 +382,7 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
+<script src="points.js"></script>
 <script src="region.js"></script>
 <script src="momentum.js"></script>
 <script>
@@ -1452,6 +1457,54 @@
     el.addEventListener('blur', () => { hint.hidden = true; });
   }
 
+  function drawPagePoints(ctx) {
+    const i19 = years.indexOf(2019);
+    const end = years[endIdx];
+    const series = al.sel;
+    const chg = k => series[k].e[endIdx] - series[k].e[i19];
+    const pct = k => (series[k].e[endIdx] / series[k].e[i19] - 1) * 100;
+    const yoy = series['all|all'].e[endIdx] - series['all|all'].e[endIdx - 1];
+    const q = quarter.areas['01'];
+    const qUs = quarter.areas.US;
+    const qPct = (q[0] - q[3]) / q[3] * 100;
+    const qUsPct = (qUs[0] - qUs[3]) / qUs[3] * 100;
+    const fmt = v => `${v > 0 ? '+' : '−'}${d3.format(',')(Math.round(Math.abs(v)))}`;
+    const rows = Object.keys(counties).filter(id => id.startsWith('01')).map(id => {
+      const arr = counties[id].e;
+      const a = arr[i19];
+      const b = arr[endIdx];
+      return a == null || b == null ? null : { name: names[id], v: b - a };
+    }).filter(Boolean).sort((a, b) => b.v - a.v);
+    const net = d3.sum(rows, r => r.v);
+    const top3 = rows.slice(0, 3);
+    const topShare = d3.sum(top3, r => r.v) / net * 100;
+    const losers = rows.filter(r => r.v < 0).length;
+    const lf = ctx.lfpr.states;
+    const gap = lf.US.latest - lf['01'].latest;
+    fillPoints([
+      {
+        num: fmt(chg('all|vehicles')),
+        claim: `Vehicle jobs are ${fmt(chg('all|vehicles'))} since 2019, up ${pct('all|vehicles').toFixed(0)}%. Electrical jobs are ${fmt(chg('all|electrical'))}. Chip employment is ${fmt(chg('all|chips'))}, down ${Math.abs(pct('all|chips')).toFixed(0)}%.`,
+        why: `Aerospace is ${fmt(chg('all|aero'))}. Alabama's gain, against a national decline, is autos and aerospace. It is not the battery belt.`
+      },
+      {
+        num: `${Math.round(topShare)}%`,
+        claim: `${top3.map(r => r.name.replace(' County', '')).join(', ')} account for ${Math.round(topShare)}% of the net job change among counties with published figures.`,
+        why: `${losers} counties lost factory jobs over the same years. The statewide number is not a broad expansion.`
+      },
+      {
+        num: fmt(yoy),
+        claim: `Factory jobs ${yoy < 0 ? 'fell' : 'rose'} ${d3.format(',')(Math.abs(Math.round(yoy)))} in ${end}. ${quarter.year} Q${quarter.qtr} is ${Math.abs(qPct).toFixed(1)}% ${qPct < 0 ? 'below' : 'above'} the same quarter a year earlier.`,
+        why: `The U.S. was ${Math.abs(qUsPct).toFixed(1)}% ${qUsPct < 0 ? 'lower' : 'higher'} in that quarter. The post-2019 climb has stalled.`
+      },
+      {
+        num: `${lf['01'].latest.toFixed(1)}%`,
+        claim: `Labor-force participation is ${lf['01'].latest.toFixed(1)}%, ${gap.toFixed(1)} points under the U.S. rate of ${lf.US.latest.toFixed(1)}%.`,
+        why: `Georgia is ${lf['13'].latest.toFixed(1)}% and Tennessee is ${lf['47'].latest.toFixed(1)}%, as of ${lf['01'].asOf}. A site that looks cheap on other costs still has to hire from a smaller share of the population.`
+      }
+    ]);
+  }
+
   Promise.all([
     d3.json(ATLAS),
     d3.json('data/meta.json'),
@@ -1479,6 +1532,7 @@
     buildControls();
     drawPeriods();
     drawInsights();
+    drawPagePoints(ctx);
     drawPolicy();
     drawTrends();
     drawRegionBrief({

@@ -99,6 +99,10 @@
     </div>
   </section>
 
+  <section class="wrap points" id="points" aria-label="The points">
+    <p>Loading the figures…</p>
+  </section>
+
   <section class="wrap" aria-label="How these numbers are calculated" style="padding-top:1.6rem">
     <details class="calc" id="calc"><summary id="calc-summary"></summary><div id="calc-body"></div></details>
   </section>
@@ -241,6 +245,7 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
+<script src="points.js"></script>
 <script>
   const ATLAS = 'vendor/counties-albers-10m.json';
   const STORIES = {
@@ -784,6 +789,105 @@
     for (const c of chapters) { c.classList.add('reveal'); io.observe(c); }
   }
 
+  function moved(v, digits) {
+    const n = Math.abs(v);
+    const text = n < 1 ? n.toFixed(1) : n.toFixed(digits);
+    return `${v < 0 ? 'fell' : 'rose'} ${text}%`;
+  }
+
+  function drawStoryPoints(which) {
+    if (which === 'alabama') { drawAlabamaStoryPoints(); return; }
+    const jobs = national.jobs;
+    const out = national.output;
+    const core = national.outputExHiTech;
+    const last = jobs.years[jobs.years.length - 1];
+    const jIdx = jobs.values[jobs.values.length - 1] / jobs.values[0] * 100;
+    const oIdx = out.values[out.years.indexOf(last)] / out.values[0] * 100;
+    const cIdx = core.values[core.years.indexOf(last)] / core.values[0] * 100;
+    const all = national.sel['all|all'].e;
+    const lost = at(all, 2000) - at(all, 2010);
+    const back = at(all, 2019) - at(all, 2010);
+    const pharma = national.sel['all|pharma'].e;
+    const food = national.sel['all|food'].e;
+    const textiles = national.sel['all|textiles'].e;
+    const veh = national.sel['all|vehicles'].e;
+    const slice = (arr) => (at(arr, 2010) / at(arr, 2000) - 1) * 100;
+    const monthly = reind.monthly;
+    const peak = d3.maxIndex(monthly.real);
+    const off = (1 - monthly.real[monthly.real.length - 1] / monthly.real[peak]) * 100;
+    const fmtMonth = d3.timeFormat('%b %Y');
+    const parse = d3.timeParse('%Y-%m');
+    const latestJ = national.latest.jobs;
+    const j19 = jobs.values[jobs.years.indexOf(2019)];
+    const fmt = v => d3.format(',')(Math.round(Math.abs(v)));
+    fillPoints([
+      {
+        num: `${Math.round(cIdx - 100)}%`,
+        claim: `Leave out computers, chips and vehicles and factory output is ${Math.round(cIdx - 100)}% above 1979, not double.`,
+        why: `Total industrial production is index ${Math.round(oIdx)} with 1979 as 100. Jobs are index ${Math.round(jIdx)}: ${jobs.values[jobs.values.length - 1].toFixed(2)} million, from ${jobs.values[0].toFixed(2)} million. The doubling sits in the industries the dashed line removes.`
+      },
+      {
+        num: `${Math.round(back / lost * 100)}%`,
+        claim: `The 2010–2019 rebound put back ${fmt(back)} factory jobs, ${Math.round(back / lost * 100)}% of the ${fmt(lost)} lost from 2000 to 2010.`,
+        why: `"Some came back" is about a one-fifth recovery of that decade. It is not a return to the old level.`
+      },
+      {
+        num: fmtPct(slice(textiles), 0),
+        claim: `In that lost decade textiles ${moved(slice(textiles), 0)} and vehicles ${moved(slice(veh), 0)}. Pharma ${moved(slice(pharma), 1)} and food ${moved(slice(food), 0)}.`,
+        why: `The industries that held their employment are not the ones the public memory of that decade is about. A national loss rate is a mix.`
+      },
+      {
+        num: `${Math.round(off)}%`,
+        claim: `Inflation-adjusted factory construction is ${Math.round(off)}% below its ${fmtMonth(parse(monthly.dates[peak]))} peak.`,
+        why: `Monthly factory employment was ${latestJ.value.toFixed(2)} million in ${fmtMonth(parse(latestJ.date))}, still under the 2019 average of ${j19.toFixed(2)} million.`
+      }
+    ]);
+  }
+
+  function drawAlabamaStoryPoints() {
+    const end = years[endIdx];
+    const e = states['01'].sel['all|all'].e;
+    const veh = states['01'].sel['all|vehicles'].e;
+    const jobChg = at(e, end) - at(e, 2019);
+    const vehChg = at(veh, end) - at(veh, 2019);
+    const g = al.gdp.states['01'];
+    const gy = al.gdp.years;
+    const gdpPct = (g.mfgReal[g.mfgReal.length - 1] / g.mfgReal[gy.indexOf(2019)] - 1) * 100;
+    const jobPct = (at(e, end) / at(e, 2019) - 1) * 100;
+    const yoy = at(e, end) - at(e, end - 1);
+    const row = al.ann.state[String(end)];
+    const row19 = al.ann.state['2019'];
+    const per = r => r[5] / r[4];
+    const perJob = d => (d >= 1e6 ? `$${(d / 1e6).toFixed(1)} million` : `$${Math.round(d / 1e3).toLocaleString('en-US')}k`);
+    const top = al.ann.projects.filter(p => p.year === end && /^3[123]/.test(String(p.naics))).sort((a, b) => (b.invest || 0) - (a.invest || 0))[0];
+    const idx = al.contracts.fys.map((y, i) => (y >= 2021 && y <= end ? i : -1)).filter(i => i >= 0);
+    const alFed = d3.sum(idx, i => al.contracts.states['01'][i]);
+    const mad = d3.sum(idx, i => al.contracts.counties['01089'][i]);
+    const fmt = v => d3.format(',')(Math.round(Math.abs(v)));
+    fillPoints([
+      {
+        num: `+${gdpPct.toFixed(1)}%`,
+        claim: `Real manufacturing GDP is up ${gdpPct.toFixed(1)}% since 2019. Factory jobs are up ${jobPct.toFixed(1)}%.`,
+        why: `The state has the same split as the national chart: output moved further than employment.`
+      },
+      {
+        num: `${Math.round(vehChg / jobChg * 100)}%`,
+        claim: `Vehicles account for ${Math.round(vehChg / jobChg * 100)}% of Alabama's net factory-job gain since 2019 (${fmt(vehChg)} of ${fmt(jobChg)}).`,
+        why: `The employment story since 2019 is the auto supply chain, not a broad industrial revival.`
+      },
+      {
+        num: perJob(per(row)),
+        claim: `${end} factory announcements were ${money(row[5] / 1e9)} for ${fmt(row[4])} jobs, ${perJob(per(row))} per job, against ${perJob(per(row19))} in 2019.`,
+        why: `BLS factory employment ${yoy < 0 ? 'fell' : 'rose'} ${fmt(yoy)} in ${end}. ${top.company} is ${money(top.invest / 1e9)} and ${fmt(top.jobs)} jobs, about ${Math.round(top.invest / row[5] * 100)}% of that year's factory dollars.`
+      },
+      {
+        num: `${Math.round(mad / alFed * 100)}%`,
+        claim: `${al.names['01089']} is ${Math.round(mad / alFed * 100)}% of federal manufacturing-contract obligations from FY2021 to FY${end}.`,
+        why: `${money(mad / 1000)} of ${money(alFed / 1000)}. The defense book is one county. Obligations are prime-contract commitments, not a statewide demand number.`
+      }
+    ]);
+  }
+
   function showStory(which) {
     story = which;
     for (const b of document.querySelectorAll('#which button')) b.setAttribute('aria-pressed', String(b.dataset.v === which));
@@ -792,8 +896,8 @@
     document.getElementById('chapters').hidden = which !== 'national';
     document.getElementById('chapters-al').hidden = which !== 'alabama';
     history.replaceState(null, '', which === 'alabama' ? '#alabama' : location.pathname);
-    if (which === 'national') { drawCalc(); return; }
-    (al ? Promise.resolve() : loadAlabama()).then(drawCalcAl).catch(err => {
+    if (which === 'national') { drawStoryPoints('national'); drawCalc(); return; }
+    (al ? Promise.resolve() : loadAlabama()).then(() => { drawStoryPoints('alabama'); drawCalcAl(); }).catch(err => {
       document.getElementById('chapters-al').innerHTML = '<p>Could not load the Alabama data. Please refresh to try again.</p>';
       console.error(err);
     });

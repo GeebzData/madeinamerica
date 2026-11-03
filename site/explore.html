@@ -30,7 +30,11 @@
 <main>
   <section class="wrap intro">
     <h1>Where American manufacturing <em>went</em>, and where it's coming back</h1>
-    <p id="hero-lede">The buildout is real. The employment recovery is partial and concentrated. Factory construction surged after 2021, peaked in late 2024 once building costs are taken out, and has cooled. The map starts in 2019. Use the year slider for the longer history back to 1990.</p>
+    <p id="hero-lede">The national total is the wrong unit. The map is a transfer across states and a split across industries, and the default layer counts a small shop the same as a large plant. It starts in 2019. The year control goes back to 1990.</p>
+  </section>
+
+  <section class="wrap points" id="points" aria-label="The points">
+    <p>Loading the figures…</p>
   </section>
 
   <section class="wrap controls" aria-label="Filters">
@@ -224,6 +228,7 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
+<script src="points.js"></script>
 <script>
   const ATLAS = 'vendor/counties-albers-10m.json';
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
@@ -1254,6 +1259,60 @@
     el.addEventListener('blur', () => { hint.hidden = true; });
   }
 
+  function drawExplorePoints() {
+    const i19 = years.indexOf(2019);
+    const i10 = years.indexOf(2010);
+    const i00 = years.indexOf(2000);
+    const all = national.sel['all|all'];
+    const lost = all.e[i00] - all.e[i10];
+    const back = all.e[i19] - all.e[i10];
+    const jobChg = all.e[endIdx] - all.e[i19];
+    const estChg = all.n[endIdx] - all.n[i19];
+    const foodChg = national.sel['all|food'].e[endIdx] - national.sel['all|food'].e[i19];
+    const chipsChg = national.sel['all|chips'].e[endIdx] - national.sel['all|chips'].e[i19];
+    const exFood = jobChg - foodChg;
+    const payPct = (all.p[endIdx] / all.p[i19] - 1) * 100;
+    const perThen = all.e[i19] / all.n[i19];
+    const perNow = all.e[endIdx] / all.n[endIdx];
+    const bands = [0, 0, 0, 0];
+    for (const row of Object.values(plants.states)) row.all.slice(0, 4).forEach((v, i) => { bands[i] += v; });
+    const small = bands[0] / d3.sum(bands) * 100;
+    const fmt = v => `${v > 0 ? '+' : '−'}${d3.format(',')(Math.round(Math.abs(v)))}`;
+    const rows = Object.keys(states).filter(id => id !== '72' && id !== '78' && names.state[id]).map(id => {
+      const e = states[id].sel['all|all'].e;
+      const a = e[i19];
+      const b = e[endIdx];
+      return a == null || b == null ? null : { name: names.state[id], v: b - a };
+    }).filter(Boolean).sort((a, b) => b.v - a.v);
+    const top = rows.slice(0, 2);
+    const worst = rows[rows.length - 1];
+    const five = d3.sum(rows.slice(-5), r => r.v);
+    fillPoints([
+      {
+        num: `${Math.round(back / lost * 100)}%`,
+        claim: `The 2010–2019 rebound put back ${d3.format(',')(Math.round(back))} factory jobs, ${Math.round(back / lost * 100)}% of the ${d3.format(',')(Math.round(lost))} lost from 2000 to 2010.`,
+        why: `Coming back, on this map, is a one-fifth recovery of that decade. It is not a return to the old employment level.`
+      },
+      {
+        num: fmt(worst.v),
+        claim: `Since 2019, ${top.map(r => `${r.name} ${fmt(r.v)}`).join(' and ')}. ${worst.name} is ${fmt(worst.v)}.`,
+        why: `The five largest state declines add up to ${fmt(five)}. The national change, ${fmt(jobChg)}, is a transfer plus a decline, not one story.`
+      },
+      {
+        num: fmt(foodChg),
+        claim: `Food processing added ${d3.format(',')(Math.round(foodChg))} jobs since 2019. Everything else, taken together, is ${fmt(exFood)}.`,
+        why: `Semiconductors and electronics are ${fmt(chipsChg)}. A green state is an industry mix. It is not evidence that the strategic complex is hiring.`
+      },
+      {
+        num: `${Math.round(perThen)} → ${Math.round(perNow)}`,
+        claim: `The country added ${d3.format(',')(Math.round(estChg))} manufacturing establishments since 2019 while losing jobs, so the average location went from ${perThen.toFixed(0)} jobs to ${perNow.toFixed(0)}.`,
+        why: `${Math.round(small)}% of plants in the ${plants.year} Census counts have fewer than 20 workers. Inflation-adjusted average pay is only ${payPct.toFixed(1)}% above 2019. The default "Factories" layer is not a count of fabs, and the pay layer is not a wage boom.`
+      }
+    ]);
+    document.getElementById('hero-lede').textContent =
+      'The national total is the wrong unit. Since 2019 the map is a transfer across states and a split across industries, and the default layer counts a small shop the same as a large plant. The year control starts in 2019 and goes back to 1990.';
+  }
+
   Promise.all([
     d3.json(ATLAS),
     d3.json('data/meta.json'),
@@ -1276,6 +1335,7 @@
     buildControls();
     buildCharts();
     drawDual(reind, ctx);
+    drawExplorePoints();
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
       `Establishments are locations with employees, from car plants to small shops; plant-size bands are Census County Business Patterns for ${plants.year}. ${meta.plantsNote || ''} Pay is shown in ${meta.payDollarsYear} dollars. ` +

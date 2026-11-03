@@ -83,7 +83,11 @@
 <main>
   <section class="wrap intro">
     <h1>Alabama manufacturing, <em>in dollars</em></h1>
-    <p>What Alabama's factories add to the economy, what they pay, what companies have announced they will invest, and what the federal government buys from them. County by county, with the Southeast for comparison.</p>
+    <p>Announced dollars, factory GDP, payroll and federal contracts do not move together. The record announcement year is a capital-intensity story, and the defense book is one county. County by county, with the Southeast for comparison.</p>
+  </section>
+
+  <section class="wrap points" id="points" aria-label="The points">
+    <p>Loading the figures…</p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers" id="kpis"></section>
@@ -260,6 +264,7 @@
 
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
+<script src="points.js"></script>
 <script>
   const ATLAS = 'vendor/counties-albers-10m.json';
   const ST = '01';
@@ -875,6 +880,57 @@
     el.addEventListener('blur', () => { hint.hidden = true; });
   }
 
+  function perAnnouncedJob(dollars) {
+    return dollars >= 1e6 ? `$${(dollars / 1e6).toFixed(1)} million` : `$${Math.round(dollars / 1e3).toLocaleString('en-US')}k`;
+  }
+
+  function drawMoneyPoints() {
+    const end = years[endIdx];
+    const i19 = years.indexOf(2019);
+    const i21 = years.indexOf(2021);
+    const jobs = states[ST].sel['all|all'].e;
+    const yoy = jobs[endIdx] - jobs[endIdx - 1];
+    const since21 = jobs[endIdx] - jobs[i21];
+    const since19 = jobs[endIdx] - jobs[i19];
+    const row = ann.state[String(end)];
+    const row19 = ann.state['2019'];
+    const announced = d3.sum(ann.years.filter(y => y >= 2021 && y <= end), y => ann.state[y][4]);
+    const real = gdp.states[ST].mfgReal;
+    const gy = gdp.years;
+    const gdpPct = (real[real.length - 1] / real[gy.indexOf(2019)] - 1) * 100;
+    const jobPct = (since19 / jobs[i19]) * 100;
+    const alShare = gdp.states[ST].mfgReal[real.length - 1] / gdp.states[ST].totalReal[real.length - 1] * 100;
+    const usShare = gdp.states['00'].mfgReal[gdp.states['00'].mfgReal.length - 1] / gdp.states['00'].totalReal[gdp.states['00'].totalReal.length - 1] * 100;
+    const idx = contracts.fys.map((y, i) => (y >= 2021 && y <= end ? i : -1)).filter(i => i >= 0);
+    const alFed = d3.sum(idx, i => contracts.states[ST][i]);
+    const madId = '01089';
+    const mad = d3.sum(idx, i => contracts.counties[madId][i]);
+    const top = ann.projects.filter(p => p.year === end && /^3[123]/.test(String(p.naics))).sort((a, b) => (b.invest || 0) - (a.invest || 0))[0];
+    const fmt = v => `${v > 0 ? '+' : '−'}${d3.format(',')(Math.round(Math.abs(v)))}`;
+    fillPoints([
+      {
+        num: perAnnouncedJob(row[5] / row[4]),
+        claim: `In ${end} the state recorded ${money(row[5] / 1e6)} of factory investment for ${d3.format(',')(row[4])} jobs, ${perAnnouncedJob(row[5] / row[4])} per job, against ${perAnnouncedJob(row19[5] / row19[4])} in 2019.`,
+        why: `BLS factory employment ${yoy < 0 ? 'fell' : 'rose'} ${d3.format(',')(Math.abs(Math.round(yoy)))} that year. ${top.company} is ${money(top.invest / 1e6)}, about ${Math.round(top.invest / row[5] * 100)}% of the factory dollars, for ${d3.format(',')(top.jobs)} jobs.`
+      },
+      {
+        num: d3.format(',')(announced),
+        claim: `From 2021 to ${end} the reports attached ${d3.format(',')(announced)} jobs to manufacturing announcements. BLS employment rose ${d3.format(',')(Math.round(since21))}.`,
+        why: `Commitments are ahead of the payroll change, and announced hiring can still be years out. Do not book the announcement total as headcount.`
+      },
+      {
+        num: `+${gdpPct.toFixed(1)}%`,
+        claim: `Real manufacturing GDP is up ${gdpPct.toFixed(1)}% since 2019. Factory jobs are up ${jobPct.toFixed(1)}% (${fmt(since19)}).`,
+        why: `Manufacturing is ${alShare.toFixed(1)}% of Alabama real GDP, against ${usShare.toFixed(1)}% for the United States. Output ran ahead of employment here too.`
+      },
+      {
+        num: `${Math.round(mad / alFed * 100)}%`,
+        claim: `${names[madId]} accounts for ${Math.round(mad / alFed * 100)}% of Alabama's federal manufacturing-contract obligations from FY2021 to FY${end} (${money(mad)} of ${money(alFed)}).`,
+        why: `The defense book is one county, not the auto corridor. Obligations are commitments on prime contracts, not cash paid out.`
+      }
+    ]);
+  }
+
   let national;
   Promise.all([
     d3.json(ATLAS),
@@ -896,6 +952,7 @@
     years = meta.years;
     endIdx = years.length - 1;
     buildMap(topo);
+    drawMoneyPoints();
     buildControls();
     drawKpis();
     drawCalc();
