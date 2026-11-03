@@ -51,19 +51,18 @@
   .size-grid strong { display: block; font-size: 2rem; font-weight: 600; line-height: 1.2; }
   .size-grid span { font-size: 1.15rem; color: var(--muted); }
 
-  .periods { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.4rem; }
-  .period h3 { margin: 0 0 0.8rem; font-family: var(--serif); font-weight: 500; font-size: 2.2rem; }
-  .period dl { margin: 0; }
-  .period dl div { display: flex; justify-content: space-between; gap: 1.2rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line-soft); font-size: 1.4rem; }
-  .period dt { color: var(--soft); }
-  .period dd { margin: 0; text-align: right; }
-  .period dd span { display: block; font-size: 1.2rem; color: var(--muted); }
-  .period .panel-note { margin-top: 0.8rem; }
-  .insights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.6rem; margin-top: 2.4rem; }
-  .insight { border-top: 2px solid var(--ink); padding-top: 1rem; }
-  .insight span { display: block; font-size: 1.2rem; color: var(--muted); }
-  .insight strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 3rem; line-height: 1.15; }
-  .insight p { margin: 0.4rem 0 0; font-size: 1.35rem; color: var(--soft); }
+  .jobs-chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  .jobs-chart text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+  .jobs-chart text.end { font-size: 12px; font-weight: 600; }
+  .jobs-chart .readout { font-size: 1.4rem; min-height: 2.1rem; margin: 0 0 0.8rem; }
+  .multiples { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem 2.4rem; margin-top: 1.2rem; }
+  .multiple { min-width: 0; }
+  .multiple h4 { margin: 0; font-size: 1.4rem; font-weight: 600; }
+  .multiple p { margin: 0.1rem 0 0.4rem; font-size: 1.25rem; color: var(--soft); min-height: 3.6rem; }
+  .multiple svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+  .multiple text { font-family: var(--sans); font-size: 10px; fill: var(--muted); }
+  .sub-h { margin: 2.8rem 0 0; font-size: 1.8rem; font-weight: 600; }
+  .sub-lede { margin: 0.2rem 0 0.8rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
 
   .policy { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 3.2rem; align-items: start; }
   .events { list-style: none; margin: 0; padding: 0; }
@@ -84,8 +83,8 @@
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .bar-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
     .bar-value { text-align: left; }
-    .periods, .policy { grid-template-columns: minmax(0, 1fr); }
-    .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .policy { grid-template-columns: minmax(0, 1fr); }
+    .multiples { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   }
 
   @media (max-width: 600px) {
@@ -93,7 +92,6 @@
     .kpi strong { font-size: 3rem; }
     .block .card { padding: 1.4rem; }
     .county-lists { grid-template-columns: minmax(0, 1fr); }
-    .insights { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 </head>
@@ -306,12 +304,20 @@
     </div>
   </section>
 
-  <section class="wrap block" aria-labelledby="glance-h">
-    <div class="card">
-      <h2 id="glance-h">Alabama at a glance: 5 and 10 years</h2>
-      <p class="lede">Fixed periods that don't move with the slider. All manufacturing, private sector. "Local edge" is what's left of Alabama's job change after taking out the national trend and its mix of industries: how Alabama's plants did against the same industries nationwide.</p>
-      <div class="periods" id="periods"></div>
-      <div class="insights" id="insights"></div>
+  <section class="wrap block" aria-labelledby="jobs-h">
+    <div class="card jobs-chart">
+      <div class="block-head">
+        <h2 id="jobs-h">Alabama factory jobs by industry since 1990</h2>
+        <button type="button" class="dl-button" id="dl-industries">Download CSV</button>
+      </div>
+      <p class="lede" id="jobs-lede"></p>
+      <div class="key" id="jobs-key"></div>
+      <p class="readout" id="jobs-readout"></p>
+      <svg id="jobs" role="img" aria-label="Alabama factory jobs in each of six categories, every year since 1990"></svg>
+      <h3 class="sub-h">Each industry group</h3>
+      <p class="sub-lede" id="groups-lede"></p>
+      <div class="multiples" id="multiples"></div>
+      <p class="panel-note" id="jobs-note"></p>
     </div>
   </section>
 
@@ -324,18 +330,6 @@
         <ol class="events" id="policy-events"></ol>
       </div>
       <p class="panel-note">Growth is shown per year so periods of different length compare fairly. The timing of a law lining up with a change doesn't show that the law caused it: interest rates, the 2020 recession and company decisions made years earlier all play a part.</p>
-    </div>
-  </section>
-
-  <section class="wrap block" aria-labelledby="trend-h">
-    <div class="card">
-      <div class="block-head">
-        <h2 id="trend-h">Industry trends: 5 and 10 years</h2>
-        <button type="button" class="dl-button" id="dl-industries">Download CSV</button>
-      </div>
-      <p class="lede" id="trend-lede"></p>
-      <div class="table-scroll"><table class="data-table" id="trend-table"></table></div>
-      <p class="panel-note" id="trend-note"></p>
     </div>
   </section>
 
@@ -400,7 +394,7 @@
     2009: ['the Great Recession', 2007], 2010: ['the Great Recession', 2007],
     2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
   };
-  const SUPPLIERS = ['metals', 'fab', 'machinery', 'chem'];
+  const CAT_COLORS = { strategic: '#2F5D8A', autos: '#9E1B32', base: '#6B6B66', chemmat: '#C27C2C', foodbev: '#355E3B', consumergoods: '#8C6BB1' };
   const EVENTS_POLICY = [
     ['2015', 'state', 'Alabama Jobs Act: tax credits for new jobs and investment at projects the state recruits.'],
     ['Feb 2021', 'state', 'Alabama renews the Jobs Act and the Growing Alabama credit (for funding industrial sites) after both lapsed in 2020.'],
@@ -413,7 +407,7 @@
   const W = 460;
 
   const state = { measure: 'e', mode: 'chg', geo: 'county', start: 2019, sel: null, hover: null };
-  let meta, national, al, states, counties, detail, plants, quarter, years, endIdx, H;
+  let meta, national, al, states, counties, detail, plants, years, endIdx, H;
   const names = {};
   const features = {};
   const metros = {};
@@ -1054,8 +1048,8 @@
       .filter(r => r.v != null)
       .sort((a, b) => b.v - a.v);
     const row = r => `<li><button type="button" data-id="${r.id}">${r.name}</button><span class="${toneClass(r.v)}">${fmtShort(r.v)}</span></li>`;
-    const gains = rows.filter(r => r.v > 0).slice(0, 8);
-    const losses = rows.filter(r => r.v < 0).reverse().slice(0, 8);
+    const gains = rows.filter(r => r.v > 0).slice(0, 5);
+    const losses = rows.filter(r => r.v < 0).reverse().slice(0, 5);
     document.getElementById('c-gains').innerHTML = gains.length ? gains.map(row).join('') : '<li class="empty">None</li>';
     document.getElementById('c-losses').innerHTML = losses.length ? losses.map(row).join('') : '<li class="empty">None</li>';
     const word = { e: 'factory jobs', n: 'establishments', p: 'average factory pay' }[state.measure];
@@ -1110,11 +1104,13 @@
       (lines[2] ? `; ${names[state.sel]} was ${pctOf(lines[2].vals[last])}.` : '. Click a place on the map to add it.');
     const readout = document.getElementById('vs-readout');
     const text = i => `${span[i]}: ` + lines.map(l => `${l.label} ${l.vals[i] == null ? 'n/a' : l.vals[i].toFixed(1)}`).join(', ');
-    const dots = lines.map(l => el.append('circle').attr('r', 4).attr('fill', l.color).attr('display', 'none'));
-    const rest = () => { readout.textContent = text(last); dots.forEach(d => d.attr('display', 'none')); };
+    const guide = el.append('line').attr('y1', M.t).attr('y2', Hc - M.b).attr('stroke', '#141414').attr('display', 'none').attr('pointer-events', 'none');
+    const dots = lines.map(l => el.append('circle').attr('r', 4.5).attr('fill', l.color).attr('stroke', '#fff').attr('stroke-width', 1.5).attr('display', 'none').attr('pointer-events', 'none'));
+    const rest = () => { readout.textContent = text(last); guide.attr('display', 'none'); dots.forEach(d => d.attr('display', 'none')); };
     el.append('rect').attr('x', M.l).attr('y', M.t).attr('width', Wc - M.l - M.r).attr('height', Hc - M.t - M.b).attr('fill', 'transparent')
       .on('pointermove', event => {
         const i = Math.max(0, Math.min(last, Math.round(x.invert(d3.pointer(event)[0])) - span[0]));
+        guide.attr('display', null).attr('x1', x(span[i])).attr('x2', x(span[i]));
         lines.forEach((l, k) => dots[k].attr('display', l.vals[i] == null ? 'none' : null).attr('cx', x(span[i])).attr('cy', l.vals[i] == null ? 0 : y(l.vals[i])));
         readout.textContent = text(i);
       })
@@ -1125,81 +1121,115 @@
   // The 50 states, for rankings (no DC or territories).
   function stateIds() { return Object.keys(states).filter(id => Number(id) <= 56 && id !== '11'); }
 
-  function groupChange(g, y0, y1, measure = 'e') {
-    const s = al.sel[`all|${g}`];
-    const arr = s && s[measure];
-    return { a: at(arr, y0), b: at(arr, y1), v: at(arr, y0) == null || at(arr, y1) == null ? null : at(arr, y1) - at(arr, y0) };
+  // Factory jobs every year since 1990: six categories on one chart, then each industry group as a small chart.
+  function drawJobs() {
+    const svg = d3.select('#jobs');
+    svg.selectAll('*').remove();
+    const W = Math.max(300, svg.node().parentNode.clientWidth - 1);
+    const narrow = W < 560;
+    const H = narrow ? 300 : 340;
+    const M = { t: 16, r: narrow ? 52 : 196, b: 28, l: 48 };
+    svg.attr('viewBox', `0 0 ${W} ${H}`);
+    const end = years[endIdx];
+    const cats = Object.keys(meta.stories).map(id => ({ name: meta.stories[id].name, color: CAT_COLORS[id], vals: al.sel[`${id}|all`].e }))
+      .sort((a, b) => b.vals[endIdx] - a.vals[endIdx]);
+    const x = d3.scaleLinear().domain([years[0], end]).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(cats, c => d3.max(c.vals)) * 1.05]).nice().range([H - M.b, M.t]);
+    svg.append('g').attr('transform', `translate(0,${H - M.b})`)
+      .call(d3.axisBottom(x).ticks(narrow ? 4 : 8).tickFormat(d3.format('d')).tickSize(0).tickPadding(8))
+      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    svg.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(v => compact(v)))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    for (const c of cats) {
+      svg.append('path').attr('d', d3.line().x((v, i) => x(years[i])).y(v => y(v))(c.vals))
+        .attr('fill', 'none').attr('stroke', c.color).attr('stroke-width', 2.5);
+    }
+    const labels = cats.map(c => ({ c, y: y(c.vals[endIdx]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < labels.length; i += 1) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 14);
+    for (const l of labels) {
+      svg.append('text').attr('class', 'end').attr('x', W - M.r + 6).attr('y', l.y).attr('dominant-baseline', 'middle')
+        .attr('fill', l.c.color).style('fill', l.c.color).text(narrow ? compact(l.c.vals[endIdx]) : `${l.c.name} ${compact(l.c.vals[endIdx])}`);
+    }
+    document.getElementById('jobs-key').innerHTML = cats.map(c => `<span><i style="border-color:${c.color}"></i>${c.name}</span>`).join('');
+    const readout = document.getElementById('jobs-readout');
+    const text = i => `${years[i]}: ` + cats.slice().sort((a, b) => b.vals[i] - a.vals[i]).map(c => `${c.name} ${d3.format(',')(c.vals[i])}`).join(' · ');
+    const guide = svg.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('display', 'none').attr('pointer-events', 'none');
+    const dots = cats.map(c => svg.append('circle').attr('r', 4.5).attr('fill', c.color).attr('stroke', '#fff').attr('stroke-width', 1.5).attr('display', 'none').attr('pointer-events', 'none'));
+    const rest = () => { readout.textContent = text(endIdx); guide.attr('display', 'none'); dots.forEach(d => d.attr('display', 'none')); };
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const i = Math.max(0, Math.min(endIdx, Math.round(x.invert(d3.pointer(event)[0])) - years[0]));
+        guide.attr('display', null).attr('x1', x(years[i])).attr('x2', x(years[i]));
+        cats.forEach((c, k) => dots[k].attr('display', null).attr('cx', x(years[i])).attr('cy', y(c.vals[i])));
+        readout.textContent = text(i);
+      })
+      .on('pointerleave', rest);
+    rest();
+
+    const total = al.sel['all|all'].e;
+    const top = cats[0];
+    const grew = cats.filter(c => c.vals[endIdx] > c.vals[0]);
+    document.getElementById('jobs-lede').textContent =
+      `Private factory jobs in Alabama each year, ${years[0]}–${end}. The state had ${d3.format(',')(total[0])} in ${years[0]} and ${d3.format(',')(total[endIdx])} in ${end}. ` +
+      `${top.name} is now the largest category with ${d3.format(',')(top.vals[endIdx])} jobs. ` +
+      `${grew.map(c => c.name).join(' and ')} ${grew.length === 1 ? 'is the only category' : 'are the categories'} above ${years[0]}. Hover to see any year.`;
+    drawMultiples();
   }
 
-  function drawPeriods() {
+  function drawMultiples() {
+    const storyOf = {};
+    for (const p of Object.values(meta.pieces)) storyOf[p.group] = p.story;
     const end = years[endIdx];
-    const s = al.sel['all|all'];
-    const us = national.sel['all|all'];
-    const card = (span, title) => {
-      const y0 = end - span;
-      const jobs = pct(at(s.e, y0), at(s.e, end));
-      const ranked = stateIds()
-        .map(id => ({ id, v: pct(at(states[id].sel['all|all'].e, y0), at(states[id].sel['all|all'].e, end)) }))
-        .filter(r => r.v != null).sort((a, b) => b.v - a.v);
-      const rank = ranked.findIndex(r => r.id === ST) + 1;
-      const moves = Object.keys(meta.groups).map(g => ({ g, ...groupChange(g, y0, end) })).filter(m => m.v != null).sort((a, b) => b.v - a.v);
-      const row = (label, v, sub) => `<div><dt>${label}</dt><dd><b class="${toneClass(v)}">${fmtPct(v)}</b><span>${sub}</span></dd></div>`;
-      let note = '';
-      if (LOWS[y0]) {
-        const alt = LOWS[y0][1];
-        note = `${y0} was the low point of ${LOWS[y0][0]}. Measured from ${alt}, Alabama factory jobs were ${fmtPct(pct(at(s.e, alt), at(s.e, end)))} (U.S. ${fmtPct(pct(at(us.e, alt), at(us.e, end)))}).`;
+    const groups = Object.keys(meta.groups).map(g => ({ name: meta.groups[g], color: CAT_COLORS[storyOf[g]], vals: al.sel[`all|${g}`].e }))
+      .sort((a, b) => b.vals[endIdx] - a.vals[endIdx]);
+    const host = document.getElementById('multiples');
+    host.innerHTML = groups.map((g, k) => `<div class="multiple"><h4>${g.name}</h4><p id="mult-${k}"></p><svg id="mult-svg-${k}"></svg></div>`).join('');
+    const caption = (g, i) => i === endIdx
+      ? `${d3.format(',')(g.vals[endIdx])} in ${end} · <span class="${toneClass(g.vals[endIdx] - g.vals[0])}">${fmtPct(pct(g.vals[0], g.vals[endIdx]), 0)} since ${years[0]}</span>`
+      : `${d3.format(',')(g.vals[i])} in ${years[i]}`;
+    const marks = groups.map((g, k) => {
+      const svg = d3.select(`#mult-svg-${k}`);
+      const W = Math.max(140, svg.node().parentNode.clientWidth);
+      const H = 90;
+      const M = { t: 6, r: 4, b: 16, l: 4 };
+      svg.attr('viewBox', `0 0 ${W} ${H}`);
+      const x = d3.scaleLinear().domain([years[0], end]).range([M.l, W - M.r]);
+      const y = d3.scaleLinear().domain([0, d3.max(g.vals) * 1.08]).range([H - M.b, M.t]);
+      svg.append('path').attr('d', d3.area().x((v, i) => x(years[i])).y0(H - M.b).y1(v => y(v))(g.vals)).attr('fill', g.color).attr('opacity', 0.12);
+      svg.append('path').attr('d', d3.line().x((v, i) => x(years[i])).y(v => y(v))(g.vals)).attr('fill', 'none').attr('stroke', g.color).attr('stroke-width', 2);
+      svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', H - M.b).attr('y2', H - M.b).attr('stroke', '#C9C9C3');
+      svg.append('text').attr('x', M.l).attr('y', H - 3).text(years[0]);
+      svg.append('text').attr('x', W - M.r).attr('y', H - 3).attr('text-anchor', 'end').text(end);
+      const guide = svg.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('display', 'none').attr('pointer-events', 'none');
+      const dot = svg.append('circle').attr('r', 3.5).attr('fill', g.color).attr('display', 'none').attr('pointer-events', 'none');
+      svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+        .on('pointermove', event => show(Math.max(0, Math.min(endIdx, Math.round(x.invert(d3.pointer(event)[0])) - years[0]))))
+        .on('pointerleave', () => show(null));
+      return { g, k, x, y, guide, dot };
+    });
+    // Hovering any small chart moves the same year across all of them.
+    function show(i) {
+      for (const m of marks) {
+        const on = i != null;
+        m.guide.attr('display', on ? null : 'none');
+        m.dot.attr('display', on ? null : 'none');
+        if (on) {
+          m.guide.attr('x1', m.x(years[i])).attr('x2', m.x(years[i]));
+          m.dot.attr('cx', m.x(years[i])).attr('cy', m.y(m.g.vals[i]));
+        }
+        document.getElementById(`mult-${m.k}`).innerHTML = caption(m.g, on ? i : endIdx);
       }
-      const top = moves[0];
-      const bottom = moves[moves.length - 1];
-      const usJobs = pct(at(us.e, y0), at(us.e, end));
-      const ss = shiftShare(al, y0, end);
-      const fm = fixedMixPay(al, y0, end);
-      const k = v => fmtShort(v, 'chg', 'e');
-      return `<div class="period"><h3>${title} · ${y0}–${end}</h3><dl>
-        ${row('Factory jobs', jobs, `${fmtRate(perYear(at(s.e, y0), at(s.e, end), span))} · U.S. ${fmtPct(usJobs)}, so ${Math.abs(jobs - usJobs).toFixed(1)} pts ${jobs >= usJobs ? 'ahead' : 'behind'} · ${ordinal(rank)} of ${ranked.length} states with data`)}
-        ${ss ? `<div><dt>Local edge (shift-share)</dt><dd><b class="${toneClass(ss.local)}">${fmtLong(ss.local, 'chg', 'e')}</b><span>U.S. trend ${k(ss.nat)} · industry mix ${k(ss.mix)} · total ${k(ss.total)}</span></dd></div>` : ''}
-        ${row('Establishments', pct(at(s.n, y0), at(s.n, end)), `U.S. ${fmtPct(pct(at(us.n, y0), at(us.n, end)))}`)}
-        ${row('Average pay, after inflation', pct(at(s.p, y0), at(s.p, end)), `${fm ? `Industry mix held fixed: ${fmtPct(pct(fm.a, fm.b))} · ` : ''}U.S. ${fmtPct(pct(at(us.p, y0), at(us.p, end)))}`)}
-        <div><dt>Biggest gain</dt><dd><b class="is-gain">${meta.groups[top.g]}</b><span>${fmtLong(top.v, 'chg', 'e')}</span></dd></div>
-        <div><dt>Biggest loss</dt><dd><b class="${toneClass(bottom.v)}">${meta.groups[bottom.g]}</b><span>${fmtLong(bottom.v, 'chg', 'e')}</span></dd></div>
-      </dl>${note ? `<p class="panel-note">${note}</p>` : ''}</div>`;
-    };
-    document.getElementById('periods').innerHTML = card(10, '10 years') + card(5, '5 years');
-  }
-
-  function drawInsights() {
-    const end = years[endIdx];
-    const y0 = end - 10;
-    const s = al.sel['all|all'];
-    const total = at(s.e, end) - at(s.e, y0);
-    const moves = Object.keys(meta.groups).map(g => ({ g, ...groupChange(g, y0, end) })).filter(m => m.v != null).sort((a, b) => b.v - a.v);
-    const top = moves[0];
-    const topLast = groupChange(top.g, end - 1, end).v;
-    const cards = [];
-    if (total > 0 && top.v > 0) {
-      cards.push([`Growth concentration, ${y0}–${end}`, `${Math.round(top.v / total * 100)}%`, 'is-gain',
-        `of Alabama's net new factory jobs came from ${meta.groups[top.g]}: ${d3.format(',')(top.v)} of ${d3.format(',')(total)}. ` +
-        `${topLast == null ? '' : `It ${topLast < 0 ? 'lost' : 'added'} ${d3.format(',')(Math.abs(topLast))} jobs in ${end}.`}`]);
     }
-    const yoy = at(s.e, end) - at(s.e, end - 1);
-    let since = null;
-    for (let yr = end - 1; yr > years[0]; yr -= 1) {
-      if ((at(s.e, yr) - at(s.e, yr - 1) < 0) === (yoy < 0)) { since = yr; break; }
-    }
-    cards.push([`Factory jobs, ${end - 1}–${end}`, (yoy < 0 ? '−' : '+') + d3.format(',')(Math.abs(yoy)), toneClass(yoy),
-      yoy < 0 ? `The first yearly decline since ${since}.` : `Up for the year; the last rise before this was ${since}.`]);
-    const q = quarter.areas[ST];
-    const qUs = quarter.areas.US;
-    if (q && qUs) {
-      const v = pct(q[3], q[0]);
-      cards.push([`${quarter.year} so far: Q${quarter.qtr} vs Q${quarter.qtr} ${quarter.year - 1}`, fmtPct(v), toneClass(v),
-        `Factory jobs, ${d3.format(',')(q[0])} (U.S. ${fmtPct(pct(qUs[3], qUs[0]))}). Early figures, compared with the same quarter a year earlier because factory hiring is seasonal. Full-year ${quarter.year} data comes out around September ${quarter.year + 1}.`]);
-    }
-    const sizes = plants.states[ST].all;
-    cards.push([`Large plants, ${plants.year}`, d3.format(',')(sizes[3]), '',
-      `plants with 500 or more workers, and ${d3.format(',')(sizes[2])} with 100–499, out of ${d3.format(',')(d3.sum(sizes))} manufacturing plants with employees.`]);
-    document.getElementById('insights').innerHTML = cards.map(([label, value, tone, note]) =>
-      `<div class="insight"><span>${label}</span><strong class="${tone}">${value}</strong><p>${note}</p></div>`).join('');
+    show(null);
+    const vehicles = groups.find(g => g.name === meta.groups.vehicles);
+    const textiles = groups.find(g => g.name === meta.groups.textiles);
+    document.getElementById('groups-lede').textContent =
+      `The 13 industry groups, largest first, each on its own scale so the shape of each one shows. Hover any chart to see that year in all of them. ` +
+      `${vehicles.name} went from ${d3.format(',')(vehicles.vals[0])} to ${d3.format(',')(vehicles.vals[endIdx])} jobs; ${textiles.name.toLowerCase()} fell from ${d3.format(',')(textiles.vals[0])} to ${d3.format(',')(textiles.vals[endIdx])}.`;
+    document.getElementById('jobs-note').innerHTML =
+      `<a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>, Alabama, private sector, annual averages. ` +
+      'Categories and industry groups are our own grouping of BLS industry codes; together they add up to all of manufacturing (see "What each category includes" below). ' +
+      'Factory jobs leave out temp workers placed by staffing agencies, whom BLS counts in services.';
   }
 
   function drawPolicy() {
@@ -1223,46 +1253,6 @@
       `<li><time>${when}<small>${level === 'state' ? 'Alabama' : 'Federal'}</small></time><span>${text}</span></li>`).join('');
   }
 
-  function trendRows() {
-    const end = years[endIdx];
-    return Object.keys(meta.groups).map(g => {
-      const s = al.sel[`all|${g}`];
-      const u = national.sel[`all|${g}`];
-      const ten = groupChange(g, end - 10, end);
-      const five = groupChange(g, end - 5, end);
-      const sizes = plants.states[ST].groups[g];
-      return {
-        g, name: meta.groups[g], jobs: at(s.e, end), ten, five,
-        pay: at(s.p, end), usPay: at(u.p, end), big: sizes ? sizes[2] + sizes[3] : null,
-        est: Boolean(estimatedPct(s, endIdx) || estimatedPct(s, endIdx - 10) || estimatedPct(s, endIdx - 5))
-      };
-    });
-  }
-
-  function drawTrends() {
-    const end = years[endIdx];
-    const rows = trendRows().sort((a, b) => (b.ten.v || 0) - (a.ten.v || 0));
-    const chg = c => (c.v == null ? '<td>n/a</td>' : `<td class="${toneClass(c.v)}">${fmtLong(c.v, 'chg', 'e').replace(' jobs', '')}<small>${fmtPct(pct(c.a, c.b), 0)}</small></td>`);
-    document.getElementById('trend-table').innerHTML =
-      `<thead><tr><th>Industry group</th><th>Jobs, ${end}</th><th>10 years<br>${end - 10}–${end}</th><th>5 years<br>${end - 5}–${end}</th>` +
-      `<th>Avg pay, ${end}</th><th>vs U.S. pay</th><th>Plants with 100+ workers, ${plants.year}</th></tr></thead><tbody>` +
-      rows.map(r => `<tr><td>${r.name}${SUPPLIERS.includes(r.g) ? '<span class="tag">Auto &amp; aerospace supplier</span>' : ''}</td>` +
-        `<td>${r.est ? '~' : ''}${r.jobs == null ? 'n/a' : d3.format(',')(r.jobs)}</td>${chg(r.ten)}${chg(r.five)}` +
-        `<td>${r.pay == null ? 'n/a' : '$' + d3.format(',')(Math.round(r.pay))}</td>` +
-        `<td class="${toneClass(r.pay - r.usPay)}">${r.pay == null || r.usPay == null ? 'n/a' : fmtPct(pct(r.usPay, r.pay), 0)}</td>` +
-        `<td>${r.big == null ? 'n/a' : d3.format(',')(r.big)}</td></tr>`).join('') + '</tbody>';
-    const supply = rows.filter(r => SUPPLIERS.includes(r.g));
-    const supplyTen = d3.sum(supply, r => r.ten.v || 0);
-    document.getElementById('trend-lede').textContent =
-      `${rows.filter(r => r.ten.v > 0).length} of ${rows.length} industry groups added jobs over 10 years. ` +
-      `The groups that supply car and aerospace plants (steel, metal fabrication, machinery, and chemicals and plastics) ${supplyTen >= 0 ? 'added' : 'lost'} ${d3.format(',')(Math.abs(supplyTen))} jobs, ` +
-      `and they have ${d3.format(',')(d3.sum(supply, r => r.big || 0))} plants with 100 or more workers.`;
-    document.getElementById('trend-note').textContent =
-      `Pay is the average for the year in ${meta.payDollarsYear} dollars; "vs U.S. pay" compares it with the same industry nationally. ` +
-      `Plant sizes come from the Census Bureau's County Business Patterns, which counts plants with employees. ` +
-      (rows.some(r => r.est) ? '~ Part of this figure is our estimate of jobs BLS withheld, split by plant count.' : '');
-  }
-
   function mapCsv() {
     const end = years[endIdx];
     const byMetro = state.geo === 'metro';
@@ -1282,14 +1272,11 @@
   }
 
   function industriesCsv() {
-    const end = years[endIdx];
-    const rows = [['Industry group', `jobs ${end}`, `jobs ${end - 10}`, `jobs ${end - 5}`, `avg pay ${end} (${meta.payDollarsYear} $)`, `U.S. avg pay ${end}`,
-      `plants 100+ workers (${plants.year})`, 'auto & aerospace supplier', 'includes estimate']];
-    for (const r of trendRows()) {
-      rows.push([r.name, r.jobs, r.ten.a, r.five.a, r.pay == null ? null : Math.round(r.pay), r.usPay == null ? null : Math.round(r.usPay), r.big,
-        SUPPLIERS.includes(r.g) ? 'yes' : '', r.est ? 'yes' : '']);
-    }
-    downloadCsv(`alabama-industries-${end}.csv`, rows);
+    const cols = [...Object.keys(meta.stories).map(id => [meta.stories[id].name + ' (category)', al.sel[`${id}|all`].e]),
+      ...Object.keys(meta.groups).map(g => [meta.groups[g], al.sel[`all|${g}`].e]), ['All manufacturing', al.sel['all|all'].e]];
+    const rows = [['Year', ...cols.map(c => c[0])]];
+    years.forEach((yr, i) => rows.push([yr, ...cols.map(c => c[1][i])]));
+    downloadCsv(`alabama-factory-jobs-by-industry-${years[0]}-${years[endIdx]}.csv`, rows);
   }
 
   function setPressed(groupId, value) {
@@ -1461,26 +1448,27 @@
     d3.json(`data/counties/by-state/${ST}.json`),
     d3.json('data/metros.json'),
     d3.json('data/plants.json'),
-    d3.json('data/quarter.json'),
     d3.json('data/context.json')
-  ]).then(([topo, m, nat, sts, cty, det, mets, pl, qt, ctx]) => {
+  ]).then(([topo, m, nat, sts, cty, det, mets, pl, ctx]) => {
     meta = m;
     renderCategoryGuide(meta, document.getElementById('guide'));
     national = nat;
     states = sts;
     al = sts[ST];
     plants = pl;
-    quarter = qt;
     counties = cty;
     detail = det;
     years = meta.years;
     endIdx = years.length - 1;
     buildMap(topo, mets);
     buildControls();
-    drawPeriods();
-    drawInsights();
     drawPolicy();
-    drawTrends();
+    drawJobs();
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(drawJobs, 150);
+    });
     drawRegionBrief({
       states, national, years, gdp: null, contracts: null, ann: null, ctx,
       peers: [
