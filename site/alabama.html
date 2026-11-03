@@ -51,7 +51,17 @@
   .size-grid strong { display: block; font-size: 2rem; font-weight: 600; line-height: 1.2; }
   .size-grid span { font-size: 1.15rem; color: var(--muted); }
 
-  .part { padding-top: 4.8rem; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  .contents { padding-top: 3.2rem; }
+  .contents h2 { margin: 0 0 1.2rem; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .contents ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; }
+  .contents a { display: grid; align-content: start; gap: 0.2rem; height: 100%; padding: 1.4rem 1.6rem; border: 1px solid var(--line); border-radius: 1.2rem; background: var(--card); color: inherit; text-decoration: none; transition: border-color 0.2s, transform 0.4s var(--spring); }
+  .contents a:hover, .contents a:focus-visible { border-color: var(--ink); transform: translateY(-2px); }
+  .contents span { font-size: 1.2rem; color: var(--muted); }
+  .contents b { font-family: var(--serif); font-weight: 500; font-size: 2rem; line-height: 1.2; }
+  .contents small { font-size: 1.25rem; color: var(--soft); }
+  .part { margin-top: 6.4rem; padding-top: 2.4rem; border-top: 3px solid var(--ink); scroll-margin-top: 2rem; }
   .part .eyebrow { font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.4rem; }
   .part h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 3.6rem; line-height: 1.1; }
   .part p:last-child { margin: 0.6rem 0 0; font-size: 1.6rem; color: var(--soft); max-width: 80rem; }
@@ -65,6 +75,16 @@
   .multiple p { margin: 0.1rem 0 0.4rem; font-size: 1.25rem; color: var(--soft); min-height: 3.6rem; }
   .multiple svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
   .multiple text { font-family: var(--sans); font-size: 10px; fill: var(--muted); }
+  .reasons { margin: 0.8rem 0 1.2rem; padding-left: 2rem; display: grid; gap: 0.8rem; font-size: 1.5rem; line-height: 1.5; max-width: 86rem; }
+  .pair-key { display: flex; gap: 1.6rem; font-size: 1.2rem; color: var(--soft); margin-bottom: 0.6rem; }
+  .pair-key span { display: inline-flex; align-items: center; gap: 0.6rem; }
+  .pair-key i { display: inline-block; width: 1.4rem; height: 1rem; }
+  .pair-row { display: grid; grid-template-columns: 22rem minmax(0, 1fr) 16rem; gap: 1.2rem; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--line-soft); font-size: 1.4rem; }
+  .pair-row:last-child { border-bottom: none; }
+  .pair-bars { display: grid; gap: 0.3rem; }
+  .pair-bars div { height: 1.1rem; border-radius: 2px; }
+  .pair-row .val { text-align: right; }
+  .pair-row .val small { display: block; font-size: 1.2rem; color: var(--muted); }
   .sub-h { margin: 2.8rem 0 0; font-size: 1.8rem; font-weight: 600; }
   .sub-lede { margin: 0.2rem 0 0.8rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
 
@@ -87,7 +107,10 @@
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .bar-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
     .bar-value { text-align: left; }
+    .pair-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+    .pair-row .val { text-align: left; }
     .policy { grid-template-columns: minmax(0, 1fr); }
+    .contents ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .multiples { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   }
 
@@ -97,6 +120,8 @@
     .block .card { padding: 1.4rem; }
     .county-lists { grid-template-columns: minmax(0, 1fr); }
     .part h2 { font-size: 2.8rem; }
+    .part { margin-top: 4.8rem; }
+    .contents ol { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 </head>
@@ -118,7 +143,7 @@
 <main>
   <section class="wrap intro">
     <h1>Alabama manufacturing, <em>county by county</em></h1>
-    <p>Pick a starting year and a measure. Each of Alabama's 67 counties is shaded by how its manufacturing changed from that year to today. Hover for the numbers; click a county to see what it makes.</p>
+    <p>What Alabama's factories produce, who they employ, where they build, what they pay, and what it costs to build here. Start with the county map or jump to any part below.</p>
   </section>
 
   <section class="wrap kpis" aria-label="Headline numbers">
@@ -128,21 +153,23 @@
     <div class="kpi"><span id="k4-label"></span><strong id="k4"></strong><small id="k4-note"></small></div>
   </section>
 
-  <section class="wrap block" aria-labelledby="stand-h">
-    <div class="card">
-      <h2 id="stand-h">Where Alabama stands against its peers</h2>
-      <div class="score-copy">
-        <div>
-          <h3>What is working</h3>
-          <ul id="vs-win"></ul>
-        </div>
-        <div>
-          <h3>What is lagging</h3>
-          <ul id="vs-lag"></ul>
-        </div>
-      </div>
-      <p class="panel-note">The charts, North Carolina and Kentucky, labor-force participation, and the Atlas/SACE investment ranks are on the <a href="southeast.html">Southeast</a> page. Announced dollars and federal contracts are on <a href="money.html">Money</a>. Named plants here are the ones already in the state's Commerce reports and in the Story.</p>
-    </div>
+  <nav class="wrap contents" id="contents" aria-labelledby="contents-h">
+    <h2 id="contents-h">On this page</h2>
+    <ol>
+      <li><a href="#part-map"><span>1</span><b>Across the state</b><small>County and metro map, change by industry, counties that gained and lost, and Alabama against the U.S.</small></a></li>
+      <li><a href="#part-output"><span>2</span><b>What Alabama produces</b><small>Factory output after inflation, output per worker and why it trails the U.S., output by industry</small></a></li>
+      <li><a href="#part-jobs"><span>3</span><b>Who Alabama employs</b><small>Factory jobs every year since 1990, by category and industry group, and the best-positioned industries</small></a></li>
+      <li><a href="#part-est"><span>4</span><b>Where Alabama builds</b><small>Plants and shops every year since 1990</small></a></li>
+      <li><a href="#part-pay"><span>5</span><b>What Alabama pays</b><small>Average factory pay since 1990, against the U.S.</small></a></li>
+      <li><a href="#part-econ"><span>6</span><b>Costs and incentives</b><small>What Alabama offers a new plant, incentive packages, federal money, and growth before and after the new incentives</small></a></li>
+      <li><a href="#part-small"><span>7</span><b>Small business</b><small>Who is starting businesses in Alabama, and who lasts</small></a></li>
+    </ol>
+  </nav>
+
+  <section class="wrap part" aria-labelledby="part-map">
+    <p class="eyebrow">Part 1</p>
+    <h2 id="part-map">Across the state</h2>
+    <p>Pick a measure and a starting year. The map, the industry bars, the county lists and the comparison with the U.S. below it all follow those choices.</p>
   </section>
 
   <section class="wrap controls" aria-label="Filters">
@@ -310,7 +337,7 @@
   </section>
 
   <section class="wrap part" aria-labelledby="part-output">
-    <p class="eyebrow">Part 1</p>
+    <p class="eyebrow">Part 2</p>
     <h2 id="part-output">What Alabama produces</h2>
     <p>The value Alabama's factories add, after inflation, and how much each worker produces, from the Bureau of Economic Analysis. BEA's state figures start in 1997.</p>
   </section>
@@ -326,6 +353,12 @@
       <div class="key" id="opw-key"></div>
       <p class="readout" id="opw-readout"></p>
       <svg id="opw-chart" role="img" aria-label="Real manufacturing output per factory worker, Alabama and the U.S., since 1997"></svg>
+      <h3 class="sub-h">Why Alabama is lower</h3>
+      <ol class="reasons" id="why-list"></ol>
+      <p class="sub-lede" id="why-pairs-lede"></p>
+      <div class="pair-key"><span><i style="background:#9E1B32"></i>Alabama</span><span><i style="background:#B4B4AE"></i>United States</span></div>
+      <div id="why-pairs"></div>
+      <p class="panel-note" id="why-note"></p>
       <h3 class="sub-h">Output by industry</h3>
       <p class="sub-lede" id="out-groups-lede"></p>
       <div class="multiples" id="out-multiples"></div>
@@ -334,7 +367,7 @@
   </section>
 
   <section class="wrap part" aria-labelledby="part-jobs">
-    <p class="eyebrow">Part 2</p>
+    <p class="eyebrow">Part 3</p>
     <h2 id="part-jobs">Who Alabama employs</h2>
     <p>Private factory jobs every year since 1990, by category and industry group.</p>
   </section>
@@ -356,8 +389,10 @@
     </div>
   </section>
 
+  <div id="slot-best"></div>
+
   <section class="wrap part" aria-labelledby="part-est">
-    <p class="eyebrow">Part 3</p>
+    <p class="eyebrow">Part 4</p>
     <h2 id="part-est">Where Alabama builds</h2>
     <p>Manufacturing establishments, the plants and shops with employees, every year since 1990.</p>
   </section>
@@ -380,7 +415,7 @@
   </section>
 
   <section class="wrap part" aria-labelledby="part-pay">
-    <p class="eyebrow">Part 4</p>
+    <p class="eyebrow">Part 5</p>
     <h2 id="part-pay">What Alabama pays</h2>
     <p>Average yearly pay per factory job, adjusted for inflation, every year since 1990.</p>
   </section>
@@ -407,6 +442,14 @@
     </div>
   </section>
 
+  <section class="wrap part" aria-labelledby="part-econ">
+    <p class="eyebrow">Part 6</p>
+    <h2 id="part-econ">Costs and incentives</h2>
+    <p>The economics of building a plant in Alabama: what it costs here against neighboring states, the incentive packages the state has offered, the federal money that has come in, and how factory growth changed after the new federal and state incentives.</p>
+  </section>
+
+  <div id="slot-why"></div>
+  <div id="slot-money"></div>
   <section class="wrap block" aria-labelledby="policy-h">
     <div class="card">
       <h2 id="policy-h">Before and after the new incentives</h2>
@@ -419,6 +462,13 @@
     </div>
   </section>
 
+  <section class="wrap part" aria-labelledby="part-small">
+    <p class="eyebrow">Part 7</p>
+    <h2 id="part-small">Small business</h2>
+    <p>New business applications across every sector, with manufacturing highlighted, and how Alabama's startups fared five years on.</p>
+  </section>
+
+  <div id="slot-small"></div>
   <div id="momentum"></div>
 
   <section class="wrap guide" id="categories" aria-labelledby="guide-h">
@@ -458,7 +508,6 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
-<script src="region.js"></script>
 <script src="momentum.js"></script>
 <script>
   const ATLAS = 'vendor/counties-albers-10m.json';
@@ -1411,7 +1460,59 @@
     rest();
   }
 
-  // Part 2: BEA real manufacturing GDP for Alabama, output per worker against the U.S., and output by industry.
+  // Why Alabama's output per worker trails the U.S.: industry mix versus the gap inside each industry.
+  function drawWhyLower(ga, gy, last) {
+    const j = years.indexOf(gy[last]);
+    const jobsIn = (pc, code) => {
+      const prefixes = [];
+      for (const part of code.replace('3466', '3366').split(',')) {
+        const [lo, hi] = part.split('-');
+        for (let c = Number(lo); c <= Number(hi || lo); c += 1) prefixes.push(String(c));
+      }
+      return d3.sum(Object.entries(pc), ([k, v]) => prefixes.some(p => k.startsWith(p)) ? v.e[j] || 0 : 0);
+    };
+    const share = (pc, sub, parent) => jobsIn(pc, sub) / jobsIn(pc, parent) * 100;
+    const rows = Object.entries(ga.sub).map(([name, v]) => {
+      const us = gdp.states['00'].sub[name];
+      const aj = jobsIn(al.pc, v.code);
+      const uj = jobsIn(national.pc, v.code);
+      return { code: v.code, name: BEA_SHORT[v.code], aj, uj, al: v.real[last] * 1e6 / aj, us: us.real[last] * 1e6 / uj, alReal: v.real[last], usReal: us.real[last] };
+    }).filter(r => r.aj > 0);
+    const AJ = d3.sum(rows, r => r.aj);
+    const UJ = d3.sum(rows, r => r.uj);
+    const usPw = d3.sum(rows, r => r.usReal) * 1e6 / UJ;
+    const alPw = d3.sum(rows, r => r.alReal) * 1e6 / AJ;
+    const mixPw = d3.sum(rows, r => r.aj / AJ * r.us);
+    const k = v => '$' + Math.round(v / 1e3) + 'k';
+    const big = rows.slice().sort((a, b) => b.aj - a.aj);
+    const behind = big.filter(r => r.al < r.us).slice(0, 3);
+    const ahead = big.filter(r => r.al > r.us * 1.2).slice(0, 2);
+    const payAl = al.sel['all|all'].p[j];
+    const payUs = national.sel['all|all'].p[j];
+    document.getElementById('why-list').innerHTML = [
+      `<b>It isn't mainly the mix of industries.</b> If every Alabama industry produced as much per worker as the same industry nationally, Alabama would be at ${k(mixPw)}, ${Math.round(mixPw / usPw * 100)}% of the U.S. figure of ${k(usPw)}. ` +
+        `Alabama has more car and parts jobs than the U.S. average and fewer in chemicals, machinery and electronics, but those differences roughly cancel out.`,
+      `<b>The gap is inside the same industries.</b> ${behind.map(r => `${r.name}: ${k(r.al)} per worker in Alabama against ${k(r.us)} nationally`).join('; ')}. ` +
+        `${ahead.length ? `${ahead.map(r => `${r.name} (${k(r.al)} against ${k(r.us)})`).join(' and ')} ${ahead.length === 1 ? 'is the exception' : 'are the exceptions'}.` : ''}`,
+      `<b>Two things behind that gap.</b> Value added is mostly wages and profits, so lower pay means lower value added per worker: Alabama's average factory pay is ${Math.round(payAl / payUs * 100)}% of the U.S. average. ` +
+        `And within broad industries, Alabama has less of the highest-value work: drug-making is ${share(al.pc, '3254', '325').toFixed(0)}% of its chemical jobs against ${share(national.pc, '3254', '325').toFixed(0)}% nationally, ` +
+        `and chip-making is ${share(al.pc, '3344', '334').toFixed(0)}% of its electronics jobs against ${share(national.pc, '3344', '334').toFixed(0)}%.`
+    ].map(t => `<li>${t}</li>`).join('');
+    const top = big.slice(0, 10);
+    const max = d3.max(top, r => Math.max(r.al, r.us));
+    document.getElementById('why-pairs-lede').textContent = `Real value added per factory job, ${gy[last]}, Alabama's ten largest manufacturing industries by jobs.`;
+    document.getElementById('why-pairs').innerHTML = top.map(r => `
+      <div class="pair-row">
+        <div>${r.name}</div>
+        <div class="pair-bars" aria-hidden="true"><div style="width:${r.al / max * 100}%;background:#9E1B32"></div><div style="width:${r.us / max * 100}%;background:#B4B4AE"></div></div>
+        <div class="val"><b>${k(r.al)}</b> vs ${k(r.us)}<small>${d3.format(',')(r.aj)} Alabama jobs</small></div>
+      </div>`).join('');
+    document.getElementById('why-note').innerHTML =
+      `Each industry's BEA real value added (chained 2017 dollars) divided by its BLS QCEW private jobs, for Alabama and for the U.S. Summing chained dollars across industries is approximate, so these totals (Alabama ${k(alPw)}) differ slightly from the chart above. ` +
+      'Drug-making is NAICS 3254 within chemicals (325); chip-making is NAICS 3344 within computers and electronics (334). Pay is the QCEW average.';
+  }
+
+  // BEA real manufacturing GDP for Alabama, output per worker against the U.S., and output by industry.
   function drawOutput() {
     const gy = gdp.years;
     const last = gy.length - 1;
@@ -1443,6 +1544,7 @@
       `Real value added per private factory job, 2017 dollars. Each Alabama factory worker produced ${k(alPw[0])} in ${gy[0]} and ${k(alPw[last])} in ${gy[last]}, ` +
       `${(alPw[last] / alPw[0]).toFixed(1)} times as much (U.S. ${(usPw[last] / usPw[0]).toFixed(1)} times). ` +
       `Alabama is at ${Math.round(alPw[last] / usPw[last] * 100)}% of the U.S. level, up from ${Math.round(alPw[0] / usPw[0] * 100)}% in ${gy[0]}.`;
+    drawWhyLower(ga, gy, last);
 
     const rows = Object.entries(ga.sub).map(([name, v]) => ({ name: BEA_SHORT[v.code] || name, color: CAT_COLORS[BEA_CAT[v.code]] || '#6B6B66', vals: v.real, nominal: v.nominal[last] }))
       .sort((a, b) => b.nominal - a.nominal);
@@ -1693,14 +1795,6 @@
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(drawParts, 150);
     });
-    drawRegionBrief({
-      states, national, years, gdp: null, contracts: null, ann: null, ctx,
-      peers: [
-        { id: '01', name: 'Alabama' }, { id: '13', name: 'Georgia' }, { id: '47', name: 'Tennessee' },
-        { id: '45', name: 'South Carolina' }, { id: '37', name: 'North Carolina' }, { id: '21', name: 'Kentucky' },
-        { id: '28', name: 'Mississippi' }
-      ]
-    });
     document.getElementById('dl-map').onclick = mapCsv;
     document.getElementById('notes').textContent =
       `Jobs, establishments and pay are private-sector annual averages, ${years[0]}–${years[endIdx]}, using NAICS industry codes throughout. ` +
@@ -1720,7 +1814,14 @@
   });
 </script>
 <script src="chrome.js"></script>
-<script>renderMomentum(document.getElementById('momentum'), { focus: '01', picker: false });</script>
+<script>
+  renderMomentum(document.getElementById('momentum'), { focus: '01', picker: false });
+  // Place the shared sections inside this page's parts.
+  for (const [slot, h] of [['slot-best', 'mo-best-h'], ['slot-why', 'mo-why-h'], ['slot-money', 'mo-money-h'], ['slot-small', 'mo-small-h']]) {
+    const section = document.querySelector(`#momentum section[aria-labelledby="${h}"]`);
+    if (section) document.getElementById(slot).replaceWith(section);
+  }
+</script>
 <script>window.goatcounter = { path: p => location.host + p };</script>
 <script data-goatcounter="https://gerardbarile.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
