@@ -70,11 +70,7 @@
 <main>
   <section class="wrap intro">
     <h1>How Alabama stacks up in the <em>Southeast</em></h1>
-    <p>Alabama is an auto and aerospace state, and manufacturing is a larger share of its economy than of the country's. It is not a battery-belt peer of Georgia or Tennessee. The comparison adds North Carolina and Kentucky. The window below starts in 2019.</p>
-  </section>
-
-  <section class="wrap points" id="points" aria-label="The points">
-    <p>Loading the figures…</p>
+    <p>Alabama is an auto and aerospace state, and manufacturing is a larger share of its economy than of the country's. It is not yet a battery-belt peer of Georgia, Tennessee, South Carolina or North Carolina. The comparison adds North Carolina and Kentucky to Alabama, Georgia, Tennessee, South Carolina and Mississippi. The window starts in 2019.</p>
   </section>
 
   <section class="wrap block" aria-labelledby="score-h">
@@ -377,7 +373,6 @@
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
 <script src="categories.js"></script>
-<script src="points.js"></script>
 <script src="region.js"></script>
 <script src="momentum.js"></script>
 <script src="supplements.js"></script>
@@ -1468,40 +1463,6 @@
     el.addEventListener('blur', () => { hint.hidden = true; });
   }
 
-  function drawPagePoints() {
-    const i19 = years.indexOf(2019);
-    const chg = (id, key) => states[id].sel[key].e[endIdx] - states[id].sel[key].e[i19];
-    const pctOf = (id, key) => (states[id].sel[key].e[endIdx] / states[id].sel[key].e[i19] - 1) * 100;
-    const fmt = v => `${v > 0 ? '+' : '−'}${d3.format(',')(Math.round(Math.abs(v)))}`;
-    const ev = ctxData.ev.june2025;
-    const ms = gdpData.states['28'];
-    const gy = gdpData.years;
-    const msGdp = (ms.mfgReal[ms.mfgReal.length - 1] / ms.mfgReal[gy.indexOf(2019)] - 1) * 100;
-    const msJobs = pctOf('28', 'all|all');
-    fillPoints([
-      {
-        num: fmt(chg('47', 'all|all')),
-        claim: `Tennessee's factory employment is ${fmt(chg('47', 'all|all'))} since 2019 because vehicles are ${fmt(chg('47', 'all|vehicles'))} and electrical employment is ${fmt(chg('47', 'all|electrical'))} (${pctOf('47', 'all|electrical').toFixed(0)}%).`,
-        why: `The battery line and the assembly line moved in opposite directions. One manufacturing growth rate hides the trade.`
-      },
-      {
-        num: fmt(chg('01', 'all|electrical')),
-        claim: `Alabama's electrical employment is ${fmt(chg('01', 'all|electrical'))}. Georgia's is ${fmt(chg('13', 'all|electrical'))} and Tennessee's is ${fmt(chg('47', 'all|electrical'))}.`,
-        why: `Alabama's realized gain is vehicles, ${fmt(chg('01', 'all|vehicles'))}. Through June 2025, Atlas counted ${d3.format(',')(ev.jobsByState['01'])} announced EV jobs in Alabama and ${d3.format(',')(ev.jobsByState['13'])} in Georgia. Announcements and payroll are not the same stock.`
-      },
-      {
-        num: fmt(chg('37', 'all|all')),
-        claim: `North Carolina's factory employment is ${fmt(chg('37', 'all|all'))} since 2019, including ${fmt(chg('37', 'all|vehicles'))} in vehicles.`,
-        why: `The same Atlas count has ${d3.format(',')(ev.jobsByState['37'])} announced EV jobs there. The recruiting story and the BLS story disagree.`
-      },
-      {
-        num: `${msGdp > 0 ? '+' : '−'}${Math.abs(msGdp).toFixed(0)}%`,
-        claim: `Mississippi's real manufacturing GDP is ${msGdp > 0 ? 'up' : 'down'} ${Math.abs(msGdp).toFixed(0)}% since 2019. Factory jobs are ${msJobs > 0 ? 'up' : 'down'} ${Math.abs(msJobs).toFixed(1)}%.`,
-        why: `Output and employment already diverge inside this region, the same split as the national accounts. A GDP print is not a hiring print.`
-      }
-    ]);
-  }
-
   Promise.all([
     d3.json(ATLAS),
     d3.json('data/meta.json'),
@@ -1536,7 +1497,6 @@
     buildMap(topo, mets);
     drawRegionBrief({ states, national, years, gdp, contracts, ann, ctx, peers: PEERS });
     mountSupplements(document, supplements, PEERS.map(p => p.id));
-    drawPagePoints();
     buildControls();
     drawPolicy();
     document.getElementById('notes').textContent =

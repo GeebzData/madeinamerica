@@ -93,11 +93,7 @@
   <section class="wrap intro">
     <h1>Who is landing the projects? <em>By each state's own count</em></h1>
     <p>Every Southeast state's economic development agency publishes what it landed each year: how many projects, how many jobs companies committed to, and how much they promised to invest. This page puts those official figures side by side for 2021 to 2025, scaled by population so large and small states compare fairly. Alabama is highlighted.</p>
-    <p class="who">Every project, job and dollar figure here comes from the states' own agencies. The only outside number is population, from the Census Bureau, used to put states on the same scale. These are commitments, not payroll.</p>
-  </section>
-
-  <section class="wrap points" id="points" aria-label="The points">
-    <p>Loading the figures…</p>
+    <p class="who">Every project, job and dollar figure here comes from the states' own agencies. The only outside number is population, from the Census Bureau, used to put states on the same scale.</p>
   </section>
 
   <section class="wrap block" aria-labelledby="rc-al-h">
@@ -242,7 +238,6 @@
 
 <script src="vendor/d3.min.js"></script>
 <script src="vendor/topojson-client.min.js"></script>
-<script src="points.js"></script>
 <script>
   // Codes like '13' are integer-like object keys, which JavaScript sorts first, so order explicitly.
   const ORDER = ['01', '13', '47', '45', '28', '21', '37'];
@@ -313,47 +308,7 @@
   const al = () => S.find(s => s.f === FOCUS);
   const leader = k => S.slice().sort((a, b) => b[k] - a[k])[0];
 
-  function perCommittedJob(dollars) {
-    return dollars >= 1e6 ? `$${(dollars / 1e6).toFixed(1)} million` : `$${fmt(Math.round(dollars / 1e3))}k`;
-  }
-
-  function drawPagePoints() {
-    const a = al();
-    const last = a.list[a.list.length - 1];
-    const top = last.top[0];
-    const invShare = top.invest / 1e6 / last.inv * 100;
-    const jobShare = top.jobs ? top.jobs / last.j * 100 : null;
-    const ga = S.find(s => s.f === '13');
-    const ms = S.find(s => s.f === '28');
-    const expLo = d3.min(a.list, r => r.expShare);
-    const expHi = d3.max(a.list, r => r.expShare);
-    const jobsBit = jobShare == null ? '' : ` and ${Math.round(jobShare)}% of its committed jobs`;
-    fillPoints([
-      {
-        num: money(top.invest / 1e6),
-        claim: `${top.company} is ${money(top.invest / 1e6)} and ${fmt(top.jobs || 0)} jobs, about ${Math.round(invShare)}% of Alabama's ${last.y} promised investment${jobsBit}.`,
-        why: `The large investment year is one capital-heavy project, not a broad hiring year. Committed jobs that year were ${fmt(Math.round(last.j))}.`
-      },
-      {
-        num: ga.jpc.toFixed(0),
-        claim: `Georgia leads committed jobs per 10,000 residents at ${ga.jpc.toFixed(0)}, against Alabama's ${a.jpc.toFixed(0)}. Its ${last.y} job commitments are ${Math.abs(Math.round(ga.mj))}% ${ga.mj < 0 ? 'below' : 'above'} the ${years[0]}–${years[years.length - 2]} average.`,
-        why: `The jobs side of recruiting has cooled in the state that still leads the five-year jobs scoreboard.`
-      },
-      {
-        num: perCommittedJob(ms.ipj).replace(' million', 'M').replace('k', 'k'),
-        claim: `Mississippi promises the most capital per committed job, ${perCommittedJob(ms.ipj)}, the highest of the seven.`,
-        why: `Alabama is ${perCommittedJob(a.ipj)} per job. A high dollar-per-job rank is capital intensity. It is not a larger factory workforce.`
-      },
-      {
-        num: `${Math.round(expLo)}–${Math.round(expHi)}%`,
-        claim: `Expansions were ${Math.round(expLo)}% to ${Math.round(expHi)}% of the projects Alabama recorded each year from ${years[0]} to ${years[years.length - 1]}.`,
-        why: `Most of what the state records is a company already there growing. New locations are the minority of the project count.`
-      }
-    ]);
-  }
-
   function drawKpis() {
-    drawPagePoints();
     const a = al();
     const n = S.length;
     const last = a.list[a.list.length - 1];
