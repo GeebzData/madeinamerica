@@ -8,9 +8,8 @@ Sources (all free; downloads cached in pipeline/raw/productivity/, which is giti
   divided by ILO manufacturing employment (ILOSTAT, ISIC Rev. 4 section C, household surveys).
   The World Bank stops publishing the U.S. after 2021, so the U.S. uses BEA's nominal figure.
 - Labor force: BLS civilian labor force (FRED CLF16OV), annual averages, to size factory jobs against it.
-- New manufacturing businesses: Census Business Formation Statistics, applications for an employer ID
-  in manufacturing, U.S., not seasonally adjusted, summed by year; 'likely' are the ones Census flags
-  as likely to hire.
+- Why output per worker rose: BEA real value added by manufacturing industry (gdp.json) against
+  BLS QCEW private jobs in the same industries (national.json), 1997 and the latest year.
 - Robots: Census Annual Capital Expenditures Survey robotics tables (2020-2022), the 2022 Economic
   Census robotics tables (experimental), and U.S. imports of industrial robots (HS 847950) from
   UN Comtrade, because the Census trade API now needs a key.
@@ -33,8 +32,6 @@ HEADERS = {'User-Agent': 'ManufacturingMap research (https://madeinamerica.gerar
 
 FRED = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=OPHMFG'
 CLF = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=CLF16OV'
-BFS = 'https://www.census.gov/econ/bfs/csv/bfs_monthly.csv'
-BFS_PAGE = 'https://www.census.gov/econ/bfs/index.html'
 WB = 'https://api.worldbank.org/v2/country/{codes}/indicator/NV.IND.MANF.CD?format=json&date=2015:2025&per_page=500'
 ILO = ('https://sdmx.ilo.org/rest/data/ILO,DF_EMP_TEMP_SEX_ECO_NB,1.0/{codes}.A..SEX_T.ECO_ISIC4_C'
        '?startPeriod=2015')
@@ -120,22 +117,51 @@ def labor_force():
     return {'years': years, 'millions': [round(sum(by_year[y]) / len(by_year[y]) / 1e3, 2) for y in years], 'series': 'CLF16OV'}
 
 
-def formation():
-    months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-    rows = {}
-    for r in csv.DictReader(io.StringIO(get(BFS, 'bfs_monthly.csv'))):
-        if r['geo'] == 'US' and r['sa'] == 'U' and r['naics_sector'] == 'NAICSMNF' and r['series'] in ('BA_BA', 'BA_HBA'):
-            rows[(r['series'], int(r['year']))] = [int(r[m]) if r[m] else None for m in months]
-    years = sorted(y for (s, y), v in rows.items() if s == 'BA_BA' and None not in v)
-    ytd_year = max(y for s, y in rows if s == 'BA_BA')
-    n = sum(v is not None for v in rows[('BA_BA', ytd_year)])
+SHORT = {
+    '321': 'Wood products', '327': 'Glass, cement & stone', '331': 'Primary metals', '332': 'Fabricated metal',
+    '333': 'Machinery', '334': 'Computers & electronics', '335': 'Electrical equipment',
+    '3361-3363': 'Motor vehicles & parts', '3364-3466,3369': 'Aerospace, ships & rail', '337': 'Furniture',
+    '339': 'Medical devices & other', '311-312': 'Food, beverage & tobacco', '313-314': 'Textiles',
+    '315-316': 'Apparel & leather', '322': 'Paper', '323': 'Printing', '324': 'Petroleum & coal',
+    '325': 'Chemicals & pharma', '326': 'Plastics & rubber',
+}
+
+
+def why_per_worker():
+    """Split the rise in output per worker into better output within industries and a shift in mix.
+
+    Chained dollars do not add up exactly across industries, so these splits are approximate.
+    """
+    gdp = json.loads((SITE / 'gdp.json').read_text())
+    national = json.loads((SITE / 'national.json').read_text())
+    years = json.loads((SITE / 'meta.json').read_text())['years']
+    y0, y1 = gdp['years'][0], gdp['years'][-1]
+    i0, i1 = years.index(y0), years.index(y1)
+
+    def jobs(code, i):
+        prefixes = []
+        for part in code.replace('3466', '3366').split(','):
+            lo, _, hi = part.partition('-')
+            prefixes += [str(c) for c in range(int(lo), int(hi or lo) + 1)]
+        return sum(v['e'][i] or 0 for k, v in national['pc'].items() if any(k.startswith(p) for p in prefixes))
+
+    rows = []
+    for sub in gdp['states']['00']['sub'].values():
+        rows.append({'code': sub['code'], 'name': SHORT[sub['code']], 'real0': sub['real'][0], 'real1': sub['real'][-1],
+                     'jobs0': jobs(sub['code'], i0), 'jobs1': jobs(sub['code'], i1)})
+    for r in rows:
+        r['ratio'] = round((r['real1'] / r['jobs1']) / (r['real0'] / r['jobs0']), 2)
+    tot = {k: sum(r[k] for r in rows) for k in ('real0', 'real1', 'jobs0', 'jobs1')}
+    base = tot['real0'] / tot['jobs0']
+    within = sum(r['jobs0'] / tot['jobs0'] * r['real1'] / r['jobs1'] for r in rows) / base
+    mix = sum(r['jobs1'] / tot['jobs1'] * r['real0'] / r['jobs0'] for r in rows) / base
+    ex = [r for r in rows if r['code'] != '334']
+    ex_ratio = (sum(r['real1'] for r in ex) / sum(r['jobs1'] for r in ex)) / (sum(r['real0'] for r in ex) / sum(r['jobs0'] for r in ex))
     return {
-        'years': years,
-        'apps': [sum(rows[('BA_BA', y)]) for y in years],
-        'likely': [sum(rows[('BA_HBA', y)]) for y in years],
-        'ytd': {'year': ytd_year, 'months': n,
-                'apps': [sum(rows[('BA_BA', y)][:n]) for y in (ytd_year, ytd_year - 1)]},
-        'url': BFS_PAGE,
+        'years': [y0, y1],
+        'rows': sorted(rows, key=lambda r: -r['jobs1']),
+        'within': round(within, 2), 'mix': round(mix, 2), 'exComputers': round(ex_ratio, 2),
+        'total': round((tot['real1'] / tot['jobs1']) / base, 2),
     }
 
 
@@ -215,7 +241,7 @@ def main():
         'perWorker': output_per_worker(),
         'countries': countries(2023),
         'laborForce': labor_force(),
-        'formation': formation(),
+        'why': why_per_worker(),
         'robots': {
             'aces': aces(),
             'acesUrl': ACES_PAGE,
@@ -229,8 +255,8 @@ def main():
     pw = out['perWorker']
     print(f"Output per worker {pw['years'][0]}: ${pw['perWorker'][0]:,}; {pw['years'][-1]}: ${pw['perWorker'][-1]:,}")
     print(f"Countries {out['countries']['year']}: " + ', '.join(f"{r['code']} ${r['perWorker'] / 1e3:.0f}k" for r in out['countries']['rows']))
-    f = out['formation']
-    print(f"Manufacturing business applications: {dict(zip(f['years'][-4:], f['apps'][-4:]))}; ytd {f['ytd']}")
+    w = out['why']
+    print(f"Why per worker: total {w['total']}x, within industries {w['within']}x, mix {w['mix']}x, ex computers {w['exComputers']}x")
     print(f"Labor force {out['laborForce']['years'][-1]}: {out['laborForce']['millions'][-1]}M")
     print(f"Robot imports: {len(out['robots']['imports'])} years; ACES {[r['manufacturing'] for r in out['robots']['aces']]}")
     print(f'Wrote {OUT}')
