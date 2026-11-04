@@ -8,6 +8,7 @@ function drawRegionBrief(deps) {
   const fmtK = v => (Math.abs(v) >= 1000 ? (v / 1000).toFixed(1) + 'k' : d3.format(',')(Math.round(v)));
   const fmtPct = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}%`;
   const at = (id, key, i) => states[id].sel[key].e[i];
+  const ordinal = n => n + (['th', 'st', 'nd', 'rd'][n % 100 > 10 && n % 100 < 14 ? 0 : n % 10] || 'th');
 
   const rows = peers.map(p => {
     const jobs = at(p.id, 'all|all', years.length - 1);
@@ -24,7 +25,7 @@ function drawRegionBrief(deps) {
       aero: at(p.id, 'all|aero', years.length - 1),
       est: states[p.id].sel['all|all'].n[years.length - 1] - states[p.id].sel['all|all'].n[i19]
     };
-  });
+  }).sort((a, b) => b.jobs - a.jobs);
   const al = rows.find(r => r.id === '01');
   const veh15 = at('01', 'all|vehicles', years.length - 1) - at('01', 'all|vehicles', i15);
   const all15 = at('01', 'all|all', years.length - 1) - at('01', 'all|all', i15);
@@ -32,17 +33,13 @@ function drawRegionBrief(deps) {
 
   const lede = document.getElementById('score-lede');
   if (lede) {
-    const peersUp = rows.filter(r => r.id !== '01').map(r => `${r.name} ${fmtPct(r.pct)}`).join(', ');
-    const ces = ctx && ctx.alMfgJobs;
-    const cesPct = v => `${v > 0 ? '+' : '−'}${Math.abs(v).toFixed(1)}%`;
-    const cesNote = ces
-      ? ` The seasonally adjusted payroll survey (FRED ${ces.cesSa.series}) was ${ces.cesSa.dec2019} thousand in December 2019 and ${ces.cesSa.latest} thousand in ${ces.cesSa.latestMonth} (${cesPct(ces.cesSa.pctVsDec2019)}). The monthly series that is not seasonally adjusted (FRED ${ces.cesNsa.series}) was ${ces.cesNsa.dec2019} thousand in December 2019 and ${ces.cesNsa.latest} thousand in ${ces.cesNsa.latestMonth} (${cesPct(ces.cesNsa.pctVsDec2019)}).`
-      : '';
-    lede.textContent =
-      `From the 2019 annual average to the ${end} annual average, Alabama factory jobs are ${fmtPct(al.pct)} (${d3.format(',')(al.jobs)} in ${end}, from ${d3.format(',')(at('01', 'all|all', i19))} in 2019). That is BLS QCEW private employment, not seasonally adjusted, and it is not a December comparison. ${peersUp}. ` +
-      cesNote + ' ' +
-      `Vehicles are ${fmtK(al.veh)} jobs and about ${vehShare15.toFixed(0)}% of Alabama's net new factory jobs since 2015. ` +
-      `Aerospace is ${fmtK(al.aero)}. Electrical equipment and batteries are ${fmtK(al.elec)}, ${al.elecShare.toFixed(1)}% of Alabama manufacturing, against a much larger base in North Carolina, Georgia, South Carolina and Tennessee.`;
+    const growth = rows.slice().sort((a, b) => b.pct - a.pct);
+    const elec = rows.slice().sort((a, b) => b.elec - a.elec);
+    lede.innerHTML = [
+      `Alabama factory jobs are ${fmtPct(al.pct)} since 2019, to ${d3.format(',')(al.jobs)} in ${end}: ${growth[0] === al ? 'the fastest growth' : `${ordinal(growth.indexOf(al) + 1)} fastest`} of these ${rows.length} states.`,
+      `Vehicles (${fmtK(al.veh)} jobs) made up about ${vehShare15.toFixed(0)}% of Alabama's net new factory jobs since 2015; aerospace adds ${fmtK(al.aero)}.`,
+      `Electrical equipment and batteries are only ${fmtK(al.elec)} jobs, ${al.elecShare.toFixed(1)}% of Alabama manufacturing, ${elec[elec.length - 1] === al ? 'the fewest' : `${ordinal(elec.indexOf(al) + 1)} most`} of these states.`
+    ].map(t => `<li>${t}</li>`).join('');
   }
 
   const head = `<thead><tr><th>State</th><th>Factory jobs, ${end}</th><th>Change since 2019</th><th>Electrical, ${end}</th><th>Vehicles, ${end}</th><th>Aerospace, ${end}</th><th>Establishments since 2019</th></tr></thead>`;
@@ -60,7 +57,7 @@ function drawRegionBrief(deps) {
       return `<div class="row${d.id === '01' ? ' is-focus' : ''}"><div class="name">${d.name}</div><div class="track"><div style="width:${Math.abs(d.v) / max * 100}%;background:${color}"></div></div><div class="val">${fmt(d.v)}</div></div>`;
     }).join('') + `</div><p class="panel-note">${caption}</p>`;
   };
-  const by = (key) => rows.slice().sort((a, b) => b[key] - a[key]);
+  const by = (key) => rows;
   bars('chart-growth', by('pct').map(r => ({ id: r.id, name: r.name, v: r.pct })), fmtPct,
     `Percent change in the annual average, 2019 to ${end}. BLS QCEW, private sector, not seasonally adjusted. Not December 2019, and not the seasonally adjusted CES series.`);
   bars('chart-elec', by('elec').map(r => ({ id: r.id, name: r.name, v: r.elec })), v => d3.format(',')(v),
