@@ -60,7 +60,8 @@
   .watch p { margin: 0.4rem 0 0; font-size: 1.4rem; color: var(--soft); }
   .chapter.full { grid-template-columns: minmax(0, 1fr); }
   .which { margin-top: 1.6rem; }
-  .figure .al-map { max-width: 36rem; margin: 1rem auto 0; }
+  .figure .al-map { max-width: 44rem; margin: 1rem auto 0; }
+  .figure .county-labels text { font-size: 8.5px; letter-spacing: -0.02em; }
   .figure .county { stroke: var(--card); stroke-width: 0.6; cursor: pointer; vector-effect: non-scaling-stroke; }
   .figure .al-outline { fill: none; stroke: var(--ink); stroke-width: 1; pointer-events: none; vector-effect: non-scaling-stroke; }
 
@@ -243,7 +244,7 @@
   const ATLAS = 'vendor/counties-albers-10m.json';
   const STORIES = {
     national: ['American manufacturing, <em>1979 to now</em>', 'Factories make more than they did forty years ago with far fewer people. Most of the jobs left in one decade, some came back, and now the country is building factories again. Here is that story in the official numbers.'],
-    alabama: ['Alabama manufacturing, <em>1990 to now</em>', 'Alabama lost its textile mills and gained car plants, and now companies are announcing record investment. Here is the state\'s story in the official numbers, county by county.']
+    alabama: ['Alabama manufacturing, <em>1990 to now</em>', 'Alabama lost a third of its factory jobs when the mills closed, rebuilt around car plants, and is now drawing record investment in new industries and growing faster than its Southeast neighbors. Here is that story in the official numbers, county by county.']
   };
   const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
   const PCT = [5, 20, 40];
@@ -547,13 +548,16 @@
       chapterHtml(5, '2010 to 2019', 'The rebound',
         figureHtml(5, 'Change in factory jobs by county, 2010–2019', `${qcew} · hover a county`, mapBody(5)),
         { stat: true, link: '<a class="go" href="alabama.html#since=2010&geo=metro">Explore Alabama metro areas →</a>' }),
-      chapterHtml(6, '2016 to now', 'Record investment',
+      chapterHtml(6, '2016 to now', 'The revival: record investment, beyond cars',
         figureHtml(6, 'Capital investment announced in Alabama each year', 'Alabama Department of Commerce, New &amp; Expanding Industry reports',
           '<svg id="a6-chart" role="img" aria-label="Announced capital investment by year"></svg><div class="key"><span><i style="border-color:#355E3B;border-top-width:8px"></i>Manufacturing</span><span><i style="border-color:#C9C9C3;border-top-width:8px"></i>Other industries</span></div>'),
         { stat: true, link: '<a class="go" href="alabama.html#part-econ">See the money behind it →</a>' }),
-      `<section class="chapter full" aria-labelledby="a7-h">
-        <div><div class="chapter-num">7 · Where things stand</div><h2 id="a7-h">What to watch in Alabama</h2></div>
-        <div class="watch" id="a7-cards"></div>
+      chapterHtml(7, '2019 to now', 'Competing across the Southeast',
+        figureHtml(7, 'Change in factory jobs, 2019 to the latest year', qcew, '<div id="a7-bars" style="margin-top:1.2rem"></div>'),
+        { stat: true, link: '<a class="go" href="southeast.html">Compare the Southeast →</a>' }),
+      `<section class="chapter full" aria-labelledby="a8-h">
+        <div><div class="chapter-num">8 · Where things stand</div><h2 id="a8-h">What to watch in Alabama</h2></div>
+        <div class="watch" id="a8-cards"></div>
       </section>`
     ].join('');
   }
@@ -579,6 +583,14 @@
       })
       .on('pointerleave', () => { hover.attr('d', null); readout.textContent = rest; });
     el.append('path').attr('class', 'al-outline').attr('d', al.path(al.outline));
+    const labels = el.insert('g', '.hover').attr('class', 'state-labels county-labels');
+    for (const d of al.features) {
+      const { v } = value(d.id);
+      if (v == null) continue;
+      const [cx, cy] = al.path.centroid(d);
+      labels.append('text').attr('x', cx).attr('y', cy).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+        .attr('class', v <= -PCT[2] || v >= PCT[2] ? 'on-dark' : '').text(fmtPct(v, 0));
+    }
     readout.textContent = rest;
     const edges = ['< −40%', '−20%', '−5%', '±5%', '+5%', '+20%', '> +40%'];
     document.getElementById(`a${n}-legend`).innerHTML = `<span>Lost</span>
@@ -633,10 +645,11 @@
     }).length;
     const measured = al.features.filter(f => al.counties[f.id] && at(al.counties[f.id].e, 2000) != null && at(al.counties[f.id].e, 2010) != null).length;
     const worst = ranks.slice().sort((x, y) => x.p - y.p).slice(0, 3).map(r => `${r.name} (${fmtPct(r.p, 0)})`);
+    const short = r => r.replace(' County', '');
     document.getElementById('a2-text').textContent =
-      `Between 2000 and 2010 Alabama lost ${d3.format(',')(lost)} factory jobs, ${fmtPct(pct(at(e, 2000), at(e, 2010)), 0).slice(1)} of the total (U.S. ${fmtPct(pct(at(us, 2000), at(us, 2010)), 0).slice(1)}). ` +
-      `Textile and apparel mills alone shed ${d3.format(',')(at(tex, 2000) - at(tex, 2010))} jobs. ${losers} of ${measured} counties with published figures lost factory jobs; ` +
-      `among counties with at least 1,000 factory jobs, the steepest declines were in ${list(worst)}.`;
+      `Alabama had ${d3.format(',')(at(e, 2000))} factory jobs in 2000 and ${d3.format(',')(at(e, 2010))} in 2010: ${d3.format(',')(lost)} jobs gone, about a third (${Math.round(-pct(at(e, 2000), at(e, 2010)))}%). ` +
+      `The country lost about the same share (${Math.round(-pct(at(us, 2000), at(us, 2010)))}%). Textile and apparel mills alone shed ${d3.format(',')(at(tex, 2000) - at(tex, 2010))} jobs. ` +
+      `${losers} of ${measured} counties lost factory jobs; the hardest hit were ${list(worst.map(short))} counties.`;
     const stat = document.getElementById('a2-stat');
     stat.textContent = '−' + d3.format(',')(Math.round(lost / 1000)) + 'K';
     stat.className = 'big-stat is-loss';
@@ -718,7 +731,12 @@
     const fed = al.contracts.states['01'];
     const fys = al.contracts.fys;
     document.getElementById('a6-readout').textContent = `${last}: ${money(data[data.length - 1].mfg)} in factories, ${money(data[data.length - 1].other)} in other industries`;
+    const win = ann.years.slice(-3);
+    const mfgP = ann.projects.filter(p => win.includes(p.year) && ['31', '32', '33'].includes(p.naics.slice(0, 2)) && !(p.jobs > 100000));
+    const nonAuto = 1 - d3.sum(mfgP.filter(p => ['3361', '3362', '3363'].includes(p.naics.slice(0, 4))), p => p.invest || 0) / d3.sum(mfgP, p => p.invest || 0);
     document.getElementById('a6-text').textContent =
+      `Alabama renewed and expanded its main incentive laws in 2023 (the Game Plan), a year after the federal government began offering grants and tax credits for new factories. ` +
+      `Investment has come in well beyond cars: ${Math.round(nonAuto * 100)}% of the factory investment announced in ${win[0]}–${win[win.length - 1]} was outside vehicles and parts, led by drug-making, steel and aluminum. ` +
       `Companies announced ${money(ann.state[last][2] / 1e9)} of new and expanding projects in Alabama in ${last}, the most in any year the state has reported, ` +
       `${money(ann.state[last][5] / 1e9)} of it in factories. ${top ? `The largest was ${top.company.replace(/ (Huntsville|Mobile|Montgomery|Birmingham|Calvert|Decatur)$/, '')}'s ${money(top.invest / 1e9)} plant in ${al.names[top.county]}. ` : ''}` +
       `Federal contracts with Alabama manufacturers, mostly defense and aerospace, rose from ${money(fed[fys.length - 5] / 1e3)} in FY${fys[fys.length - 5]} to ${money(fed[fys.length - 1] / 1e3)} in FY${fys[fys.length - 1]}. ` +
@@ -730,6 +748,35 @@
   }
 
   function alChapter7() {
+    const end = years[endIdx];
+    const peers = [['01', 'Alabama'], ['13', 'Georgia'], ['47', 'Tennessee'], ['45', 'South Carolina'], ['37', 'North Carolina'], ['21', 'Kentucky'], ['28', 'Mississippi']];
+    const rows = peers.map(([id, name]) => {
+      const e = states[id].sel['all|all'].e;
+      return { id, name, v: pct(at(e, 2019), at(e, end)), d: at(e, end) - at(e, 2019) };
+    }).sort((a, b) => b.v - a.v);
+    const max = d3.max(rows, r => Math.abs(r.v));
+    document.getElementById('a7-bars').innerHTML = rows.map(r => {
+      const w = Math.abs(r.v) / max * 50;
+      return `<div class="bar-row"${r.id === '01' ? ' style="font-weight:600"' : ''}><span>${r.name}</span>
+        <div class="bar-track" aria-hidden="true"><div style="left:${r.v < 0 ? 50 - w : 50}%;width:${w}%;background:${r.id === '01' ? '#9E1B32' : r.v < 0 ? 'var(--loss)' : 'var(--gain)'}"></div></div>
+        <span class="bar-value ${r.v < 0 ? 'is-loss' : 'is-gain'}">${fmtPct(r.v, 1)}</span></div>`;
+    }).join('');
+    const us = national.sel['all|all'].e;
+    const alr = rows.find(r => r.id === '01');
+    const rank = rows.indexOf(alr) + 1;
+    const share = y => at(states['01'].sel['all|all'].e, y) / at(us, y) * 100;
+    document.getElementById('a7-text').textContent =
+      `Since 2019, Alabama has added ${d3.format(',')(alr.d)} factory jobs (${fmtPct(alr.v, 1)}), ` +
+      `${rank === 1 ? `the fastest growth of the seven Southeast factory states` : `ranking ${rank} of the seven Southeast factory states`}, while U.S. factory jobs changed ${fmtPct(pct(at(us, 2019), at(us, end)), 1)}. ` +
+      `Only ${rows.filter(r => r.v > 0).length} of the seven grew. Alabama's share of the nation's factory jobs rose from ${share(2019).toFixed(2)}% to ${share(end).toFixed(2)}%.`;
+    const stat = document.getElementById('a7-stat');
+    stat.textContent = fmtPct(alr.v, 1);
+    stat.className = 'big-stat is-gain';
+    document.getElementById('a7-stat-note').textContent = `factory jobs, 2019–${end}; U.S. ${fmtPct(pct(at(us, 2019), at(us, end)), 1)}`;
+    document.getElementById('a7-readout').textContent = `Annual averages, 2019 to ${end}. Alabama is highlighted.`;
+  }
+
+  function alChapter8() {
     const e = states['01'].sel['all|all'].e;
     const end = years[endIdx];
     const yoy = at(e, end) - at(e, end - 1);
@@ -743,13 +790,13 @@
     const qv = q ? pct(q[3], q[0]) : null;
     const cards = [
       [`Factory jobs, ${end - 1}–${end}`, (yoy < 0 ? '−' : '+') + d3.format(',')(Math.abs(yoy)), yoy < 0 ? 'is-loss' : 'is-gain',
-        q ? `And ${fmtPct(qv)} in the first quarter of ${al.quarter.year} compared with a year earlier (U.S. ${fmtPct(pct(qUs[3], qUs[0]))}).` : ''],
+        q ? `And ${fmtPct(qv, 1)} in the first quarter of ${al.quarter.year} compared with a year earlier (U.S. ${fmtPct(pct(qUs[3], qUs[0]), 1)}).` : ''],
       ['Manufacturing share of the economy', (g.mfg[gi] / g.total[gi] * 100).toFixed(1) + '%', '',
         `of Alabama's GDP in ${al.gdp.years[gi]}, compared with ${(us.mfg[gi] / us.total[gi] * 100).toFixed(1)}% nationally. Factories matter more here than in most states.`],
       ['Reliance on car plants', Math.round(vehShare) + '%', '',
         `of Alabama's net new factory jobs since ${end - 10} came from vehicles and parts (BLS QCEW), so the state's factory economy rises and falls with the auto industry.`]
     ];
-    document.getElementById('a7-cards').innerHTML = cards.map(([label, value, tone, note]) =>
+    document.getElementById('a8-cards').innerHTML = cards.map(([label, value, tone, note]) =>
       `<div class="card"><span>${label}</span><strong class="${tone}">${value}</strong><p>${note}</p></div>`).join('');
   }
 
@@ -764,6 +811,7 @@
       '<b>Jobs.</b> Private-sector factory jobs from the BLS count of employer tax filings, averaged over each year\'s 12 months, for the state, its counties and its industries.',
       '<b>Chapter 1.</b> Output is manufacturing GDP from the Bureau of Economic Analysis, adjusted for inflation (2017 dollars). Output and jobs are both set to 100 in 1997, the first year BEA publishes state GDP by industry.',
       '<b>County maps.</b> Each county\'s jobs at the end of the period minus the start, divided by the start. Counties where BLS withholds a year are gray. County lists leave out counties with fewer than 1,000 factory jobs, where one plant can swing the percent.',
+      '<b>Chapter 7.</b> Percent change in each state\'s private factory jobs from the 2019 annual average to the latest annual average (BLS QCEW).',
       '<b>Chapter 6.</b> Announced capital investment from the Alabama Department of Commerce\'s yearly New & Expanding Industry reports; a project counts as manufacturing when its NAICS code starts with 31–33. Federal contracts are dollars obligated to manufacturers for work done in Alabama, from USAspending.gov, by federal fiscal year.',
       `<b>Why ${end}.</b> It's the latest full year BLS and BEA have published. The first-quarter ${al.quarter.year} figure compares the same quarter a year earlier, because factory hiring is seasonal.`
     ];
@@ -794,6 +842,7 @@
       alChapter5();
       alChapter6();
       alChapter7();
+      alChapter8();
       reveal(document.querySelectorAll('#chapters-al .chapter'));
     });
   }
