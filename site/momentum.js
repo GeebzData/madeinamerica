@@ -83,7 +83,8 @@ function renderMomentum(el, opts) {
       <h3 class="mo-h3">New business applications, indexed to 2019</h3>
       <div class="mo-key" id="mo-apps-key"></div>
       <svg id="mo-apps" role="img" aria-label="Business applications over time, 2019 = 100"></svg>
-      <h3 class="mo-h3">Startups and how they fared, by sector</h3>
+      <h3 class="mo-h3" id="mo-sectors-h"></h3>
+      <p class="mo-sub" id="mo-sectors-lede"></p>
       <div class="table-scroll"><table class="data-table" id="mo-sectors"></table></div>
       <p class="panel-note" id="mo-sectors-note"></p>
       <h3 class="mo-h3" id="mo-sba-h"></h3>
@@ -364,41 +365,42 @@ function renderMomentum(el, opts) {
       `Startups data runs through ${T.years[T.years.length - 1]}; SBA loans run through fiscal ${S.fys[S.fys.length - 1]}.`;
     drawApps();
 
-    const secs = Object.entries(S.sectors).filter(([c]) => T.areas[f][MO_BDS[c] || c]);
     const t = T.areas[f];
+    const u = T.areas.US;
     const ty = T.years;
-    const sb = S.areas[f];
     const base = arr => d3.mean(arr.slice(ty.indexOf(2015), ty.indexOf(2019) + 1).filter(v => v != null));
-    const rows = secs.map(([c, n]) => {
-      const b = t[MO_BDS[c] || c];
-      const s = b.s[b.s.length - 1];
-      const loss = sb.loss[c];
-      const loans = sb.sec[c];
-      return {
-        c, n, s, vs: pct(base(b.s), s), j: b.j[b.j.length - 1],
-        surv: b.c[0] && b.c[1] != null ? b.c[1] / b.c[0] * 100 : null,
-        kept: b.c[2] && b.c[3] != null ? b.c[3] / b.c[2] * 100 : null,
-        loans: loans ? loans[0] : 0, amt: loans ? loans[1] : 0, young: loans && loans[0] ? loans[3] / loans[0] * 100 : null,
-        loss: loss && loss[0] >= 20 ? loss[1] / loss[0] * 100 : null
-      };
-    }).filter(r => r.s).sort((x, y) => y.s - x.s);
-    const usS = surv('US');
+    const fare = b => ({
+      s: b.s[b.s.length - 1],
+      vs: pct(base(b.s), b.s[b.s.length - 1]),
+      surv: b.c[0] && b.c[1] != null ? b.c[1] / b.c[0] * 100 : null,
+      kept: b.c[2] && b.c[3] != null ? b.c[3] / b.c[2] * 100 : null
+    });
+    // Rank sectors by how far they beat the same U.S. sector on growth, survival and jobs kept, in points added together.
+    const rows = Object.entries(S.sectors).filter(([c]) => t[MO_BDS[c] || c] && u[MO_BDS[c] || c]).map(([c, n]) => {
+      const k = MO_BDS[c] || c;
+      const r = { c, n, ...fare(t[k]), us: fare(u[k]) };
+      r.edge = [r.vs - r.us.vs, r.surv - r.us.surv, r.kept - r.us.kept].every(Number.isFinite) ? r.vs - r.us.vs + r.surv - r.us.surv + r.kept - r.us.kept : null;
+      return r;
+    }).filter(r => r.s >= 100 && r.edge != null).sort((x, y) => y.edge - x.edge).slice(0, 5);
+    const all = fare(t.all), usAll = fare(u.all);
+    const vsUs = (v, w, f) => `<td class="${tone(v - w)}">${f(v)}<small>U.S. ${f(w)}</small></td>`;
+    const pc = v => Math.round(v) + '%';
+    $('mo-sectors-h').textContent = `Where ${name()}'s startups do best`;
+    $('mo-sectors-lede').textContent =
+      `${pc(all.surv)} of ${name()}'s ${T.cohort[0]} startups were still open in ${T.cohort[1]}, against ${pc(usAll.surv)} nationally, and the ones still open had ` +
+      `${pc(all.kept)} of the jobs the whole group started with, against ${pc(usAll.kept)}. These are the five sectors where ${name()} beats the U.S. by the most.`;
     $('mo-sectors').innerHTML =
-      `<thead><tr><th>Sector</th><th>Startups,<br>${ty[ty.length - 1]}</th><th>vs 2015–19<br>average</th><th>Jobs at<br>startups</th>` +
-      `<th>Still open<br>after 5 years</th><th>Jobs kept<br>after 5 years</th><th>SBA loans,<br>FY${S.recent[0]}–${S.recent[1]}</th><th>Share to new<br>businesses</th><th>Loans written off<br>(FY2010–19)</th></tr></thead><tbody>` +
-      rows.map(r => `<tr class="${r.c === '31' ? 'is-focus' : ''}"><td>${r.n}</td><td>${fmt(r.s)}</td><td class="${tone(r.vs)}">${pctFmt(r.vs)}</td><td>${r.j == null ? 'n/a' : fmt(r.j)}</td>` +
-        `<td class="${r.surv == null ? '' : tone(r.surv - usS)}">${r.surv == null ? 'n/a' : Math.round(r.surv) + '%'}</td>` +
-        `<td class="${tone(r.kept - 100)}">${r.kept == null ? 'n/a' : Math.round(r.kept) + '%'}</td>` +
-        `<td>${fmt(r.loans)}<small>${money(r.amt)}</small></td><td>${r.young == null ? '' : Math.round(r.young) + '%'}</td>` +
-        `<td>${r.loss == null ? '' : r.loss.toFixed(1) + '%'}</td></tr>`).join('') + '</tbody>';
+      `<thead><tr><th>Sector</th><th>Startups,<br>${ty[ty.length - 1]}</th><th>vs 2015–19<br>average</th><th>Still open<br>after 5 years</th><th>Jobs kept<br>after 5 years</th></tr></thead><tbody>` +
+      rows.map(r => `<tr class="${r.c === '31' ? 'is-focus' : ''}"><td>${r.n}</td><td>${fmt(r.s)}</td>` +
+        vsUs(r.vs, r.us.vs, pctFmt) + vsUs(r.surv, r.us.surv, pc) + vsUs(r.kept, r.us.kept, pc) + '</tr>').join('') + '</tbody>';
     $('mo-sectors-note').textContent =
-      `Startups are firms in their first year with at least one employee (Census Business Dynamics Statistics). "Still open after 5 years" compares ${T.cohort[0]} startups with five-year-old firms in ${T.cohort[1]}, ` +
-      `colored against the U.S. rate of ${Math.round(usS)}% for all sectors; "jobs kept" compares their employment at the same two points, so over 100% means the survivors grew enough to replace the jobs lost at firms that closed. ` +
-      `SBA loans are 7(a) and 504 approvals for businesses located in ${name()}, net of canceled loans; "new businesses" are startups and firms two years old or less. ` +
-      `Write-offs are charged-off loans among those approved in fiscal 2010–2019, shown where at least 20 loans were made. Manufacturing is highlighted.`;
+      `Startups are firms in their first year with at least one employee (Census Business Dynamics Statistics). "Still open after 5 years" compares ${T.cohort[0]} startups with five-year-old firms in ${T.cohort[1]}; ` +
+      `"jobs kept" compares their employment at the same two points, so over 100% means the survivors grew enough to replace the jobs lost at firms that closed. ` +
+      `Sectors are ranked by how many points they beat the same U.S. sector by on all three measures added together, among sectors with at least 100 startups in ${ty[ty.length - 1]}. Manufacturing is highlighted.`;
 
+    const sb = S.areas[f];
     const prior = S.prior;
-    const top = sb.top.slice(0, 12);
+    const top = sb.top.slice(0, 5);
     $('mo-sba-h').textContent = `Industries borrowing most through SBA, FY${S.recent[0]}–${S.recent[1]}`;
     $('mo-sba').innerHTML =
       `<thead><tr><th>Industry</th><th>Loans</th><th>vs FY${prior[0]}–${prior[1]}</th><th>Amount</th></tr></thead><tbody>` +
