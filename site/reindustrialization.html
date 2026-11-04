@@ -6,13 +6,1133 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://gerardbarile.goatcounter.com; font-src 'self'; connect-src 'self' https://gerardbarile.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reindustrialization · Made in America</title>
-<link rel="canonical" href="https://madeinamerica.gerardbarile.com/">
-<meta http-equiv="refresh" content="0; url=./">
+<link rel="canonical" href="https://madeinamerica.gerardbarile.com/reindustrialization.html">
+<meta name="description" content="American factories are producing a record amount with fewer workers. Where they are growing, how productive they are, and how incentives, entrepreneurs and robots are pushing the same way.">
+<link rel="stylesheet" href="vendor/fonts.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<script>location.replace('./');</script>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .ranks { display: flex; flex-direction: column; gap: 1.8rem; }
+
+  .kpis { padding-top: 2.4rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6rem; }
+  .kpi { border-top: 2px solid var(--ink); padding-top: 1rem; }
+  .kpi span { display: block; font-size: 1.2rem; color: var(--muted); }
+  .kpi strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 3.6rem; line-height: 1.15; }
+  .kpi small { display: block; font-size: 1.3rem; color: var(--soft); }
+
+  .block { padding-top: 2rem; }
+  .block .card { padding: 2rem; }
+  .block h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 2.6rem; }
+  .block .lede { margin: 0.4rem 0 1.6rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
+
+  .bar-legend { display: flex; flex-wrap: wrap; gap: 1.6rem; font-size: 1.2rem; color: var(--soft); margin-bottom: 1.4rem; }
+  .bar-legend span { display: inline-flex; align-items: center; gap: 0.6rem; }
+  .bar-legend i { display: inline-block; width: 1.4rem; height: 1rem; }
+  .bar-row { display: grid; grid-template-columns: 30rem minmax(0, 1fr) 16rem; gap: 1.2rem; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid var(--line-soft); }
+  .bar-row:last-child { border-bottom: none; }
+  .bar-name { font-size: 1.4rem; }
+  .bar-track { display: flex; flex-direction: column; gap: 0.3rem; }
+  .bar-track div { height: 1rem; border-radius: 2px; transition: width 0.6s var(--spring); }
+  .bar-track .before { background: #C9C9C3; }
+  .bar-track .recent { background: var(--gain); height: 1.4rem; }
+  .bar-value { font-size: 1.4rem; text-align: right; }
+  .bar-value b { font-weight: 600; }
+
+  .wide-chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  .wide-chart text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+  .wide-chart .readout { font-size: 1.4rem; min-height: 2.1rem; margin: 0 0 0.8rem; }
+  .key { display: flex; flex-wrap: wrap; gap: 1.6rem; font-size: 1.2rem; color: var(--soft); margin-bottom: 0.8rem; }
+  .key span { display: inline-flex; align-items: center; gap: 0.6rem; }
+  .key i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid; }
+  .key i.dash { border-top-style: dashed; }
+  .key i.bar { height: 1rem; width: 1.2rem; border: none; }
+
+  .theme { padding-top: 3.2rem; }
+  .theme p { margin: 0; font-size: 1.8rem; line-height: 1.5; max-width: 92rem; }
+  .theme .eyebrow { font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+  .story .card { display: flex; flex-direction: column; gap: 0.4rem; }
+  .story-num { margin: 0; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gain); font-weight: 600; }
+  .story h2 { font-size: 3rem; line-height: 1.15; text-wrap: balance; }
+  .story .lede { font-size: 1.6rem; line-height: 1.55; color: var(--ink); max-width: 80rem; }
+  .story .chart { width: 100%; }
+  .story .chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+  .story .chart text { font-family: var(--sans); font-size: 11px; fill: var(--soft); }
+  .story .chart text.callout { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .story .chart text.callout.muted { fill: var(--muted); }
+  .story .panel-note { max-width: 96rem; }
+  .sub-h { margin: 2.4rem 0 0; font-size: 1.8rem; font-weight: 600; }
+  .sub-lede { margin: 0.2rem 0 1rem; font-size: 1.4rem; color: var(--soft); max-width: 80rem; }
+  .story-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.8rem; }
+  .panel-mini { min-width: 0; }
+  .panel-mini .sub-h { margin-top: 2.4rem; }
+  .reasons { margin: 0.8rem 0 1.2rem; padding-left: 2rem; display: grid; gap: 0.8rem; font-size: 1.5rem; line-height: 1.5; max-width: 86rem; }
+  .deployments { margin: 0.8rem 0 0; padding-left: 2rem; display: grid; gap: 0.8rem; font-size: 1.4rem; max-width: 96rem; }
+  .story .key { margin-top: 0.8rem; }
+  .story .readout { font-size: 1.4rem; min-height: 2.1rem; margin: 0.4rem 0; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+    .story-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .bar-row { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+    .bar-value { text-align: left; }
+  }
+
+  @media (max-width: 600px) {
+    .block .card { padding: 1.4rem; }
+    .story h2 { font-size: 2.4rem; }
+    .theme p { font-size: 1.6rem; }
+    .kpi strong { font-size: 3rem; }
+  }
+</style>
 </head>
 <body>
-<p><a href="./">Reindustrialization</a></p>
+<header class="site-header">
+  <a class="brand" href="./">Made in America</a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="./">Story</a>
+    <a href="reindustrialization.html" aria-current="page">Reindustrialization</a>
+    <a href="alabama.html">Alabama</a>
+    <a href="southeast.html">Southeast</a>
+    <a href="commerce.html">Commerce Dept</a>
+    <a href="#sources">Data sources</a>
+  </nav>
+</header>
+
+<main>
+  <section class="wrap intro">
+    <h1>America makes more than ever, <em>with fewer hands</em></h1>
+    <p id="hero-lede">Real factory output is at a record, and each worker produces far more than a generation ago. The map shows where manufacturing is growing since the year you pick.</p>
+  </section>
+
+  <section class="wrap kpis" aria-label="Headline numbers">
+    <div class="kpi"><span id="k1-label"></span><strong id="k1"></strong><small id="k1-note"></small></div>
+    <div class="kpi"><span id="k2-label"></span><strong id="k2"></strong><small id="k2-note"></small></div>
+    <div class="kpi"><span id="k3-label"></span><strong id="k3"></strong><small id="k3-note"></small></div>
+  </section>
+
+  <section class="wrap controls" aria-label="Map filters">
+    <div class="control">
+      <span class="control-label">Category</span>
+      <div class="control" id="story-pills" role="group" aria-label="Category"></div>
+    </div>
+    <p class="story-blurb" id="story-blurb"></p>
+    <div class="control">
+      <span class="control-label">Industry</span>
+      <select class="select" id="group-select" aria-label="Industry group"></select>
+    </div>
+    <div class="control">
+      <span class="control-label">Shade by</span>
+      <div class="segmented" id="measure" role="group" aria-label="Shade by">
+        <button type="button" data-v="n" aria-pressed="true" aria-describedby="hint"
+          data-hint="Change in manufacturing locations with employees (plants and shops of any size), using yearly averages. A 5-person shop counts the same as a car plant, and companies reorganizing payroll filings can add or remove locations without opening or closing anything."
+          data-source="BLS Quarterly Census of Employment and Wages">Net new establishments</button>
+        <button type="button" data-v="e" aria-pressed="false" aria-describedby="hint"
+          data-hint="Change in private-sector factory jobs, averaged over each year's 12 months."
+          data-source="BLS Quarterly Census of Employment and Wages (employer unemployment-insurance filings)">Factory jobs</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap controls" aria-label="Since year">
+    <div class="control">
+      <span class="control-label">Since</span>
+      <div class="segmented" id="since" role="group" aria-label="Since year"></div>
+    </div>
+    <div class="control since-range">
+      <label for="since-range" class="control-label">Any year</label>
+      <input type="range" id="since-range" step="1">
+      <strong id="since-year"></strong>
+    </div>
+    <p class="since-note" id="since-note" hidden></p>
+  </section>
+
+  <section class="wrap explore">
+    <div class="card map-card">
+      <div class="map-head">
+        <div>
+          <div class="map-sub" id="map-sub"></div>
+          <div class="map-title" id="map-title"></div>
+        </div>
+      </div>
+      <div class="map-wrap" id="map-wrap">
+        <svg id="map" viewBox="0 0 1040 610" role="img" aria-label="Map of change in establishments by state"></svg>
+        <div class="loading" id="loading">Loading data…</div>
+        <div class="tooltip" id="tooltip" hidden></div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <aside class="card panel ranks" aria-live="polite">
+      <div>
+        <p class="eyebrow">Leading states</p>
+        <h2 id="rank-title"></h2>
+      </div>
+      <div class="moves">
+        <h3 class="is-gain">Biggest gains</h3>
+        <ol id="rank-gains"></ol>
+      </div>
+      <div class="moves">
+        <h3 class="is-loss">Biggest losses</h3>
+        <ol id="rank-losses"></ol>
+      </div>
+      <p class="panel-note" id="plant-note">"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant-size bands are Census County Business Patterns for 2023, the latest release. Census has not scheduled 2024. Most plants are small: about 2 in 3 have fewer than 20 workers and fewer than 1 in 10 have 100 or more.</p>
+    </aside>
+  </section>
+
+  <section class="wrap theme" aria-label="What this page shows">
+    <p class="eyebrow">Four stories, one thread</p>
+    <p id="theme-text">American factories make a record amount with fewer people, and each worker produces more than in any other large manufacturing country. Two forces are now pushing the same way: federal incentives are paying for new plants, and entrepreneurs keep opening new shops and plants on their own. The next leg up is automation. Output per hour has been flat since 2011, and robots are how it climbs again.</p>
+  </section>
+
+  <section class="wrap block story" id="record" aria-labelledby="record-h">
+    <div class="card">
+      <p class="story-num">Story 1 of 4</p>
+      <h2 id="record-h">American factories are producing more than ever</h2>
+      <p class="lede" id="record-lede"></p>
+      <p class="readout" id="record-readout"></p>
+      <div class="chart"><svg id="record-chart" role="img" aria-label="Real manufacturing GDP by year since 1997"></svg></div>
+      <p class="panel-note" id="record-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block story" id="per-worker" aria-labelledby="worker-h">
+    <div class="card">
+      <p class="story-num">Story 2 of 4</p>
+      <h2 id="worker-h">Each factory worker makes far more than before</h2>
+      <p class="lede" id="worker-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Output per worker</span>
+        <span><i class="dash" style="border-color:#8A8A84"></i>Factory jobs</span>
+      </div>
+      <p class="readout" id="worker-readout"></p>
+      <div class="chart"><svg id="worker-chart" role="img" aria-label="Real output per factory worker and factory jobs, indexed to 1997"></svg></div>
+      <p class="panel-note" id="worker-note"></p>
+      <h3 class="sub-h">Why each worker makes more</h3>
+      <ol class="reasons" id="why-list"></ol>
+      <p class="sub-lede" id="why-bars-lede"></p>
+      <div id="why-bars"></div>
+      <p class="panel-note" id="why-note"></p>
+      <h3 class="sub-h" id="world-h">Ahead of every other large manufacturing country</h3>
+      <p class="sub-lede" id="world-lede"></p>
+      <div id="world-bars"></div>
+      <p class="panel-note" id="world-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block story" id="investment" aria-labelledby="money-h">
+    <div class="card">
+      <p class="story-num">Story 3 of 4</p>
+      <h2 id="money-h">Incentives and entrepreneurs are building at the same time</h2>
+      <p class="lede" id="money-lede"></p>
+      <div class="key">
+        <span><i style="border-color:var(--gain)"></i>Factory construction, adjusted for building costs (left scale)</span>
+        <span><i style="border-color:#141414"></i>Federal incentives committed, running total (left scale)</span>
+        <span><i class="bar" style="background:#DCDCD6"></i>Net new manufacturing establishments that year (right scale)</span>
+      </div>
+      <p class="readout" id="money-readout"></p>
+      <div class="chart"><svg id="money" role="img" aria-label="Monthly factory construction spending since 2008, federal incentives committed, and net new manufacturing establishments each year"></svg></div>
+      <p class="panel-note" id="money-note"></p>
+      <h3 class="sub-h" id="types-h">Which industries are building</h3>
+      <p class="sub-lede" id="types-lede"></p>
+      <div class="bar-legend">
+        <span><i style="background:#C9C9C3"></i>2019–2021 average</span>
+        <span><i style="background:var(--gain)"></i>Last 12 months</span>
+      </div>
+      <div id="bars"></div>
+      <p class="panel-note" id="types-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap block story" id="robots" aria-labelledby="robots-h">
+    <div class="card">
+      <p class="story-num">Story 4 of 4</p>
+      <h2 id="robots-h">Productivity stalled after 2011. Robots are how it climbs again.</h2>
+      <p class="lede" id="robots-lede"></p>
+      <p class="readout" id="hour-readout"></p>
+      <div class="chart"><svg id="hour-chart" role="img" aria-label="Manufacturing output per hour since 1987"></svg></div>
+      <p class="panel-note" id="hour-note"></p>
+      <div class="story-grid">
+        <div class="panel-mini">
+          <h3 class="sub-h" id="imports-h">Robot imports are climbing</h3>
+          <p class="sub-lede" id="imports-lede"></p>
+          <p class="readout" id="imports-readout"></p>
+          <div class="chart"><svg id="imports-chart" role="img" aria-label="U.S. imports of industrial robots by year"></svg></div>
+        </div>
+        <div class="panel-mini">
+          <h3 class="sub-h">Big plants already use them</h3>
+          <p class="sub-lede">Share of plants with robots, by number of employees, 2022. Most small shops have none yet, which is where the room to grow is.</p>
+          <div id="size-bars"></div>
+        </div>
+        <div class="panel-mini">
+          <h3 class="sub-h" id="se-robots-h">The Southeast is ahead</h3>
+          <p class="sub-lede">Share of factory workers at plants that use robots, 2022.</p>
+          <div id="se-bars"></div>
+        </div>
+      </div>
+      <h3 class="sub-h">Humanoid robots are being tested in Southeast plants</h3>
+      <ul class="deployments" id="deployments"></ul>
+      <p class="panel-note" id="robots-note"></p>
+    </div>
+  </section>
+
+  <section class="wrap guide" id="categories" aria-labelledby="guide-h">
+    <div class="card">
+      <h2 id="guide-h">What each category includes</h2>
+      <p class="lede">Every manufacturing industry BLS tracks sits in exactly one category and one industry group, so together they add up to all of manufacturing. The small numbers are NAICS industry codes, the federal system BLS uses to classify businesses.</p>
+      <div class="guide-grid" id="guide"></div>
+    </div>
+  </section>
+
+  <section class="wrap sources block" id="sources">
+    <div class="card">
+      <h2>Data sources</h2>
+      <ul>
+        <li><a href="https://www.bea.gov/data/gdp/gdp-industry">Bureau of Economic Analysis, GDP by industry and state</a>: real manufacturing GDP (value added) in chained 2017 dollars, the record in story 1 and output per worker in story 2.</li>
+        <li><a href="https://fred.stlouisfed.org/series/MANEMP">BLS Current Employment Statistics, manufacturing</a> (FRED <code>MANEMP</code>): national factory payroll jobs, annual averages.</li>
+        <li><a href="https://fred.stlouisfed.org/series/OPHMFG">BLS labor productivity, manufacturing sector</a> (FRED <code>OPHMFG</code>, 2017 = 100): output per hour worked.</li>
+        <li><a href="https://data.worldbank.org/indicator/NV.IND.MANF.CD">World Bank, manufacturing value added</a> (current U.S. dollars) and <a href="https://ilostat.ilo.org/">ILO employment by economic activity</a> (manufacturing, labor force surveys): the country comparison.</li>
+        <li><a href="https://www.census.gov/library/publications/2025/econ/2022-ec-robotic-equipment.html">Census Bureau, 2022 Economic Census robotics tables</a> (experimental) and <a href="https://www.census.gov/library/publications/2023/econ/2022-robotic-equipment.html">Annual Capital Expenditures Survey robotics tables</a>: robot use and robot spending.</li>
+        <li><a href="https://comtradeplus.un.org/">UN Comtrade</a>: U.S. imports of industrial robots, HS code 847950.</li>
+        <li><a href="https://newsroom.bmwgroup.com/americas/successful-test-of-humanoid-robots-at-bmw-group-plant-spartanburg">BMW Group</a> and <a href="https://www.therobotreport.com/boston-dynamics-opens-metaplant-application-center-train-atlas-humanoid-robots/">The Robot Report</a>: the humanoid robot trials in South Carolina and Georgia.</li>
+        <li><a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau Construction Spending</a>: private factory construction by industry, monthly, seasonally adjusted annual rate. Published nationally only.</li>
+        <li><a href="https://fred.stlouisfed.org/series/PCU236211236211">BLS Producer Price Index for new industrial building construction</a> (FRED <code>PCU236211236211</code>): used to adjust construction spending for building costs.</li>
+        <li>Federal incentives in story 3: <a href="https://www.nist.gov/chips/chips-program-office-awards">NIST CHIPS Program Office awards</a> (final manufacturing awards, dated from NIST releases and the <a href="https://www.manufacturingdive.com/news/chips-and-science-act-tracker-semiconductor-manufacturing/734039/">Manufacturing Dive CHIPS tracker</a>), <a href="https://www.usaspending.gov/search">USAspending</a> grants under DOE's manufacturing and energy supply chain program (81.253), and the two <a href="https://www.irs.gov/newsroom/irs-and-treasury-provide-guidance-on-the-qualifying-advanced-energy-project-credit">48C tax credit rounds</a>.</li>
+        <li><a href="https://fred.stlouisfed.org/series/CLF16OV">BLS civilian labor force</a> (FRED <code>CLF16OV</code>): the U.S. labor force, annual averages, for factory jobs as a share of it.</li>
+        <li><a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>: establishments (plants and shops) and jobs by state and industry for the map, the headline numbers and the bars in story 3, private sector, annual averages.</li>
+        <li><a href="https://github.com/topojson/us-atlas">us-atlas</a>: state outlines from the Census Bureau.</li>
+      </ul>
+      <p id="notes"></p>
+    </div>
+  </section>
+</main>
+<div class="hint" id="hint" role="tooltip" hidden></div>
+
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="categories.js"></script>
+<script>
+  const ATLAS = 'vendor/states-albers-10m.json';
+  const COLORS = ['#9A4410', '#D27A3F', '#EDC29F', '#E2E2DD', '#C4DCC6', '#6FA077', '#355E3B'];
+  const THRESH = { n: [20, 100, 400], e: [1000, 5000, 20000] };
+  const MEASURES = { n: 'Net new establishments', e: 'Factory jobs' };
+  const UNITS = { n: 'establishments', e: 'jobs' };
+  const SINCE = [[1990, '1990'], [2000, '2000'], [2010, '2010'], [2019, '2019 · before COVID'], [2021, '2021'], [2022, '2022 · CHIPS & IRA']];
+  // Start years at or near the bottom of a downturn, and a fairer year to compare with.
+  const LOWS = {
+    1991: ['the early-1990s recession', 1990], 1992: ['the early-1990s recession', 1990],
+    2009: ['the Great Recession', 2007], 2010: ['the Great Recession', 2007],
+    2020: ['the COVID shutdowns', 2019], 2021: ['the COVID shutdowns', 2019]
+  };
+  const ABBR = {
+    '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL',
+    '13': 'GA', '15': 'HI', '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', '22': 'LA', '23': 'ME',
+    '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN', '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH',
+    '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH', '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI',
+    '45': 'SC', '46': 'SD', '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA', '54': 'WV', '55': 'WI',
+    '56': 'WY'
+  };
+  const CALLOUTS = ['50', '33', '25', '44', '09', '34', '10', '24', '11'];
+
+  const state = { since: 2019, measure: 'n', story: 'all', group: 'all', hover: null };
+  let meta, national, states, reind, years, endIdx, prod, incentives;
+  const features = {};
+  const names = {};
+
+  const path = d3.geoPath();
+  const svg = d3.select('#map');
+  const gStates = svg.append('g');
+  const hoverLine = svg.append('path').attr('class', 'hover');
+  const gLeaders = svg.append('g');
+  const gLabels = svg.append('g').attr('font-size', 12);
+  const tip = d3.select('#tooltip');
+  const mapWrap = document.getElementById('map-wrap');
+
+  const hatch = svg.append('defs').append('pattern')
+    .attr('id', 'hatch').attr('width', 6).attr('height', 6)
+    .attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
+  hatch.append('rect').attr('width', 6).attr('height', 6).attr('fill', '#EFEFEB');
+  hatch.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 6).attr('stroke', '#B4B4AE').attr('stroke-width', 2);
+
+  function idx(year) { return years.indexOf(year); }
+  function selKey() { return `${state.story}|${state.group}`; }
+  function groupsFor(story) { return Object.keys(meta.groups).filter(g => meta.selections.includes(`${story}|${g}`)); }
+
+  function selLabel() {
+    const story = state.story === 'all' ? null : meta.stories[state.story].name;
+    if (state.group === 'all') return story || 'All manufacturing';
+    return story ? `${meta.groups[state.group]} (${story.toLowerCase()})` : meta.groups[state.group];
+  }
+
+  function series(kind, id, key = selKey()) {
+    if (kind === 'nation') return national.sel[key];
+    return states[id] && states[id].sel[key];
+  }
+
+  function endPoint(arr) {
+    if (!arr) return -1;
+    for (let i = endIdx; i >= Math.max(0, endIdx - 2); i -= 1) if (arr[i] != null) return i;
+    return -1;
+  }
+
+  function change(arr) {
+    if (!arr) return null;
+    const a = arr[idx(state.since)];
+    const b = arr[endPoint(arr)];
+    return a == null || b == null ? null : b - a;
+  }
+
+  function estimatedPct(s, i) { return s && s.x && i >= 0 ? s.x[i] : 0; }
+
+  function sign(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; }
+
+  function compact(a) {
+    if (a >= 1e6) return (a / 1e6).toFixed(1) + 'M';
+    if (a >= 1e4) return Math.round(a / 1e3) + 'K';
+    if (a >= 1e3) return (a / 1e3).toFixed(1) + 'K';
+    return String(Math.round(a));
+  }
+
+  function fmtShort(v) { return v == null ? 'n/a' : sign(v) + compact(Math.abs(v)); }
+  function fmtLong(v, measure = state.measure) {
+    return v == null ? 'Not published' : `${sign(v)}${d3.format(',')(Math.round(Math.abs(v)))} ${UNITS[measure]}`;
+  }
+  function fmtLevel(v, measure = state.measure) {
+    return v == null ? 'not published' : `${d3.format(',')(Math.round(v))} ${UNITS[measure]}`;
+  }
+  function toneClass(v) { return v == null ? '' : v < 0 ? 'is-loss' : v > 0 ? 'is-gain' : ''; }
+  function money(v) { return '$' + (v >= 100 ? Math.round(v) : v.toFixed(1)) + 'B'; }
+
+  function nice(x) {
+    const p = 10 ** Math.floor(Math.log10(x));
+    return d3.least([1, 2, 2.5, 5, 10].map(m => m * p), v => Math.abs(Math.log(v / x)));
+  }
+
+  // Color bands follow the spread of the states on the map, so the whole color range stays in use.
+  function thresholds() {
+    const vals = Object.keys(features).map(id => change((series('state', id) || {})[state.measure]))
+      .filter(v => v != null).map(Math.abs).sort(d3.ascending);
+    if (vals.length < 10) return THRESH[state.measure];
+    const t = [];
+    for (const q of [0.12, 0.45, 0.8]) {
+      const prev = t.length ? t[t.length - 1] : 0;
+      let v = nice(Math.max(d3.quantileSorted(vals, q), prev * 1.6, 1));
+      if (v < prev * 1.5) v = nice(prev * 2.2);
+      t.push(v);
+    }
+    return t;
+  }
+
+  function colorScale() {
+    const t = thresholds();
+    return d3.scaleThreshold().domain([-t[2], -t[1], -t[0], t[0], t[1], t[2]]).range(COLORS);
+  }
+
+  function parts() {
+    if (state.group === 'all') {
+      return groupsFor(state.story).map(g => ({ kind: 'sel', key: `${state.story}|${g}`, name: meta.groups[g] }));
+    }
+    return Object.entries(meta.pieces)
+      .filter(([, p]) => p.group === state.group && (state.story === 'all' || p.story === state.story))
+      .map(([code, p]) => ({ kind: 'pc', key: code, name: p.name }));
+  }
+
+  function breakdown(kind, id) {
+    const list = parts();
+    if (list.length < 2) return null;
+    const base = kind === 'nation' ? national : states[id];
+    const moves = [];
+    for (const p of list) {
+      const s = base && base[p.kind][p.key];
+      const v = change(s && s[state.measure]);
+      if (v != null && v !== 0) moves.push({ name: p.name, v });
+    }
+    return moves.sort((x, y) => Math.abs(y.v) - Math.abs(x.v));
+  }
+
+  function largestPart(f) {
+    if (f.geometry.type !== 'MultiPolygon') return f;
+    let best = null;
+    let bestArea = -1;
+    for (const coords of f.geometry.coordinates) {
+      const g = { type: 'Polygon', coordinates: coords };
+      const a = path.area(g);
+      if (a > bestArea) { bestArea = a; best = g; }
+    }
+    return best;
+  }
+
+  function tipHtml(id) {
+    const s = series('state', id);
+    const arr = s && s[state.measure];
+    const v = change(arr);
+    const ei = endPoint(arr) < 0 ? endIdx : endPoint(arr);
+    let html = `<h3>${names[id]}</h3>
+      <div class="sub">${MEASURES[state.measure]} · ${selLabel()} · ${state.since} → ${years[ei]}</div>
+      <div class="big ${toneClass(v)}">${fmtLong(v)}</div>
+      <div class="range">${fmtLevel(arr ? arr[idx(state.since)] : null)} in ${state.since} → ${fmtLevel(arr ? arr[ei] : null)} in ${years[ei]}</div>`;
+    if (ei !== endIdx) html += `<div class="note">${years[endIdx]} not published here; showing ${years[ei]}.</div>`;
+    const estA = estimatedPct(s, idx(state.since));
+    const estB = estimatedPct(s, ei);
+    if (state.measure === 'e' && (estA || estB)) {
+      html += '<div class="note">Part of this figure is our estimate of jobs BLS withheld (split by plant count).</div>';
+    }
+    const moves = breakdown('state', id);
+    if (moves) {
+      html += `<div class="eyebrow">By ${state.group === 'all' ? 'industry group' : 'industry'}</div>`;
+      const top = moves.slice(0, moves.length === 6 ? 6 : 5);
+      for (const m of top) html += `<div class="row"><span>${m.name}</span><b class="${toneClass(m.v)}">${fmtLong(m.v)}</b></div>`;
+      if (moves.length > top.length) {
+        html += `<div class="row"><span>Other ${moves.length - top.length}</span><span>${fmtLong(d3.sum(moves.slice(top.length), m => m.v))}</span></div>`;
+      }
+      if (!moves.length) html += '<div class="note">No change in any industry here.</div>';
+    }
+    return html;
+  }
+
+  function moveTip(event) {
+    const [x, y] = d3.pointer(event, mapWrap);
+    const node = tip.node();
+    let left = x + 16;
+    if (left + node.offsetWidth > mapWrap.clientWidth) left = x - node.offsetWidth - 16;
+    const top = Math.max(0, Math.min(y - 24, mapWrap.clientHeight - node.offsetHeight));
+    tip.style('left', Math.max(0, left) + 'px').style('top', top + 'px');
+  }
+
+  function drawMap() {
+    const scale = colorScale();
+    const t = thresholds();
+    gStates.selectAll('path').attr('fill', d => {
+      const v = change((series('state', d.id) || {})[state.measure]);
+      return v == null ? 'url(#hatch)' : scale(v);
+    });
+    const labels = [];
+    const leaders = [];
+    for (const f of Object.values(features)) {
+      const s = series('state', f.id) || {};
+      const v = change(s[state.measure]);
+      const approx = state.measure === 'e' && v != null && (estimatedPct(s, idx(state.since)) || estimatedPct(s, endPoint(s.e))) ? '~' : '';
+      const num = approx + fmtShort(v);
+      const ci = CALLOUTS.indexOf(f.id);
+      if (ci >= 0) {
+        const y = 170 + ci * 20;
+        leaders.push({ x1: f.label[0], y1: f.label[1], x2: 962, y2: y });
+        labels.push({ x: 966, y, text: `${ABBR[f.id]} ${num}`, anchor: 'start', color: '#141414' });
+      } else {
+        const dark = v != null && Math.abs(v) >= t[2];
+        labels.push({ x: f.label[0], y: f.label[1], text: num, anchor: 'middle', color: dark ? '#fff' : '#141414' });
+      }
+    }
+    gLeaders.selectAll('line').data(leaders).join('line').attr('class', 'leader')
+      .attr('x1', d => d.x1).attr('y1', d => d.y1).attr('x2', d => d.x2).attr('y2', d => d.y2);
+    gLabels.selectAll('text').data(labels).join('text')
+      .attr('x', d => d.x).attr('y', d => d.y).attr('text-anchor', d => d.anchor)
+      .attr('dominant-baseline', 'middle').attr('fill', d => d.color).text(d => d.text);
+  }
+
+  function drawLegend() {
+    const t = thresholds();
+    const edges = [`< ${fmtShort(-t[2])}`, fmtShort(-t[1]), fmtShort(-t[0]), '±' + compact(t[0]), fmtShort(t[0]), fmtShort(t[1]), `> ${fmtShort(t[2])}`];
+    document.getElementById('legend').innerHTML = `
+      <span>Fewer</span>
+      <div class="legend-scale">${COLORS.map((c, i) => `<div><span style="background:${c}"></span><small>${edges[i]}</small></div>`).join('')}</div>
+      <span>More</span>
+      <span class="legend-hatch"><svg viewBox="0 0 20 12" aria-hidden="true"><rect width="20" height="12" fill="url(#hatch)"></rect></svg>Not published (confidential)</span>`;
+  }
+
+  function drawRanks() {
+    const rows = Object.keys(features)
+      .map(id => ({ name: names[id], v: change((series('state', id) || {})[state.measure]) }))
+      .filter(r => r.v != null)
+      .sort((a, b) => b.v - a.v);
+    const row = r => `<li><span>${r.name}</span><span class="${toneClass(r.v)}">${fmtShort(r.v)}</span></li>`;
+    const gains = rows.filter(r => r.v > 0).slice(0, 5);
+    const losses = rows.filter(r => r.v < 0).reverse().slice(0, 5);
+    document.getElementById('rank-gains').innerHTML = gains.length ? gains.map(row).join('') : '<li class="empty">None</li>';
+    document.getElementById('rank-losses').innerHTML = losses.length ? losses.map(row).join('') : '<li class="empty">None</li>';
+    document.getElementById('rank-title').textContent = `${MEASURES[state.measure]}, ${selLabel().toLowerCase()}, since ${state.since}`;
+  }
+
+  function drawKpis() {
+    const end = years[endIdx];
+    const all = national.sel['all|all'];
+    const n = change(all.n);
+    const jobs = change(all.e);
+    const t = reind.total;
+    const lf = prod.laborForce;
+    const force = lf.millions[lf.years.indexOf(end)];
+    const asOf = d3.timeFormat('%b %Y')(d3.timeParse('%Y-%m')(reind.latest));
+    document.getElementById('k1-label').textContent = `Factory construction, 12 months to ${asOf}`;
+    document.getElementById('k1').textContent = money(t.recent) + ' a year';
+    document.getElementById('k1-note').textContent = `${(t.recent / t.before).toFixed(1)}× the 2019–21 average`;
+    document.getElementById('k2-label').textContent = `Net new manufacturing establishments since ${state.since}`;
+    document.getElementById('k2').textContent = fmtShort(n);
+    document.getElementById('k2').className = toneClass(n);
+    document.getElementById('k2-note').textContent = `${d3.format(',')(all.n[endIdx])} in ${end}`;
+    document.getElementById('k3-label').textContent = `Factory jobs since ${state.since}`;
+    document.getElementById('k3').textContent = fmtShort(jobs);
+    document.getElementById('k3').className = toneClass(jobs);
+    document.getElementById('k3-note').textContent = `${(all.e[endIdx] / 1e6).toFixed(1)} million in ${end}` +
+      (force ? `, ${(all.e[endIdx] / 1e6 / force * 100).toFixed(1)}% of the U.S. labor force` : '');
+  }
+
+  function drawHeadings() {
+    document.getElementById('map-sub').textContent = `${selLabel()} · ${MEASURES[state.measure]} · States`;
+    document.getElementById('map-title').textContent = `${state.since} → ${years[endIdx]}`;
+    document.getElementById('story-blurb').textContent = state.story === 'all'
+      ? 'Pick a category or an industry group to see where that part of manufacturing is growing.'
+      : meta.stories[state.story].blurb;
+  }
+
+  function drawBars() {
+    const max = d3.max(reind.byType, d => Math.max(d.before, d.recent));
+    const sorted = reind.byType.slice().sort((a, b) => (a.id === 'other') - (b.id === 'other') || b.recent - a.recent);
+    document.getElementById('bars').innerHTML = sorted.map(d => `
+      <div class="bar-row">
+        <div class="bar-name">${d.name}</div>
+        <div class="bar-track" aria-hidden="true">
+          <div class="before" style="width:${d.before / max * 100}%"></div>
+          <div class="recent" style="width:${d.recent / max * 100}%"></div>
+        </div>
+        <div class="bar-value">${money(d.before)} → <b>${money(d.recent)}</b> <span class="${d.recent >= d.before ? 'is-gain' : 'is-loss'}">(${(d.recent / d.before).toFixed(1)}×)</span></div>
+      </div>`).join('');
+    const top = sorted[0];
+    const share = (top.recent - top.before) / (reind.total.recent - reind.total.before) * 100;
+    document.getElementById('types-lede').textContent =
+      `Factory construction spending a year, adjusted for building costs (${reind.dollarsOf} dollars). ` +
+      `${top.name.replace(/ \(.*\)/, '')} accounts for about ${Math.round(share)}% of the increase since 2019–21.`;
+    document.getElementById('types-note').textContent =
+      'Census publishes these industry groups for the country as a whole, not by state. "All other manufacturing" covers paper, metals, machinery and other industries Census does not show separately.';
+  }
+
+  // Story charts are drawn at the width of their box, so text stays readable on a phone.
+  function frame(id, H) {
+    const svg = d3.select('#' + id);
+    svg.selectAll('*').remove();
+    const W = Math.max(280, svg.node().parentNode.clientWidth);
+    svg.attr('viewBox', `0 0 ${W} ${H}`);
+    return { svg, W, narrow: W < 560 };
+  }
+
+  function axes(svg, x, y, W, H, M, yFormat, xTicks) {
+    svg.append('g').attr('transform', `translate(0,${H - M.b})`)
+      .call(d3.axisBottom(x).ticks(xTicks).tickFormat(d3.format('d')).tickSize(0).tickPadding(8))
+      .call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    svg.append('g').attr('transform', `translate(${M.l},0)`)
+      .call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(yFormat))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+  }
+
+  function dotLabel(svg, x, y, text, anchor, dy = -12) {
+    svg.append('circle').attr('cx', x).attr('cy', y).attr('r', 4.5).attr('fill', '#355E3B');
+    svg.append('text').attr('class', 'callout').attr('x', x).attr('y', y + dy).attr('text-anchor', anchor).text(text);
+  }
+
+  // A vertical line follows the pointer on charts with years along the bottom, and the readout above shows that point.
+  function hover(svg, M, W, H, n, xAt, readout, text, dots = []) {
+    const g = svg.append('g').attr('display', 'none').attr('pointer-events', 'none');
+    const line = g.append('line').attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#141414').attr('stroke-width', 1);
+    const marks = dots.map(d => g.append('circle').attr('r', 4.5).attr('fill', d.color).attr('stroke', '#fff').attr('stroke-width', 1.5));
+    const xs = d3.range(n).map(xAt);
+    const rest = () => { g.attr('display', 'none'); readout.textContent = text(n - 1, true); };
+    svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).attr('fill', 'transparent')
+      .on('pointermove', event => {
+        const i = Math.max(0, Math.min(n - 1, d3.bisectCenter(xs, d3.pointer(event)[0])));
+        line.attr('x1', xs[i]).attr('x2', xs[i]);
+        marks.forEach((m, j) => m.attr('cx', xs[i]).attr('cy', dots[j].y(i)));
+        g.attr('display', null);
+        readout.textContent = text(i);
+      })
+      .on('pointerleave', rest);
+    rest();
+  }
+
+  function drawRecord(prod) {
+    const pw = prod.perWorker;
+    const yrs = pw.years;
+    const vals = pw.realGdp.map(v => v / 1e6);
+    const H = 300;
+    const M = { t: 34, r: 20, b: 28, l: 52 };
+    const { svg, W, narrow } = frame('record-chart', H);
+    const x = d3.scaleLinear().domain(d3.extent(yrs)).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([d3.min(vals) * 0.9, d3.max(vals) * 1.06]).nice().range([H - M.b, M.t]);
+    axes(svg, x, y, W, H, M, v => '$' + v.toFixed(1) + 'T', narrow ? 4 : 8);
+    svg.append('path').attr('d', d3.area().x((v, i) => x(yrs[i])).y0(H - M.b).y1(v => y(v))(vals)).attr('fill', '#355E3B').attr('opacity', 0.08);
+    svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(vals)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
+    const last = vals.length - 1;
+    const i07 = yrs.indexOf(2007);
+    dotLabel(svg, x(yrs[i07]), y(vals[i07]), `${narrow ? '' : '2007 peak: '}$${vals[i07].toFixed(2)}T`, 'middle');
+    dotLabel(svg, x(yrs[last]), y(vals[last]), `${yrs[last]}: $${vals[last].toFixed(2)}T`, 'end');
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('record-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${yrs[i]}: $${vals[i].toFixed(2)} trillion of real manufacturing GDP`,
+      [{ color: '#355E3B', y: i => y(vals[i]) }]);
+  }
+
+  function drawWorker(prod) {
+    const pw = prod.perWorker;
+    const yrs = pw.years;
+    const idx = arr => arr.map(v => v / arr[0] * 100);
+    const lines = [
+      { vals: idx(pw.perWorker), color: '#355E3B', width: 2.5, dash: null },
+      { vals: idx(pw.jobs), color: '#8A8A84', width: 2, dash: '5 4' }
+    ];
+    const H = 300;
+    const M = { t: 30, r: 20, b: 28, l: 44 };
+    const { svg, W, narrow } = frame('worker-chart', H);
+    const x = d3.scaleLinear().domain(d3.extent(yrs)).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([60, d3.max(lines[0].vals) * 1.08]).nice().range([H - M.b, M.t]);
+    axes(svg, x, y, W, H, M, d3.format('d'), narrow ? 4 : 8);
+    svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(100)).attr('y2', y(100)).attr('stroke', '#A8A8A2');
+    svg.append('text').attr('x', M.l + 4).attr('y', y(100) - 6).text(`${yrs[0]} = 100`);
+    for (const l of lines) {
+      svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(l.vals))
+        .attr('fill', 'none').attr('stroke', l.color).attr('stroke-width', l.width).attr('stroke-dasharray', l.dash);
+    }
+    const last = yrs.length - 1;
+    const ratio = pw.perWorker[last] / pw.perWorker[0];
+    const jobPct = (pw.jobs[last] / pw.jobs[0] - 1) * 100;
+    dotLabel(svg, x(yrs[last]), y(lines[0].vals[last]), `${ratio.toFixed(1)}× per worker`, 'end');
+    svg.append('text').attr('class', 'callout muted').attr('x', x(yrs[last])).attr('y', y(lines[1].vals[last]) - 10)
+      .attr('text-anchor', 'end').text(`Jobs ${jobPct.toFixed(0).replace('-', '−')}%`);
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('worker-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${yrs[i]}: $${Math.round(pw.perWorker[i] / 1e3)}k of output per worker, ${pw.jobs[i].toFixed(1)} million factory jobs`,
+      lines.map(l => ({ color: l.color, y: i => y(l.vals[i]) })));
+  }
+
+  function drawPerHour(prod) {
+    const ph = prod.perHour;
+    const yrs = ph.years;
+    const vals = ph.values;
+    const H = 280;
+    const M = { t: 34, r: 20, b: 28, l: 44 };
+    const { svg, W, narrow } = frame('hour-chart', H);
+    const x = d3.scaleLinear().domain(d3.extent(yrs)).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(vals) * 1.12]).nice().range([H - M.b, M.t]);
+    const i11 = yrs.indexOf(2011);
+    svg.append('rect').attr('x', x(2011)).attr('width', x(yrs[yrs.length - 1]) - x(2011)).attr('y', M.t).attr('height', H - M.t - M.b).attr('fill', '#EDC29F').attr('opacity', 0.35);
+    axes(svg, x, y, W, H, M, d3.format('d'), narrow ? 4 : 8);
+    svg.append('text').attr('class', 'callout').attr('x', (x(2011) + x(yrs[yrs.length - 1])) / 2).attr('y', M.t + 16).attr('text-anchor', 'middle').text(narrow ? 'Flat' : 'Flat since 2011');
+    svg.append('path').attr('d', d3.line().x((v, i) => x(yrs[i])).y(v => y(v))(vals)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
+    dotLabel(svg, x(yrs[0]), y(vals[0]), `${yrs[0]}: ${vals[0].toFixed(0)}`, 'start');
+    dotLabel(svg, x(2011), y(vals[i11]), `2011: ${vals[i11].toFixed(0)}`, 'end', 22);
+    hover(svg, M, W, H, yrs.length, i => x(yrs[i]), document.getElementById('hour-readout'),
+      (i, rest) => rest ? `Latest, ${ph.latest.quarter}: ${ph.latest.value.toFixed(1)} (2017 = 100)` : `${yrs[i]}: ${vals[i].toFixed(1)} (2017 = 100)`,
+      [{ color: '#355E3B', y: i => y(vals[i]) }]);
+  }
+
+  function drawImports(prod) {
+    const rows = prod.robots.imports;
+    const H = 200;
+    const M = { t: 24, r: 8, b: 26, l: 8 };
+    const { svg, W } = frame('imports-chart', H);
+    const x = d3.scaleBand().domain(rows.map(r => r.year)).range([M.l, W - M.r]).padding(0.18);
+    const y = d3.scaleLinear().domain([0, d3.max(rows, r => r.millions) * 1.15]).range([H - M.b, M.t]);
+    svg.selectAll('rect').data(rows).join('rect').attr('x', r => x(r.year)).attr('width', x.bandwidth())
+      .attr('y', r => y(r.millions)).attr('height', r => y(0) - y(r.millions)).attr('fill', (r, i) => i === rows.length - 1 ? '#355E3B' : '#A9C4AC');
+    for (const r of [rows[0], rows[rows.length - 1]]) {
+      svg.append('text').attr('class', 'callout').attr('x', x(r.year) + x.bandwidth() / 2).attr('y', y(r.millions) - 6).attr('text-anchor', 'middle').text(`$${r.millions}M`);
+      svg.append('text').attr('x', x(r.year) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').text(r.year);
+    }
+    hover(svg, M, W, H, rows.length, i => x(rows[i].year) + x.bandwidth() / 2, document.getElementById('imports-readout'),
+      (i, rest) => `${rest ? 'Latest, ' : ''}${rows[i].year}: $${rows[i].millions} million`);
+  }
+
+  function hbars(el, rows, fmt, max) {
+    el.innerHTML = '<div class="hbar">' + rows.map(d =>
+      `<div class="row${d.focus ? ' is-focus' : ''}"><div class="name">${d.name}</div><div class="track"><div style="width:${Math.min(d.v / max, 1) * 100}%;background:${d.color}"></div></div><div class="val">${d.label || fmt(d.v)}</div></div>`
+    ).join('') + '</div>';
+  }
+
+  function drawStories(prod, reind) {
+    const pw = prod.perWorker;
+    const last = pw.years.length - 1;
+    const y0 = pw.years[0];
+    const yN = pw.years[last];
+    const T = v => (v / 1e6).toFixed(2);
+    const k = v => '$' + Math.round(v / 1e3) + 'k';
+    const real = pw.realGdp;
+    const i07 = pw.years.indexOf(2007);
+    const record = real[last] >= d3.max(real);
+
+    document.getElementById('hero-lede').textContent =
+      `Real factory output hit $${T(real[last])} trillion in ${yN}${record ? ', a record' : ''}, and each worker now produces ${(pw.perWorker[last] / pw.perWorker[0]).toFixed(1)} times as much as in ${y0}. ` +
+      'Federal incentives and private businesses are both putting money into new plants. The map shows where manufacturing is growing since the year you pick.';
+
+    document.getElementById('record-h').textContent = record ? 'American factories are producing more than ever' : 'American factories are producing near their record';
+    document.getElementById('record-lede').textContent =
+      `Real manufacturing GDP, adjusted for inflation, was $${T(real[last])} trillion in ${yN}${record ? ', the highest year in the government\'s records' : ''}. ` +
+      `That is ${Math.round((real[last] / real[i07] - 1) * 100)}% above the 2007 peak before the Great Recession. ` +
+      `Factories got there with ${pw.jobs[last].toFixed(1)} million workers, down from ${pw.jobs[0].toFixed(1)} million in ${y0}.`;
+    document.getElementById('record-note').innerHTML =
+      'Source: <a href="https://www.bea.gov/data/gdp/gdp-industry">Bureau of Economic Analysis</a>, manufacturing value added in chained 2017 dollars, annual. ' +
+      'The Federal Reserve\'s industrial production index measures output a different way and is still below its 2007 level, so the record here is in value added, the measure used for GDP.';
+
+    const ratio = pw.perWorker[last] / pw.perWorker[0];
+    document.getElementById('worker-h').textContent = `Each factory worker makes ${ratio.toFixed(1)} times what one did in ${y0}`;
+    document.getElementById('worker-lede').textContent =
+      `In ${y0}, American factories produced ${k(pw.perWorker[0])} of output per worker. In ${yN} it was ${k(pw.perWorker[last])}, both in 2017 dollars. ` +
+      `Factory jobs fell from ${pw.jobs[0].toFixed(1)} million to ${pw.jobs[last].toFixed(1)} million over the same years. ` +
+      'Fewer people now make more, so the factory head count of the 1990s is the wrong yardstick for how much America makes.';
+    document.getElementById('worker-note').innerHTML =
+      'Output per worker is BEA real manufacturing GDP divided by the annual average of BLS factory payroll jobs (<a href="https://fred.stlouisfed.org/series/MANEMP">MANEMP</a>). ' +
+      'Both lines are set to 100 in ' + y0 + '. Trade also cost factory jobs over these years; the Story page covers imports.';
+
+    const w = prod.why;
+    const wr = code => w.rows.find(r => r.code === code);
+    const lost = ['315-316', '313-314', '337'].reduce((t, code) => t + wr(code).jobs0 - wr(code).jobs1, 0);
+    const comp = wr('334');
+    const x = v => v.toFixed(1) + '×';
+    document.getElementById('why-list').innerHTML = [
+      `<b>Better machines and methods.</b> Holding the ${w.years[0]} mix of industries fixed, output per worker rose about ${x(w.within)}. ` +
+        `Car and parts plants make ${x(wr('3361-3363').ratio)} as much per worker, steel and other metal mills ${x(wr('331').ratio)}. This is where automation, computer-controlled machines and better processes show up.`,
+      `<b>A shift toward higher-value work.</b> Apparel, textiles and furniture lost ${(lost / 1e6).toFixed(1)} million jobs as that work moved overseas, while chemicals and pharma, vehicles and aerospace kept more of their workers. ` +
+        `The change in mix alone raises output per worker by about ${Math.round((w.mix - 1) * 100)}%.`,
+      `<b>Computers and chips count for a lot.</b> Real output of computers and electronics rose about ${Math.round(comp.real1 / comp.real0)} times with ${Math.round((1 - comp.jobs1 / comp.jobs0) * 100)}% fewer workers. ` +
+        `Much of that is how it is measured: a chip that does twice as much counts as twice the output. Leave that industry out and output per worker still rose about ${x(w.exComputers)}.`
+    ].map(t => `<li>${t}</li>`).join('');
+    document.getElementById('why-bars-lede').textContent = `Output per worker in ${w.years[1]} compared with ${w.years[0]}, the ten largest manufacturing industries by jobs.`;
+    hbars(document.getElementById('why-bars'),
+      w.rows.slice(0, 10).sort((a, b) => b.ratio - a.ratio).map(r => ({ name: r.name, v: r.ratio, label: x(r.ratio), color: r.ratio >= 1 ? '#355E3B' : '#D27A3F' })),
+      v => x(v), 4);
+    document.getElementById('why-note').innerHTML =
+      `Each industry's real value added (<a href="https://www.bea.gov/data/gdp/gdp-industry">BEA</a>, chained 2017 dollars) divided by its private jobs (<a href="https://www.bls.gov/cew/">BLS QCEW</a>), ${w.years[0]} and ${w.years[1]}. ` +
+      `The computers and electronics bar runs off the scale at ${x(comp.ratio)}. Chained dollars do not add up exactly across industries, so the splits above are approximate, ` +
+      `and the industry-by-industry total (${x(w.total)}) differs from the ${x(ratio)} headline, which uses the BLS payroll job count.`;
+
+    const c = prod.countries;
+    const us = c.rows.find(r => r.code === 'USA');
+    const by = code => c.rows.find(r => r.code === code);
+    document.getElementById('world-lede').textContent =
+      `Value added per manufacturing worker, ${c.year}. The U.S. figure is ${k(us.perWorker)}, against ${k(by('DEU').perWorker)} in Germany, ${k(by('KOR').perWorker)} in South Korea and ${k(by('JPN').perWorker)} in Japan.`;
+    hbars(document.getElementById('world-bars'),
+      c.rows.map(r => ({ name: r.name, v: r.perWorker, focus: r.code === 'USA', color: r.code === 'USA' ? '#355E3B' : '#A8A8A2' })),
+      v => k(v), us.perWorker);
+    document.getElementById('world-note').innerHTML =
+      `Value added in current U.S. dollars at market exchange rates (<a href="https://data.worldbank.org/indicator/NV.IND.MANF.CD">World Bank</a>; BEA for the U.S., which the World Bank stopped publishing after 2021), ` +
+      `divided by manufacturing employment from each country's labor force survey (<a href="https://ilostat.ilo.org/">ILO</a>). ` +
+      `The survey count includes self-employed and contract workers, so the U.S. uses ${us.workers.toFixed(1)} million workers, not the payroll count, keeping every country on the same basis. ` +
+      `Exchange rates move these comparisons. China publishes no comparable employment count; its factories added $${(c.chinaValueAdded / 1e3).toFixed(2)} trillion of value in ${c.year}, against $${(us.valueAdded / 1e3).toFixed(2)} trillion in the U.S.`;
+
+    const ph = prod.perHour;
+    const r = prod.robots;
+    const e = r.census2022;
+    const usR = e.states.find(s => s.name === 'United States');
+    const aces = r.aces;
+    const pct = v => (v * 100).toFixed(1).replace(/\.0$/, '') + '%';
+    const b = v => '$' + (v / 1e3).toFixed(1) + ' billion';
+    document.getElementById('robots-lede').textContent =
+      `Output per hour of factory work more than doubled from ${ph.years[0]} to 2011, then went flat: ${ph.values[ph.years.indexOf(2011)].toFixed(0)} in 2011 and ${ph.latest.value.toFixed(0)} in ${ph.latest.quarter}. ` +
+      `Robots are spreading but still rare. In 2022, ${pct(usR.plants)} of U.S. factories used them, and those plants employed ${pct(usR.workers)} of factory workers. ` +
+      `Manufacturers spent ${b(aces[aces.length - 1].manufacturing)} on robotic equipment in ${aces[aces.length - 1].year}, up from ${b(aces[0].manufacturing)} in ${aces[0].year}.`;
+    document.getElementById('hour-note').innerHTML =
+      `BLS labor productivity, manufacturing sector, output per hour worked, 2017 = 100 (<a href="https://fred.stlouisfed.org/series/OPHMFG">FRED OPHMFG</a>), annual averages. The shaded years are the stall.`;
+
+    const imp = r.imports;
+    document.getElementById('imports-h').textContent = `Robot imports are up ${(imp[imp.length - 1].millions / imp[0].millions).toFixed(1)}× since ${imp[0].year}`;
+    document.getElementById('imports-lede').textContent = `Industrial robots imported, millions of dollars a year. Most industrial robots used here are made in Japan and Europe.`;
+    hbars(document.getElementById('size-bars'),
+      e.sizes.map(s => ({ name: s.size.replace('+', ' or more') + ' workers', v: s.plants, color: '#355E3B' })),
+      pct, d3.max(e.sizes, s => s.plants));
+    const se = e.states.filter(s => s.name !== 'United States');
+    const above = se.filter(s => s.workers > usR.workers).length;
+    document.getElementById('se-robots-h').textContent = `${above} of ${se.length} Southeast states are above the U.S.`;
+    hbars(document.getElementById('se-bars'),
+      e.states.slice().sort((a, b2) => b2.workers - a.workers).map(s => ({
+        name: s.name, v: s.workers, focus: s.name === 'Alabama' || s.name === 'United States',
+        color: s.name === 'United States' ? '#141414' : s.name === 'Alabama' ? '#9E1B32' : '#A8A8A2'
+      })),
+      pct, d3.max(e.states, s => s.workers));
+    document.getElementById('deployments').innerHTML = r.deployments.map(d =>
+      `<li><b>${d.place}</b>, ${d.when}. ${d.what} <a href="${d.url}">${d.source}</a></li>`).join('');
+    document.getElementById('robots-note').innerHTML =
+      `Robot imports: <a href="https://comtradeplus.un.org/">UN Comtrade</a>, U.S. imports under trade code 847950 (industrial robots); some robots enter under other codes, so this is a floor. ` +
+      `Plant adoption and the Southeast comparison: <a href="${r.censusUrl}">2022 Economic Census robotics tables</a>, which Census labels experimental. ` +
+      `Spending: <a href="${r.acesUrl}">Census Annual Capital Expenditures Survey</a>, manufacturing sector, ${aces.map(a => `${a.year} ${b(a.manufacturing)}`).join(', ')}.`;
+
+    const m = reind.monthly;
+    const fmtDate = d3.timeFormat('%b %Y');
+    const dates = m.dates.map(d => d3.timeParse('%Y-%m')(d));
+    const peak = d3.maxIndex(m.real);
+    const lastM = m.real.length - 1;
+    const n = national.sel['all|all'].n;
+    const i19 = years.indexOf(2019);
+    const inc = incentives;
+    const incN = inc.total.length - 1;
+    const incDate = i => d3.timeParse('%Y-%m')(inc.months[i]);
+    document.getElementById('money-lede').textContent =
+      'The CHIPS Act and the Inflation Reduction Act, both signed in August 2022, offer grants and tax credits for building chip, battery and clean-energy plants. ' +
+      `Spending on new factories, adjusted for building costs, peaked at ${money(m.real[peak])} a year in ${fmtDate(dates[peak])} and was ${money(m.real[lastM])} in ${fmtDate(dates[lastM])}, still ${(reind.total.recent / reind.total.before).toFixed(1)} times the 2019–21 average over the last 12 months. ` +
+      `Federal incentives committed to factories reached ${money(inc.total[incN])} by ${fmtDate(incDate(incN))}, most of it signed between ${fmtDate(incDate(inc.months.indexOf('2024-11')))} and ${fmtDate(incDate(inc.months.indexOf('2025-01')))}. Construction had already passed $${Math.floor(m.real[m.dates.indexOf('2024-01')] / 10) * 10}B a year by then: companies broke ground once the laws passed, before the awards were final. ` +
+      `The bars show the rest of the market: the U.S. has ${d3.format(',')(n[endIdx] - n[i19])} more manufacturing establishments than in 2019. Most establishments are small shops, not the large plants the incentives are aimed at.`;
+    document.getElementById('money-note').innerHTML =
+      `Line: <a href="https://www.census.gov/construction/c30/c30index.html">Census Bureau construction spending</a>, private manufacturing, at an annual rate, adjusted to ${reind.dollarsOf} dollars with the BLS price index for new industrial buildings. ` +
+      'It counts all private factory construction, with or without federal money. ' +
+      `Incentives: final CHIPS Act manufacturing awards (${money(inc.chips[incN])}, <a href="${inc.urls.chips}">NIST</a>, dated by each final award), ` +
+      `Treasury's two 48C advanced-manufacturing tax credit rounds (${money(inc.c48[incN])}, <a href="${inc.urls.c48}">IRS</a>) and DOE manufacturing supply chain grants (${money(inc.doe[incN])}, <a href="${inc.urls.doe}">USAspending</a>, program 81.253). ` +
+      'The line leaves out the 45X production tax credit, which manufacturers claim on their tax returns with no public monthly total, DOE loans, and state and local packages, so it is a floor. Intel\'s CHIPS grant was turned into a federal ownership stake in August 2025; it is counted at the award. ' +
+      `Bars: <a href="https://www.bls.gov/cew/">BLS Quarterly Census of Employment and Wages</a>, change in the number of private manufacturing establishments each year (annual averages, through ${years[endIdx]}). A small shop and a large plant each count as one.`;
+
+  }
+
+  // Net new manufacturing establishments each year (BLS QCEW), drawn as bars behind the construction line.
+  function netNew() {
+    const n = national.sel['all|all'].n;
+    return years.slice(1).map((yr, i) => ({ year: yr, v: n[i + 1] - n[i] }));
+  }
+
+  function moneyChart() {
+    const m = reind.monthly;
+    const H = 300;
+    const M = { t: 18, r: 52, b: 28, l: 48 };
+    const { svg: el, W, narrow } = frame('money', H);
+    const parse = d3.timeParse('%Y-%m');
+    const dates = m.dates.map(parse);
+    const x = d3.scaleTime().domain(d3.extent(dates)).range([M.l, W - M.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(m.real) * 1.08]).nice().range([H - M.b, M.t]);
+    const bars = netNew().filter(d => new Date(d.year, 0, 1) >= dates[0]);
+    const yb = d3.scaleLinear().domain([Math.min(0, d3.min(bars, d => d.v)), d3.max(bars, d => d.v) * 1.15]).nice().range([H - M.b, M.t]);
+    el.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(narrow ? 4 : 8).tickSize(0).tickPadding(8)).call(g => g.select('.domain').attr('stroke', '#C9C9C3'));
+    el.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - M.l - M.r)).tickFormat(v => '$' + v + 'B'))
+      .call(g => g.select('.domain').remove()).call(g => g.selectAll('line').attr('stroke', '#E6E6E1'));
+    el.append('g').attr('transform', `translate(${W - M.r},0)`).call(d3.axisRight(yb).ticks(5).tickSize(0).tickPadding(6).tickFormat(v => (v > 0 ? '+' : v < 0 ? '−' : '') + compact(Math.abs(v))))
+      .call(g => g.select('.domain').remove());
+    el.append('g').selectAll('rect').data(bars).join('rect')
+      .attr('x', d => x(new Date(d.year, 0, 1)) + 1).attr('width', d => Math.max(1, x(new Date(d.year + 1, 0, 1)) - x(new Date(d.year, 0, 1)) - 2))
+      .attr('y', d => yb(Math.max(0, d.v))).attr('height', d => Math.abs(yb(d.v) - yb(0)))
+      .attr('fill', d => d.v < 0 ? '#EDC29F' : '#DCDCD6');
+    el.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', yb(0)).attr('y2', yb(0)).attr('stroke', '#C9C9C3');
+    const marker = parse('2022-08');
+    el.append('line').attr('x1', x(marker)).attr('x2', x(marker)).attr('y1', M.t).attr('y2', H - M.b).attr('stroke', '#8A8A84').attr('stroke-dasharray', '3 3');
+    el.append('text').attr('x', x(marker) - 6).attr('y', M.t + 10).attr('text-anchor', 'end').text(narrow ? 'CHIPS & IRA' : 'Aug 2022: CHIPS Act & IRA signed');
+    el.append('path').attr('d', d3.line().x((d, i) => x(dates[i])).y(d => y(d))(m.real)).attr('fill', 'none').attr('stroke', '#355E3B').attr('stroke-width', 2.5);
+    const incAt = new Map(incentives.months.map((mo, i) => [mo, incentives.total[i]]));
+    const incDates = incentives.months.map(parse);
+    el.append('path').attr('d', d3.line().x((d, i) => x(incDates[i])).y(d => y(d))(incentives.total)).attr('fill', 'none').attr('stroke', '#141414').attr('stroke-width', 2);
+    const incLast = incentives.total.length - 1;
+    el.append('text').attr('class', 'callout').attr('x', x(incDates[incLast])).attr('y', y(incentives.total[incLast]) - 8).attr('text-anchor', 'end').text(`${money(incentives.total[incLast])} in incentives`);
+    const fmtDate = d3.timeFormat('%b %Y');
+    const byYear = new Map(bars.map(d => [d.year, d.v]));
+    hover(el, M, W, H, dates.length, i => x(dates[i]), document.getElementById('money-readout'), (i, rest) => {
+      const yr = dates[i].getFullYear();
+      const nn = byYear.get(yr);
+      const committed = incAt.get(m.dates[i]);
+      return `${rest ? 'Latest, ' : ''}${fmtDate(dates[i])}: ${money(m.real[i])} a year on factory construction` +
+        (committed ? ` · ${money(committed)} in federal incentives committed` : '') +
+        (nn == null ? '' : ` · ${yr}: ${fmtShort(nn)} net new establishments`);
+    }, [{ color: '#355E3B', y: i => y(m.real[i]) }, { color: '#141414', y: i => y(incAt.get(m.dates[i]) || 0) }]);
+  }
+
+  function drawCharts(prod) {
+    drawRecord(prod);
+    drawWorker(prod);
+    drawPerHour(prod);
+    drawImports(prod);
+    moneyChart();
+  }
+
+  function setPressed(groupId, value) {
+    const el = document.getElementById(groupId);
+    if (el.tagName === 'SELECT') { el.value = value; return; }
+    for (const b of document.querySelectorAll(`#${groupId} button`)) b.setAttribute('aria-pressed', String(b.dataset.v === String(value)));
+  }
+
+  function pill(value, label, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pill';
+    b.dataset.v = value;
+    b.textContent = label;
+    b.onclick = onClick;
+    return b;
+  }
+
+  // Hover card for a story pill: what the story means and the industries in it, by group.
+  function storyCardHtml(id) {
+    if (id === 'all') {
+      return '<strong>All manufacturing</strong><p>Every factory industry BLS tracks, sorted into six categories. Hover each one to see its industries.</p><ul>' +
+        Object.values(meta.stories).map(s => `<li><b>${s.name}</b><span>${s.blurb}</span></li>`).join('') + '</ul>';
+    }
+    const rows = groupsFor(id).map(g => {
+      const items = Object.values(meta.pieces).filter(p => p.group === g && p.story === id).map(p => p.name);
+      const detail = items.length === 1 && items[0] === meta.groups[g] ? '' : `<span>${items.join(' · ')}</span>`;
+      return `<li><b>${meta.groups[g]}</b>${detail}</li>`;
+    }).join('');
+    return `<strong>${meta.stories[id].name}</strong><p>${meta.stories[id].blurb}</p><ul>${rows}</ul>`;
+  }
+
+  function storyPill(id, label, onClick) {
+    const wrap = document.createElement('span');
+    wrap.className = 'story-wrap';
+    const b = pill(id, label, onClick);
+    const card = document.createElement('div');
+    card.className = 'story-card';
+    card.id = `story-card-${id}`;
+    card.setAttribute('role', 'tooltip');
+    card.innerHTML = storyCardHtml(id);
+    b.setAttribute('aria-describedby', card.id);
+    wrap.append(b, card);
+    return wrap;
+  }
+
+  let pillsFor = null;
+  function renderGroupPills() {
+    if (pillsFor === state.story) return;
+    pillsFor = state.story;
+    const sel = document.getElementById('group-select');
+    sel.replaceChildren(...[['all', state.story === 'all' ? 'All groups' : `All ${meta.stories[state.story].name.toLowerCase()}`],
+      ...groupsFor(state.story).map(g => [g, meta.groups[g]])].map(([v, label]) => new Option(label, v)));
+  }
+
+  function setSelection(story, group) {
+    state.story = story;
+    state.group = groupsFor(story).includes(group) ? group : 'all';
+    render();
+  }
+
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    if (meta.stories[p.get('story')]) state.story = p.get('story');
+    if (groupsFor(state.story).includes(p.get('group'))) state.group = p.get('group');
+    if (MEASURES[p.get('measure')]) state.measure = p.get('measure');
+    const since = Number(p.get('since'));
+    if (years.includes(since) && since < years[endIdx]) state.since = since;
+  }
+
+  function writeHash() {
+    const p = new URLSearchParams({ since: state.since, story: state.story, group: state.group, measure: state.measure });
+    history.replaceState(null, '', '#' + p.toString());
+  }
+
+  function render() {
+    writeHash();
+    renderGroupPills();
+    setPressed('story-pills', state.story);
+    document.getElementById('group-select').value = state.group;
+    setPressed('since', state.since);
+    document.getElementById('since-range').value = state.since;
+    document.getElementById('since-year').textContent = state.since;
+    const low = LOWS[state.since];
+    document.getElementById('since-note').hidden = !low;
+    if (low) document.getElementById('since-note').textContent = `${state.since} was at or near the bottom of ${low[0]}, so growth since then partly reflects the recovery. For the longer trend, compare with ${low[1]}.`;
+    setPressed('measure', state.measure);
+    tip.attr('hidden', true);
+    hoverLine.attr('d', null);
+    drawHeadings();
+    drawKpis();
+    drawMap();
+    drawLegend();
+    drawRanks();
+  }
+
+  function bindSegmented(groupId, key, cast = v => v) {
+    document.getElementById(groupId).addEventListener('click', event => {
+      const b = event.target.closest('button');
+      if (!b) return;
+      state[key] = cast(b.dataset.v);
+      render();
+    });
+  }
+
+  // Short "how it's measured" notes under buttons that carry data-hint.
+  const hint = document.getElementById('hint');
+  function showHint(el) {
+    const source = document.createElement('span');
+    source.textContent = `Source: ${el.dataset.source}`;
+    hint.replaceChildren(el.dataset.hint, source);
+    hint.hidden = false;
+    const r = el.getBoundingClientRect();
+    const maxLeft = document.documentElement.clientWidth - hint.offsetWidth - 16;
+    hint.style.left = Math.max(16, Math.min(r.left, maxLeft)) + window.scrollX + 'px';
+    hint.style.top = r.bottom + window.scrollY + 8 + 'px';
+  }
+  for (const el of document.querySelectorAll('[data-hint]')) {
+    el.addEventListener('pointerenter', () => showHint(el));
+    el.addEventListener('focus', () => showHint(el));
+    el.addEventListener('pointerleave', () => { hint.hidden = true; });
+    el.addEventListener('blur', () => { hint.hidden = true; });
+  }
+
+  Promise.all([
+    d3.json(ATLAS),
+    d3.json('data/meta.json'),
+    d3.json('data/national.json'),
+    d3.json('data/states.json'),
+    d3.json('data/reindustrialization.json'),
+    d3.json('data/productivity.json'),
+    d3.json('data/us_incentives.json')
+  ]).then(([topo, m, nat, sts, r, p, inc]) => {
+    meta = m;
+    prod = p;
+    incentives = inc;
+    renderCategoryGuide(meta, document.getElementById('guide'));
+    national = nat;
+    states = sts;
+    reind = r;
+    years = meta.years;
+    endIdx = years.length - 1;
+
+    const stateFeatures = topojson.feature(topo, topo.objects.states).features;
+    for (const f of stateFeatures) {
+      f.label = path.centroid(largestPart(f));
+      features[f.id] = f;
+      names[f.id] = f.properties.name;
+    }
+    gStates.selectAll('path').data(stateFeatures).join('path')
+      .attr('class', 'state').attr('d', path).attr('data-id', d => d.id)
+      .on('pointerenter', (event, d) => {
+        state.hover = d.id;
+        hoverLine.attr('d', path(d));
+        tip.html(tipHtml(d.id)).attr('hidden', null);
+        moveTip(event);
+      })
+      .on('pointermove', moveTip)
+      .on('pointerleave', () => { state.hover = null; hoverLine.attr('d', null); tip.attr('hidden', true); });
+
+    document.getElementById('since').replaceChildren(...SINCE.map(([yr, label]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.v = yr;
+      b.textContent = label;
+      return b;
+    }));
+    document.getElementById('story-pills').replaceChildren(
+      storyPill('all', 'All manufacturing', () => setSelection('all', state.group)),
+      ...Object.entries(meta.stories).map(([id, s]) => storyPill(id, s.name, () => setSelection(id, state.group)))
+    );
+    document.getElementById('group-select').addEventListener('change', event => setSelection(state.story, event.target.value));
+    bindSegmented('since', 'since', Number);
+    const range = document.getElementById('since-range');
+    range.min = years[0];
+    range.max = years[endIdx] - 1;
+    range.addEventListener('input', () => { state.since = Number(range.value); render(); });
+    bindSegmented('measure', 'measure');
+
+    document.getElementById('notes').textContent =
+      `Construction spending is shown as an annual rate and adjusted to ${reind.dollarsOf} dollars with the BLS producer price index for new industrial building construction (FRED PCU236211236211). The unadjusted Census series is FRED TLMFGCONS. The construction headline number is the average of the 12 months ending ${reind.latest}. ` +
+      `Factory jobs as a share of the labor force divide the BLS private factory job count by the BLS civilian labor force for the same year. ` +
+      (meta.plantsNote ? meta.plantsNote + ' ' : '') +
+      `Establishments and jobs are private-sector annual averages through ${years[endIdx]}. "Strategic tech & defense" covers semiconductors and electronics, batteries and grid equipment, aerospace, ships and rail, and pharma and medical devices; vehicles are counted in their own category. ` +
+      `Where BLS withholds part of a state's industry jobs figure, we split the withheld total by plant count; figures where this is 10% or more are marked ~. ` +
+      `Data updated ${meta.built}.`;
+
+    readHash();
+    document.getElementById('loading').remove();
+    render();
+    drawBars();
+    drawStories(prod, reind);
+    drawCharts(prod);
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => drawCharts(prod), 150);
+    });
+    if (meta.plantsNote) document.getElementById('plant-note').textContent =
+      `"Net new establishments" is the BLS count of manufacturing locations with employees, from small shops to large plants. Plant sizes come from a separate source: ${meta.plantsNote} In those 2023 counts, about 2 in 3 manufacturing establishments have fewer than 20 workers and fewer than 1 in 10 have 100 or more.`;
+  }).catch(err => {
+    document.getElementById('loading').textContent = 'Could not load the data. Please refresh to try again.';
+    console.error(err);
+  });
+</script>
+<script src="chrome.js"></script>
 <script>window.goatcounter = { path: p => location.host + p };</script>
 <script data-goatcounter="https://gerardbarile.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>

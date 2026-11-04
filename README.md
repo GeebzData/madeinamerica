@@ -26,12 +26,11 @@ pipeline/
   commerce/              State commerce-agency county data for the Commerce Dept page (writes site/data/commerce_counties.json)
   export.py       Warehouse tables -> compact JSON in site/data/
 site/
-  index.html                 Reindustrialization page: the map, then four stories (record output, output per worker, robots, incentives)
-  story.html                 Story page (chapters, 1979 to now)
-  reindustrialization.html   Reindustrialization page
-  alabama.html               Alabama counties and metro areas, 5- and 10-year trends, incentives
+  index.html                 Story page, the home page (chapters, 1979 to now)
+  reindustrialization.html   Reindustrialization page: the map, then four stories (record output, output per worker, robots, incentives)
+  alabama.html               Alabama in seven parts: map, output, jobs, establishments, pay, costs and incentives (incl. announced investment and federal contracts), small business
   southeast.html             Alabama, Georgia, Tennessee, South Carolina and Mississippi compared, state → metro → county
-  money.html                 Alabama in dollars: GDP, payroll, announced investment, federal contracts
+  story.html, explore.html, money.html   Redirects to the pages that replaced them
   commerce.html              Commerce Dept: each Southeast commerce agency's own projects, jobs and investment, 2021-2025
   styles.css                 Shared styles
   data/                      Generated JSON
